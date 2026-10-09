@@ -693,9 +693,9 @@
                 <th scope="col" class="py-3.5 px-4 min-w-[240px]">Tên tài liệu &amp; Loại</th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16">Số trang</th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16" title="Lần ban hành">Lần BH</th>
-                <th scope="col" class="py-3.5 px-3 w-28">Ngày BH</th>
+                <th scope="col" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center">Ngày BH</th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16" title="Lần sửa đổi">Lần SĐ</th>
-                <th scope="col" class="py-3.5 px-3 w-28">Ngày SĐ</th>
+                <th scope="col" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center">Ngày SĐ</th>
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Soạn thảo</th>
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Phê duyệt</th>
                 <th scope="col" class="py-3.5 px-3 w-36 text-center">Tình trạng</th>
@@ -1330,10 +1330,10 @@
             <table class="min-w-full text-xs text-left divide-y divide-slate-200">
               <thead class="bg-slate-100 text-slate-700 font-semibold">
                 <tr>
-                  <th class="py-2.5 px-3">Lần BH</th>
-                  <th class="py-2.5 px-3">Ngày BH</th>
-                  <th class="py-2.5 px-3">Lần SĐ</th>
-                  <th class="py-2.5 px-3">Ngày SĐ</th>
+                  <th class="py-2.5 px-3 text-center">Lần BH</th>
+                  <th class="py-2.5 px-3 font-bold text-slate-800 text-center">Ngày BH</th>
+                  <th class="py-2.5 px-3 text-center">Lần SĐ</th>
+                  <th class="py-2.5 px-3 font-bold text-slate-800 text-center">Ngày SĐ</th>
                   <th class="py-2.5 px-3">Soạn / Duyệt</th>
                   <th class="py-2.5 px-3 text-center">Tình trạng</th>
                   <th class="py-2.5 px-3 text-center">Toàn văn</th>
@@ -3297,13 +3297,34 @@
     }
 
     function formatDateDisplay(dStr) {
-      if (!dStr || dStr === '1899-12-31' || dStr === '-' || dStr === '0') return '—';
-      const clean = String(dStr).split('T')[0];
-      const parts = clean.split('-');
-      if (parts.length === 3 && parts[0].length === 4) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      if (!dStr || dStr === '1899-12-31' || dStr === '1900-12-31' || dStr === '-' || dStr === '—' || dStr === '0' || dStr === 'null' || dStr === 'undefined') return '—';
+      if (dStr instanceof Date) {
+        if (isNaN(dStr.getTime())) return '—';
+        const d = String(dStr.getDate()).padStart(2, '0');
+        const m = String(dStr.getMonth() + 1).padStart(2, '0');
+        const y = dStr.getFullYear();
+        return `${d}/${m}/${y}`;
       }
-      return clean;
+      let s = String(dStr).trim();
+      if (!s) return '—';
+      if (s.includes('T')) s = s.split('T')[0].trim();
+      if (s.includes(' ')) s = s.split(' ')[0].trim();
+      const ymd = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+      if (ymd) {
+        return `${ymd[3].padStart(2, '0')}/${ymd[2].padStart(2, '0')}/${ymd[1]}`;
+      }
+      const dmy = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+      if (dmy) {
+        return `${dmy[1].padStart(2, '0')}/${dmy[2].padStart(2, '0')}/${dmy[3]}`;
+      }
+      const parsed = new Date(s);
+      if (!isNaN(parsed.getTime())) {
+        const d = String(parsed.getDate()).padStart(2, '0');
+        const m = String(parsed.getMonth() + 1).padStart(2, '0');
+        const y = parsed.getFullYear();
+        return `${d}/${m}/${y}`;
+      }
+      return s;
     }
 
     // ==========================================
@@ -4430,9 +4451,9 @@
             </td>
             <td class="py-3 px-2 text-center text-slate-700 font-medium">${doc.pages || 1}</td>
             <td class="py-3 px-2 text-center font-bold text-slate-900">${escapeHtml(doc.issueNo || '01')}</td>
-            <td class="py-3 px-3 text-slate-700 font-mono text-xs whitespace-nowrap">${formatDateDisplay(doc.issueDate)}</td>
+            <td class="py-3 px-3 text-center font-bold text-slate-900 text-sm whitespace-nowrap">${formatDateDisplay(doc.issueDate)}</td>
             <td class="py-3 px-2 text-center font-bold text-indigo-700">${escapeHtml(doc.revNo || '00')}</td>
-            <td class="py-3 px-3 text-slate-700 font-mono text-xs whitespace-nowrap">${formatDateDisplay(doc.revDate)}</td>
+            <td class="py-3 px-3 text-center font-bold text-slate-900 text-sm whitespace-nowrap">${formatDateDisplay(doc.revDate)}</td>
             <td class="py-3 px-3 text-xs text-slate-700">
               <div class="font-bold text-slate-900">${escapeHtml(doc.drafterName || '—')}</div>
               <div class="text-[11px] text-slate-500">${escapeHtml(doc.drafterRole || '')}</div>
@@ -4492,13 +4513,13 @@
             </div>
 
             <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <div>
-                <span class="text-slate-500 text-[11px]">Lần / Ngày BH:</span>
-                <p class="font-bold text-slate-800">${escapeHtml(doc.issueNo)} (${formatDateDisplay(doc.issueDate)})</p>
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-slate-500 text-xs font-semibold">Lần / Ngày BH:</span>
+                <p class="font-bold text-slate-900 text-sm">${escapeHtml(doc.issueNo)} <span class="text-slate-900 font-bold">(${formatDateDisplay(doc.issueDate)})</span></p>
               </div>
-              <div>
-                <span class="text-slate-500 text-[11px]">Lần / Ngày SĐ:</span>
-                <p class="font-bold text-indigo-700">${escapeHtml(doc.revNo)} (${formatDateDisplay(doc.revDate)})</p>
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-slate-500 text-xs font-semibold">Lần / Ngày SĐ:</span>
+                <p class="font-bold text-indigo-700 text-sm">${escapeHtml(doc.revNo)} <span class="text-indigo-900 font-bold">(${formatDateDisplay(doc.revDate)})</span></p>
               </div>
               <div>
                 <span class="text-slate-500 text-[11px]">Soạn thảo:</span>
@@ -4915,10 +4936,10 @@
             <td class="py-3 px-3 text-center text-xs font-mono font-bold text-indigo-700 whitespace-nowrap">
               Rev ${escapeHtml(doc.revNo || '00')}
             </td>
-            <td class="py-3 px-3 text-xs text-slate-700 whitespace-nowrap">
+            <td class="py-3 px-3 text-sm font-semibold text-slate-800 whitespace-nowrap text-center">
               ${formatDateDisplay(doc.lastReviewedDate || doc.revDate || doc.issueDate)}
             </td>
-            <td class="py-3 px-3 text-xs whitespace-nowrap font-bold text-slate-900">
+            <td class="py-3 px-3 text-sm whitespace-nowrap font-bold text-slate-900 text-center">
               ${formatDateDisplay(item.dateStr)}
               ${st.isDueReview ? '<span class="block text-[10px] text-rose-600 font-extrabold uppercase animate-pulse">Quá hạn</span>' : ''}
             </td>
@@ -5358,7 +5379,7 @@
                 ${escapeHtml(ev.type)}
               </span>
             </td>
-            <td class="py-3 px-3 text-xs font-mono text-slate-700 whitespace-nowrap">${formatDateDisplay(ev.date)}</td>
+            <td class="py-3 px-3 text-sm font-semibold text-slate-800 whitespace-nowrap text-center">${formatDateDisplay(ev.date)}</td>
             <td class="py-3 px-3 text-xs font-mono text-slate-700 whitespace-nowrap">BH ${escapeHtml(ev.issueNo || '01')} / Rev ${escapeHtml(ev.revNo || '00')}</td>
             <td class="py-3 px-3 text-xs text-slate-800 font-semibold">${escapeHtml(ev.proposer || '—')}</td>
             <td class="py-3 px-3 text-xs text-emerald-800 font-semibold">${escapeHtml(ev.approver || '—')}</td>
@@ -5665,7 +5686,7 @@
               <span class="text-xs text-indigo-700 font-mono font-semibold">${escapeHtml(d.copyNo || 'Bản số 01')} (Rev ${escapeHtml(d.revNo || '00')})</span>
             </td>
             <td class="py-3 px-3 text-xs font-bold text-slate-800">${escapeHtml(d.recipientDept)}</td>
-            <td class="py-3 px-3 text-xs font-mono text-slate-700 whitespace-nowrap">${formatDateDisplay(d.receiveDate)}</td>
+            <td class="py-3 px-3 text-sm font-semibold text-slate-800 whitespace-nowrap text-center">${formatDateDisplay(d.receiveDate)}</td>
             <td class="py-3 px-3 text-xs text-slate-700">
               <span class="px-2 py-0.5 rounded ${d.docType.includes('có kiểm soát') ? 'bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${escapeHtml(d.docType)}</span>
             </td>
@@ -5884,10 +5905,10 @@
 
         html += `
           <tr class="${isCurrent ? 'bg-indigo-50/70 font-bold' : 'hover:bg-slate-50'} transition">
-            <td class="py-2.5 px-3 font-semibold text-slate-800">${escapeHtml(r.issueNo)}</td>
-            <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateDisplay(r.issueDate)}</td>
-            <td class="py-2.5 px-3 font-bold text-indigo-700">Rev ${escapeHtml(r.revNo)}</td>
-            <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateDisplay(r.revDate)}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-slate-800">${escapeHtml(r.issueNo)}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-slate-900 text-sm whitespace-nowrap">${formatDateDisplay(r.issueDate)}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-indigo-700">Rev ${escapeHtml(r.revNo)}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-slate-900 text-sm whitespace-nowrap">${formatDateDisplay(r.revDate)}</td>
             <td class="py-2.5 px-3 text-slate-700">${escapeHtml(r.drafterName || '—')} / ${escapeHtml(r.approverName || '—')}</td>
             <td class="py-2.5 px-3 text-center">
               <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] ${rSt.badgeClass}">
@@ -5975,7 +5996,7 @@
           <tr class="hover:bg-slate-50 transition">
             <td class="py-2.5 px-3 font-mono font-bold text-indigo-700">${escapeHtml(d.copyNo || 'Bản số 01')}</td>
             <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(d.recipientDept)}</td>
-            <td class="py-2.5 px-3 font-mono text-xs text-slate-600">${formatDateDisplay(d.receiveDate)}</td>
+            <td class="py-2.5 px-3 text-sm font-semibold text-slate-800 whitespace-nowrap text-center">${formatDateDisplay(d.receiveDate)}</td>
             <td class="py-2.5 px-3 text-xs">${escapeHtml(d.docType)}</td>
             <td class="py-2.5 px-3 font-semibold text-slate-800">${escapeHtml(d.recipient)}</td>
             <td class="py-2.5 px-3 text-slate-600">${escapeHtml(d.distributor)}</td>
