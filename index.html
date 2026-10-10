@@ -57,28 +57,9 @@
       -moz-osx-font-smoothing: grayscale !important;
       text-rendering: optimizeLegibility !important;
     }
-    html {
-      overflow-x: hidden;
-      overflow-y: auto !important;
-      scroll-behavior: smooth;
-      height: 100%;
-    }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       color: #0f172a; /* Solid slate-900 for razor-sharp readability */
-      overflow-x: hidden;
-      overflow-y: auto !important;
-      min-height: 100vh;
-      -webkit-overflow-scrolling: touch;
-    }
-    body.overflow-hidden {
-      overflow: hidden !important;
-    }
-    /* Đảm bảo bảng và container ngang không chặn con cuộn chuột dọc */
-    #container-table-view,
-    .overflow-x-auto {
-      overscroll-behavior-x: contain;
-      overscroll-behavior-y: auto;
     }
     table {
       border-collapse: separate;
@@ -2309,7 +2290,7 @@
             <button type="button" onclick="saveConfigPermanentToFile()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-2xs">
               Lưu vào File HTML
             </button>
-            <button type="button" onclick="showQrCodeModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition">
+            <button type="button" onclick="openModal('modal-qr-code')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition">
               Mã QR Cho Điện Thoại
             </button>
             <button type="button" onclick="copyConfigLink()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition">
@@ -2767,48 +2748,43 @@
     // ========================================================
     // KHỞI TẠO VÀ XÁC THỰC PHÂN QUYỀN
     // ========================================================
-    async function initApp() {
-      // Đảm bảo không bị khóa cuộn trang
-      document.body.classList.remove('overflow-hidden');
+    function initApp() {
+      // Tự động xóa dữ liệu giả định cũ từ phiên bản trước
+      if (localStorage.getItem('ISO17025_CLEARED_DUMMY_V2') !== 'true') {
+        localStorage.removeItem(LS_KEY_DOCS);
+        localStorage.removeItem(LS_KEY_EVENTS);
+        localStorage.removeItem(LS_KEY_DISTRIBUTIONS);
+        localStorage.setItem('ISO17025_CLEARED_DUMMY_V2', 'true');
+      }
 
       // 1. Tải mật khẩu admin
       const savedPw = localStorage.getItem('ISO17025_ADMIN_PASSWORD');
       if (savedPw) appState.adminPassword = savedPw;
 
-      // 2. Nhận diện cấu hình Google Sheet tự động từ URL (param, hash, host hoặc LocalStorage)
-      const detectedUrl = detectGoogleSheetUrl();
-      if (detectedUrl) {
-        appState.gsheetUrl = detectedUrl;
+      // 2. Tải cấu hình Google Sheet
+      const gsheetCfg = localStorage.getItem(LS_KEY_GSHEET);
+      if (gsheetCfg) {
         try {
-          const cfg = { url: detectedUrl, autoSync: true };
-          localStorage.setItem(LS_KEY_GSHEET, JSON.stringify(cfg));
+          const parsed = JSON.parse(gsheetCfg);
+          appState.gsheetUrl = parsed.url || '';
+          appState.gsheetAutoSync = !!parsed.autoSync;
+          const urlInput = document.getElementById('gsheet-app-url');
+          if (urlInput) urlInput.value = appState.gsheetUrl;
+          const syncChk = document.getElementById('gsheet-auto-sync');
+          if (syncChk) syncChk.checked = appState.gsheetAutoSync;
         } catch(e) {}
-      } else {
-        const gsheetCfg = localStorage.getItem(LS_KEY_GSHEET);
-        if (gsheetCfg) {
-          try {
-            const parsed = JSON.parse(gsheetCfg);
-            appState.gsheetUrl = parsed.url || '';
-            appState.gsheetAutoSync = (parsed.autoSync !== false);
-          } catch(e) {}
-        }
       }
 
-      const urlInput = document.getElementById('gsheet-app-url');
-      if (urlInput && appState.gsheetUrl) urlInput.value = appState.gsheetUrl;
-      const syncChk = document.getElementById('gsheet-auto-sync');
-      if (syncChk) syncChk.checked = appState.gsheetAutoSync;
-
-      // 3. Tải danh sách tài liệu từ bộ nhớ đệm LocalStorage (để hiển thị tức thì, cuộn chuột được ngay)
+      // 3. Tải danh sách tài liệu từ LocalStorage
       const savedDocs = localStorage.getItem(LS_KEY_DOCS);
       if (savedDocs !== null) {
         try {
           appState.documents = JSON.parse(savedDocs);
         } catch(e) {
-          appState.documents = [];
+          appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
         }
       } else {
-        appState.documents = [];
+        appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
       }
 
       // 4. Tải danh sách sự kiện vòng đời
@@ -2817,10 +2793,10 @@
         try {
           appState.events = JSON.parse(savedEvents);
         } catch(e) {
-          appState.events = [];
+          appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
         }
       } else {
-        appState.events = [];
+        appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
       }
 
       // 5. Tải danh sách phân phối tài liệu
@@ -2829,10 +2805,10 @@
         try {
           appState.distributions = JSON.parse(savedDist);
         } catch(e) {
-          appState.distributions = [];
+          appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
         }
       } else {
-        appState.distributions = [];
+        appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
       }
 
       // 6. Tải danh sách tài khoản người dùng
@@ -2883,10 +2859,7 @@
         codeArea.value = GOOGLE_APPS_SCRIPT_DOC_CONTROL_CODE.trim();
       }
 
-      // 8. TỰ ĐỘNG NẠP DỮ LIỆU TỪ GOOGLE SHEET KHI MỞ LINK (Fix triệt để lỗi phải nạp thủ công mới cuộn được)
-      if (appState.gsheetUrl) {
-        importFromGoogleSheet({ isAuto: true, silent: (appState.documents.length > 0) });
-      }
+      seedDemoAttachments();
     }
 
     function updateUserInterface() {
@@ -4223,13 +4196,13 @@
       }
     }
 
-    function saveDocumentsToStorage(skipRemoteSync = false) {
+    function saveDocumentsToStorage() {
       try {
         localStorage.setItem(LS_KEY_DOCS, JSON.stringify(appState.documents));
       } catch(e) {
         console.error('Lỗi lưu tài liệu:', e);
       }
-      if (!skipRemoteSync && appState.gsheetAutoSync && appState.gsheetUrl) {
+      if (appState.gsheetAutoSync && appState.gsheetUrl) {
         triggerAutoSyncGoogleSheet();
       }
     }
@@ -6653,9 +6626,6 @@ function getAccountsFromSheet(ss) {
       localStorage.setItem(LS_KEY_GSHEET, JSON.stringify({ url: url, autoSync: autoSync }));
       closeModal('modal-google-sheet');
       showToast('Đã lưu cấu hình Google Sheet!', 'success');
-      if (url) {
-        importFromGoogleSheet({ isAuto: false });
-      }
     }
 
     async function exportToGoogleSheet() {
@@ -6686,39 +6656,16 @@ function getAccountsFromSheet(ss) {
       }
     }
 
-    async function importFromGoogleSheet(options = {}) {
-      const isAuto = !!(options && options.isAuto);
-      const silent = !!(options && options.silent);
-
+    async function importFromGoogleSheet() {
       if (!appState.gsheetUrl) {
-        if (!isAuto) {
-          showToast('Vui lòng nhập URL Google Apps Script trước!', 'warning');
-          openModal('modal-google-sheet');
-        }
+        showToast('Vui lòng nhập URL Google Apps Script trước!', 'warning');
+        openModal('modal-google-sheet');
         return;
       }
-
-      if (!silent) {
-        showToast('Đang nạp dữ liệu từ Google Sheet...', 'info');
-      }
-
-      // Nếu chưa có dữ liệu và đang nạp tự động, hiển thị trạng thái đang tải trên bảng
-      const emptyState = document.getElementById('document-empty-state');
-      if (appState.documents.length === 0 && emptyState) {
-        emptyState.innerHTML = `
-          <div class="py-12 px-4 text-center">
-            <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <h3 class="text-base font-bold text-slate-800">Đang tự động nạp dữ liệu từ Google Sheet...</h3>
-            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Vui lòng chờ trong giây lát để hệ thống tải toàn bộ danh mục tài liệu.</p>
-          </div>
-        `;
-        emptyState.classList.remove('hidden');
-      }
-
+      showToast('Đang nạp dữ liệu từ Google Sheet...', 'info');
       try {
-        const fetchUrl = appState.gsheetUrl + (appState.gsheetUrl.includes('?') ? '&' : '?') + 'action=GET_ALL&_t=' + Date.now();
+        const fetchUrl = appState.gsheetUrl + (appState.gsheetUrl.includes('?') ? '&' : '?') + 'action=GET_ALL';
         const res = await fetch(fetchUrl);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
 
         let countMsg = [];
@@ -6746,24 +6693,21 @@ function getAccountsFromSheet(ss) {
             content: String(doc.content || '').trim()
           })).filter(d => d.code || d.name);
 
-          saveDocumentsToStorage(true);
+          saveDocumentsToStorage();
           if (appState.documents.length > 0) {
             countMsg.push(`${appState.documents.length} tài liệu`);
           }
         }
-
         if (data && data.events && Array.isArray(data.events) && data.events.length > 0) {
           appState.events = data.events;
           saveEventsToStorage();
           countMsg.push(`${data.events.length} sự kiện`);
         }
-
         if (data && data.distributions && Array.isArray(data.distributions) && data.distributions.length > 0) {
           appState.distributions = data.distributions;
           saveDistributionsToStorage();
           countMsg.push(`${data.distributions.length} phân phối`);
         }
-
         if (data && data.accounts && Array.isArray(data.accounts) && data.accounts.length > 0) {
           appState.accounts = data.accounts;
           saveAccountsToStorage();
@@ -6771,25 +6715,23 @@ function getAccountsFromSheet(ss) {
           countMsg.push(`${data.accounts.length} tài khoản`);
         }
 
-        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ nếu người dùng bấm nạp thủ công
-        if (!isAuto) {
-          appState.searchQuery = '';
-          appState.selectedCategory = 'ALL';
-          appState.selectedStatus = 'ALL';
-          appState.selectedPersonnel = 'ALL';
-          appState.docPage = 1;
+        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ ngay sau khi nạp
+        appState.searchQuery = '';
+        appState.selectedCategory = 'ALL';
+        appState.selectedStatus = 'ALL';
+        appState.selectedPersonnel = 'ALL';
+        appState.docPage = 1;
 
-          const sInp = document.getElementById('search-input');
-          if (sInp) sInp.value = '';
-          const clearBtn = document.getElementById('btn-clear-search');
-          if (clearBtn) clearBtn.classList.add('hidden');
-          const stSelect = document.getElementById('filter-status-select');
-          if (stSelect) stSelect.value = 'ALL';
-          const pSelect = document.getElementById('filter-personnel-select');
-          if (pSelect) pSelect.value = 'ALL';
-          const toggleLatest = document.getElementById('toggle-latest-only');
-          if (toggleLatest) toggleLatest.checked = true;
-        }
+        const sInp = document.getElementById('search-input');
+        if (sInp) sInp.value = '';
+        const clearBtn = document.getElementById('btn-clear-search');
+        if (clearBtn) clearBtn.classList.add('hidden');
+        const stSelect = document.getElementById('filter-status-select');
+        if (stSelect) stSelect.value = 'ALL';
+        const pSelect = document.getElementById('filter-personnel-select');
+        if (pSelect) pSelect.value = 'ALL';
+        const toggleLatest = document.getElementById('toggle-latest-only');
+        if (toggleLatest) toggleLatest.checked = true;
 
         populatePersonnelDropdown();
         populateDeptFilterDropdown();
@@ -6802,22 +6744,13 @@ function getAccountsFromSheet(ss) {
         renderDistributionTable();
         checkAndRenderAlerts();
 
-        // Đóng modal google sheet nếu đang mở để trả lại giao diện chính và thanh cuộn
-        closeModal('modal-google-sheet');
-
         if (countMsg.length > 0) {
           showToast(`Đã đồng bộ thành công: ${countMsg.join(', ')} từ Google Sheet!`, 'success');
         } else {
-          if (!isAuto) showToast('Google Sheet trả về dữ liệu rỗng.', 'warning');
+          showToast('Google Sheet trả về dữ liệu rỗng.', 'warning');
         }
       } catch(err) {
-        console.error('Lỗi nạp từ Google Sheet:', err);
-        if (!isAuto || appState.documents.length === 0) {
-          showToast('Lỗi kết nối Google Sheet: ' + err.message, 'warning');
-        }
-        if (appState.documents.length === 0) {
-          renderDocumentList();
-        }
+        showToast('Lỗi nạp từ Google Sheet: ' + err.message, 'warning');
       }
     }
 
@@ -6837,70 +6770,9 @@ function getAccountsFromSheet(ss) {
       }).catch(e => console.log('Auto sync silent fail:', e));
     }
 
-    function detectGoogleSheetUrl() {
-      // 1. Kiểm tra tham số URL query (?gsheet=..., ?url=..., ?sheet=..., ?api=...)
-      try {
-        if (window.location.search) {
-          const urlParams = new URLSearchParams(window.location.search);
-          const p = urlParams.get('gsheet') || urlParams.get('url') || urlParams.get('sheet') || urlParams.get('api') || urlParams.get('webAppUrl');
-          if (p && p.trim().startsWith('http')) return p.trim();
-        }
-      } catch(e) {}
-
-      // 2. Kiểm tra hash URL (#gsheet=..., #url=...)
-      try {
-        if (window.location.hash) {
-          const hashStr = window.location.hash.substring(1);
-          if (hashStr.startsWith('gsheet=')) {
-            const val = decodeURIComponent(hashStr.substring(7));
-            if (val && val.trim().startsWith('http')) return val.trim();
-          } else if (hashStr.startsWith('url=')) {
-            const val = decodeURIComponent(hashStr.substring(4));
-            if (val && val.trim().startsWith('http')) return val.trim();
-          } else if (hashStr.startsWith('http')) {
-            return decodeURIComponent(hashStr).trim();
-          }
-        }
-      } catch(e) {}
-
-      // 3. Nếu chạy trực tiếp trên Google Apps Script Web App
-      try {
-        if (window.location.hostname === 'script.google.com' && window.location.pathname.includes('/macros/s/')) {
-          return window.location.href.split('?')[0].split('#')[0];
-        }
-      } catch(e) {}
-
-      // 4. Kiểm tra LocalStorage đã lưu cấu hình trước đó
-      try {
-        const gsheetCfg = localStorage.getItem(LS_KEY_GSHEET);
-        if (gsheetCfg) {
-          const parsed = JSON.parse(gsheetCfg);
-          if (parsed && parsed.url && parsed.url.trim().startsWith('http')) {
-            return parsed.url.trim();
-          }
-        }
-      } catch(e) {}
-
-      return '';
-    }
-
-    function showQrCodeModal() {
-      const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const link = baseUrl + '#gsheet=' + encodeURIComponent(appState.gsheetUrl || '');
-      const qrImg = document.getElementById('qr-code-img');
-      if (qrImg) {
-        qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(link);
-      }
-      openModal('modal-qr-code');
-    }
-
     function saveConfigPermanentToFile() {
-      let htmlContent = document.documentElement.outerHTML;
-      if (appState.gsheetUrl) {
-        htmlContent = htmlContent.replace(/(gsheetUrl:\s*['"])([^'"]*)(['"])/, '$1' + appState.gsheetUrl + '$3');
-      }
-      const fullHtml = '<!DOCTYPE html>\n<html lang="vi">\n' + htmlContent + '\n</html>';
-      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const htmlContent = document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'kiem_soat_tai_lieu_iso17025_configured.html';
@@ -6911,17 +6783,10 @@ function getAccountsFromSheet(ss) {
     }
 
     function copyConfigLink() {
-      const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const url = baseUrl + '#gsheet=' + encodeURIComponent(appState.gsheetUrl || '');
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast('Đã sao chép liên kết cấu hình (kèm Google Sheet)!', 'success');
-        }).catch(() => {
-          prompt('Sao chép đường link cấu hình dưới đây:', url);
-        });
-      } else {
-        prompt('Sao chép đường link cấu hình dưới đây:', url);
-      }
+      const url = window.location.href.split('#')[0] + '#gsheet=' + encodeURIComponent(appState.gsheetUrl);
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Đã sao chép liên kết cấu hình!', 'success');
+      });
     }
 
     // ========================================================
@@ -7128,27 +6993,9 @@ function getAccountsFromSheet(ss) {
       const el = document.getElementById(id);
       if (el) {
         el.classList.add('hidden');
-      }
-      const openModals = document.querySelectorAll('[id^="modal-"]:not(.hidden)');
-      if (!openModals || openModals.length === 0) {
         document.body.classList.remove('overflow-hidden');
       }
     }
-
-    // Đóng modal khi nhấp chuột ra ngoài vùng hộp thoại (Backdrop) và phím Escape
-    window.addEventListener('click', function(e) {
-      if (e.target && e.target.id && e.target.id.startsWith('modal-') && !e.target.classList.contains('hidden')) {
-        closeModal(e.target.id);
-      }
-    });
-
-    window.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        const openModals = document.querySelectorAll('[id^="modal-"]:not(.hidden)');
-        openModals.forEach(m => closeModal(m.id));
-        toggleSidebar(false);
-      }
-    });
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
