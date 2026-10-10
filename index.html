@@ -708,13 +708,13 @@
             <thead class="bg-slate-100 text-slate-900 text-xs font-bold uppercase tracking-wider sticky top-0 z-[10] border-b-2 border-slate-300 shadow-2xs backdrop-blur-xs">
               <tr>
                 <th scope="col" class="py-3.5 px-3 w-12 text-center">TT</th>
-                <th scope="col" class="py-3.5 px-3 w-28">Mã hiệu</th>
-                <th scope="col" class="py-3.5 px-4 min-w-[240px]">Tên tài liệu &amp; Loại</th>
+                <th scope="col" id="th-sort-code" onclick="sortDocuments('code')" class="py-3.5 px-3 w-28 cursor-pointer hover:bg-slate-200 transition select-none" title="Nhấp để sắp xếp theo Mã hiệu">Mã hiệu <span class="sort-icon text-blue-600 font-bold"> ▲</span></th>
+                <th scope="col" id="th-sort-name" onclick="sortDocuments('name')" class="py-3.5 px-4 min-w-[240px] cursor-pointer hover:bg-slate-200 transition select-none" title="Nhấp để sắp xếp theo Tên tài liệu &amp; Loại">Tên tài liệu &amp; Loại <span class="sort-icon opacity-40"> ↕</span></th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16">Số trang</th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16" title="Lần ban hành">Lần BH</th>
-                <th scope="col" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center">Ngày BH</th>
+                <th scope="col" id="th-sort-issue-date" onclick="sortDocuments('issueDate')" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center cursor-pointer hover:bg-slate-200 transition select-none" title="Nhấp để sắp xếp theo Ngày ban hành">Ngày BH <span class="sort-icon opacity-40"> ↕</span></th>
                 <th scope="col" class="py-3.5 px-2 text-center w-16" title="Lần sửa đổi">Lần SĐ</th>
-                <th scope="col" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center">Ngày SĐ</th>
+                <th scope="col" id="th-sort-rev-date" onclick="sortDocuments('revDate')" class="py-3.5 px-3 w-32 min-w-[120px] font-bold text-slate-800 text-center cursor-pointer hover:bg-slate-200 transition select-none" title="Nhấp để sắp xếp theo Ngày sửa đổi">Ngày SĐ <span class="sort-icon opacity-40"> ↕</span></th>
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Soạn thảo</th>
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Phê duyệt</th>
                 <th scope="col" class="py-3.5 px-3 w-36 text-center">Tình trạng</th>
@@ -2530,17 +2530,749 @@
     ];
 
     // 2. DEFAULT DOCUMENTS (16 chuẩn hóa ISO 17025)
-    // 2. DANH MỤC TÀI LIỆU HỆ THỐNG (Khởi tạo sạch - 0 dữ liệu giả định)
-    const DEFAULT_DOCUMENTS = [];
+    // 2. DANH MỤC TÀI LIỆU HỆ THỐNG (Chuẩn hóa ISO/IEC 17025:2017)
+    const DEFAULT_DOCUMENTS = [ {
+        id: 'doc-001',
+        name: 'Sổ tay chất lượng phòng thí nghiệm',
+        code: 'STCL-01',
+        pages: 35,
+        issueNo: '02',
+        issueDate: '2024-01-15',
+        revNo: '01',
+        revDate: '2025-06-20',
+        content: 'Mô tả hệ thống quản lý theo ISO/IEC 17025:2017, chính sách chất lượng, cam kết tính khách quan và bảo mật thông tin khách hàng.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Sổ tay chất lượng'
+      },
+      {
+        id: 'doc-002',
+        name: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        code: 'QTQL-01',
+        pages: 12,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '02',
+        revDate: '2025-08-15',
+        content: 'Sửa đổi lần 02: Bổ sung quy định kiểm soát tài liệu điện tử, phân quyền trên hệ thống LIMS, và thiết lập chu kỳ soát xét định kỳ 12 tháng theo Điều 8.3 tiêu chuẩn ISO/IEC 17025:2017.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình quản lý',
+        fileAttachment: {
+          fileName: 'QTQL-01_Kiem_soat_tai_lieu_Rev02.docx',
+          fileType: 'docx',
+          fileSize: 50504,
+          hasBlob: true,
+          uploadDate: '2025-08-15'
+        }
+      },
+      {
+        id: 'doc-002-v1',
+        name: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        code: 'QTQL-01',
+        pages: 11,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '01',
+        revDate: '2024-05-10',
+        content: 'Sửa đổi lần 01: Điều chỉnh thẩm quyền ký duyệt biểu mẫu thử nghiệm (chuyển giao cho Trưởng phòng Thử nghiệm) và cập nhật mẫu BM-01/QTQL-01.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình quản lý'
+      },
+      {
+        id: 'doc-002-v0',
+        name: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        code: 'QTQL-01',
+        pages: 10,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '00',
+        revDate: '2023-05-10',
+        content: 'Ban hành lần đầu: Xây dựng mới quy trình phục vụ đánh giá công nhận phòng thử nghiệm theo ISO/IEC 17025:2017.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình quản lý'
+      },
+      {
+        id: 'doc-003',
+        name: 'Quy trình quản lý rủi ro và cơ hội',
+        code: 'QTQL-02',
+        pages: 10,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '00',
+        revDate: '2023-05-10',
+        content: 'Quy trình nhận diện, đánh giá và lập kế hoạch giảm thiểu rủi ro đối với tính khách quan và hoạt động thử nghiệm (khoản 8.5).',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Trần Thị Mai',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình quản lý'
+      },
+      {
+        id: 'doc-004',
+        name: 'Quy trình đánh giá nội bộ',
+        code: 'QTQL-03',
+        pages: 9,
+        issueNo: '01',
+        issueDate: '2023-06-01',
+        revNo: '01',
+        revDate: '2024-11-05',
+        content: 'Quy định việc lập kế hoạch, triển khai đánh giá nội bộ định kỳ và theo dõi hành động khắc phục (khoản 8.8).',
+        drafterRole: 'Đánh giá viên trưởng',
+        drafterName: 'Vũ Quốc Tuấn',
+        checkerRole: 'Cán bộ ĐBCL',
+        checkerName: 'Nguyễn Văn Minh',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình quản lý'
+      },
+      {
+        id: 'doc-005',
+        name: 'Quy trình thử nghiệm xác định hàm lượng Chì (Pb) trong nước bằng phổ hấp thụ nguyên tử (F-AAS)',
+        code: 'QTTN-01',
+        pages: 15,
+        issueNo: '01',
+        issueDate: '2024-03-01',
+        revNo: '01',
+        revDate: '2026-02-18',
+        content: 'Phương pháp thử nghiệm xác định vết chì theo SMEWW 3111B, giới hạn phát hiện (LOD) 0.05 mg/L, độ không đảm bảo đo U = 8.5%.',
+        drafterRole: 'Kiểm nghiệm viên Hóa',
+        drafterName: 'Đặng Thanh Tùng',
+        checkerRole: 'Trưởng phòng Thử nghiệm Hóa',
+        checkerName: 'ThS. Hoàng Bích Ngọc',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình thử nghiệm',
+        fileAttachment: {
+          fileName: 'QTTN-01_Xac_dinh_Chi_Pb_F-AAS.pdf',
+          fileType: 'pdf',
+          fileSize: 2124,
+          hasBlob: true,
+          uploadDate: '2026-02-18'
+        }
+      },
+      {
+        id: 'doc-006',
+        name: 'Quy trình thử nghiệm xác định Escherichia coli trong thực phẩm bằng phương pháp MPN',
+        code: 'QTTN-02',
+        pages: 14,
+        issueNo: '01',
+        issueDate: '2023-08-20',
+        revNo: '02',
+        revDate: '2026-05-10',
+        content: 'Quy trình thử nghiệm vi sinh vật định lượng E. coli theo TCVN 6846:2007 (ISO 7251:2005) trong mẫu thực phẩm và thủy hải sản.',
+        drafterRole: 'Kỹ thuật viên Vi sinh',
+        drafterName: 'Phạm Thị Lan',
+        checkerRole: 'Trưởng phòng Thử nghiệm Vi sinh',
+        checkerName: 'Đỗ Đức Thắng',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Quy trình thử nghiệm'
+      },
+      {
+        id: 'doc-007',
+        name: 'Hướng dẫn sử dụng, kiểm tra hàng ngày và bảo dưỡng cân phân tích 4 số lẻ',
+        code: 'HDTB-01',
+        pages: 6,
+        issueNo: '01',
+        issueDate: '2023-04-12',
+        revNo: '01',
+        revDate: '2025-04-10',
+        content: 'Hướng dẫn thao tác bật máy, hiệu chuẩn nội hàng ngày bằng quả cân chuẩn cấp chính xác E2, ghi chép nhật ký kiểm tra và vệ sinh buồng cân.',
+        drafterRole: 'Kỹ thuật viên Hóa',
+        drafterName: 'Đặng Thanh Tùng',
+        checkerRole: 'Cán bộ Thiết bị',
+        checkerName: 'Lê Văn An',
+        approverRole: 'Trưởng ban QLCL',
+        approverName: 'Trần Thu Hà',
+        type: 'Hướng dẫn thiết bị'
+      },
+      {
+        id: 'doc-008',
+        name: 'Hướng dẫn pha chế, dán nhãn và chuẩn hóa nồng độ dung dịch chuẩn Axit - Bazơ',
+        code: 'HDC-01',
+        pages: 7,
+        issueNo: '01',
+        issueDate: '2023-04-15',
+        revNo: '00',
+        revDate: '2023-04-15',
+        content: 'Cách thức pha chế, chuẩn độ xác định hệ số k và nồng độ thực tế, dán nhãn hạn dùng và lưu trữ dung dịch chuẩn theo quy định GLP và ISO 17025.',
+        drafterRole: 'Kỹ thuật viên Hóa',
+        drafterName: 'Nguyễn Thị Oanh',
+        checkerRole: 'Trưởng phòng Thử nghiệm Hóa',
+        checkerName: 'ThS. Hoàng Bích Ngọc',
+        approverRole: 'Trưởng ban QLCL',
+        approverName: 'Trần Thu Hà',
+        type: 'Hướng dẫn chung'
+      },
+      {
+        id: 'doc-014',
+        name: 'Hướng dẫn kiểm soát an toàn hóa chất, trang bị bảo hộ lao động và xử lý sự cố tràn đổ trong phòng lab',
+        code: 'HDC-02',
+        pages: 8,
+        issueNo: '01',
+        issueDate: '2023-06-15',
+        revNo: '01',
+        revDate: '2024-08-20',
+        content: 'Sửa đổi lần 01: Bổ sung quy định về phân loại hóa chất nguy hại theo hệ thống hài hòa toàn cầu GHS và quy trình sơ cấp cứu khi bị bỏng axit/kiềm.',
+        drafterRole: 'Kỹ thuật viên Hóa',
+        drafterName: 'Nguyễn Thị Oanh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Hướng dẫn chung'
+      },
+      {
+        id: 'doc-014-v0',
+        name: 'Hướng dẫn an toàn phòng thử nghiệm và trang bị bảo hộ lao động',
+        code: 'HDC-02',
+        pages: 6,
+        issueNo: '01',
+        issueDate: '2023-06-15',
+        revNo: '00',
+        revDate: '2023-06-15',
+        content: 'Ban hành lần đầu: Quy định các nguyên tắc an toàn chung khi làm việc với hóa chất, dụng cụ thủy tinh và thiết bị gia nhiệt trong phòng thí nghiệm.',
+        drafterRole: 'Kỹ thuật viên Hóa',
+        drafterName: 'Nguyễn Thị Oanh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Hướng dẫn chung'
+      },
+      {
+        id: 'doc-011',
+        name: 'Hướng dẫn vận hành, kiểm tra độ nhạy và bảo trì máy quang phổ hấp thụ nguyên tử F-AAS',
+        code: 'HDTB-02',
+        pages: 14,
+        issueNo: '01',
+        issueDate: '2024-03-01',
+        revNo: '01',
+        revDate: '2025-09-10',
+        content: 'Quy trình hướng dẫn bật hệ thống cấp khí nén / Axetylen an toàn, căn chỉnh đèn Cathode rỗng (HCL), tối ưu hóa góc đầu đốt và quy trình vệ sinh buồng phun sương máy AAS.',
+        drafterRole: 'Kiểm nghiệm viên Hóa',
+        drafterName: 'Đặng Thanh Tùng',
+        checkerRole: 'Cán bộ Thiết bị',
+        checkerName: 'Lê Văn An',
+        approverRole: 'Trưởng ban QLCL',
+        approverName: 'Trần Thu Hà',
+        type: 'Hướng dẫn thiết bị'
+      },
+      {
+        id: 'doc-012',
+        name: 'Tiêu chuẩn quốc gia TCVN ISO/IEC 17025:2017 - Yêu cầu chung về năng lực phòng thử nghiệm và hiệu chuẩn',
+        code: 'TLTC-01',
+        pages: 42,
+        issueNo: '01',
+        issueDate: '2023-01-10',
+        revNo: '00',
+        revDate: '2023-01-10',
+        content: 'Tiêu chuẩn quốc gia tương đương nguyên vẹn với ISO/IEC 17025:2017 quy định các yêu cầu chung về tính khách quan, tính bảo mật, cơ cấu tổ chức, nguồn lực, quá trình và hệ thống quản lý phòng thử nghiệm.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Tài liệu tham chiếu'
+      },
+      {
+        id: 'doc-013',
+        name: 'SMEWW 3111B - Standard Methods for the Examination of Water and Wastewater (Direct Air-Acetylene Flame Method)',
+        code: 'TLTC-02',
+        pages: 18,
+        issueNo: '01',
+        issueDate: '2023-02-15',
+        revNo: '00',
+        revDate: '2023-02-15',
+        content: 'Phương pháp tiêu chuẩn của Hiệp hội Y tế Công cộng Hoa Kỳ (APHA/AWWA/WEF) về phân tích kim loại nặng trong nước bằng ngọn lửa không khí - Axetylen, tài liệu tham chiếu gốc cho phương pháp QTTN-01.',
+        drafterRole: 'Kiểm nghiệm viên Hóa',
+        drafterName: 'Đặng Thanh Tùng',
+        checkerRole: 'Trưởng phòng Thử nghiệm Hóa',
+        checkerName: 'ThS. Hoàng Bích Ngọc',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Tài liệu tham chiếu'
+      },
+      {
+        id: 'doc-009',
+        name: 'Danh mục phân phối và thu hồi tài liệu',
+        code: 'BM-01/QTQL-01',
+        pages: 2,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '01',
+        revDate: '2025-08-15',
+        content: 'Biểu mẫu theo dõi vị trí phân phối bản sao có kiểm soát (Controlled Copy) và xác nhận thu hồi tài liệu hết hiệu lực.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Biểu mẫu'
+      },
+      {
+        id: 'doc-010',
+        name: 'Phiếu yêu cầu ban hành / sửa đổi tài liệu',
+        code: 'BM-02/QTQL-01',
+        pages: 2,
+        issueNo: '01',
+        issueDate: '2023-05-10',
+        revNo: '00',
+        revDate: '2023-05-10',
+        content: 'Biểu mẫu đề xuất lý do sửa đổi, nội dung sửa đổi và chữ ký xem xét của các bộ phận liên quan trước khi trình duyệt.',
+        drafterRole: 'Cán bộ ĐBCL',
+        drafterName: 'Nguyễn Văn Minh',
+        checkerRole: 'Trưởng ban QLCL',
+        checkerName: 'Trần Thu Hà',
+        approverRole: 'Giám đốc PTN',
+        approverName: 'TS. Lê Hoàng Nam',
+        type: 'Biểu mẫu'
+      } ];
 
-    // 3. NHẬT KÝ SỰ KIỆN VÒNG ĐỜI (Khởi tạo sạch - 0 dữ liệu giả định)
-    const DEFAULT_EVENTS = [];
+    // 3. NHẬT KÝ SỰ KIỆN VÒNG ĐỜI (Chuẩn hóa ISO/IEC 17025:2017)
+    const DEFAULT_EVENTS = [ {
+        id: 'evt-01',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        type: 'Ban hành mới',
+        date: '2024-01-15',
+        issueNo: '01',
+        revNo: '00',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 02/QĐ-PTN',
+        content: 'Ban hành mới Sổ tay chất lượng lần đầu theo tiêu chuẩn ISO/IEC 17025:2017.',
+        attachments: []
+      },
+      {
+        id: 'evt-02',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        type: 'Sửa đổi',
+        date: '2025-06-20',
+        issueNo: '02',
+        revNo: '01',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 35/QĐ-PTN',
+        content: 'Sửa đổi lần 01: Cập nhật chính sách bảo mật dữ liệu số, phân công trách nhiệm quyền hạn mới theo cơ cấu tổ chức trung tâm.',
+        attachments: []
+      },
+      {
+        id: 'evt-03',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        type: 'Ban hành mới',
+        date: '2023-05-10',
+        issueNo: '01',
+        revNo: '00',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 15/QĐ-PTN',
+        content: 'Ban hành quy trình kiểm soát tài liệu và hồ sơ lần đầu phục vụ đánh giá công nhận VILAS.',
+        attachments: []
+      },
+      {
+        id: 'evt-04',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        type: 'Sửa đổi',
+        date: '2024-05-10',
+        issueNo: '01',
+        revNo: '01',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 22/QĐ-PTN',
+        content: 'Sửa đổi lần 01: Điều chỉnh thẩm quyền ký duyệt biểu mẫu thử nghiệm (chuyển giao cho Trưởng phòng Thử nghiệm) và cập nhật mẫu BM-01.',
+        attachments: []
+      },
+      {
+        id: 'evt-05',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        type: 'Sửa đổi',
+        date: '2025-08-15',
+        issueNo: '01',
+        revNo: '02',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 48/QĐ-PTN',
+        content: 'Sửa đổi lần 02: Bổ sung quy định kiểm soát tài liệu điện tử, phân quyền trên hệ thống LIMS, và thiết lập chu kỳ soát xét định kỳ 12 tháng theo Điều 8.3.',
+        attachments: []
+      },
+      {
+        id: 'evt-06',
+        docId: 'doc-005',
+        docCode: 'QTTN-01',
+        docName: 'Quy trình thử nghiệm xác định hàm lượng Chì (Pb) trong nước bằng phổ hấp thụ nguyên tử (F-AAS)',
+        type: 'Ban hành mới',
+        date: '2024-03-01',
+        issueNo: '01',
+        revNo: '00',
+        proposer: 'Đặng Thanh Tùng',
+        checker: 'ThS. Hoàng Bích Ngọc',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 18/QĐ-PTN',
+        content: 'Ban hành quy trình thử nghiệm xác định Chì (Pb) trong nước bằng phương pháp ngọn lửa F-AAS.',
+        attachments: []
+      },
+      {
+        id: 'evt-07',
+        docId: 'doc-005',
+        docCode: 'QTTN-01',
+        docName: 'Quy trình thử nghiệm xác định hàm lượng Chì (Pb) trong nước bằng phổ hấp thụ nguyên tử (F-AAS)',
+        type: 'Sửa đổi',
+        date: '2026-02-18',
+        issueNo: '01',
+        revNo: '01',
+        proposer: 'Đặng Thanh Tùng',
+        checker: 'ThS. Hoàng Bích Ngọc',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 08/QĐ-PTN',
+        content: 'Cập nhật dải tuyến tính chuẩn, giới hạn phát hiện LOD = 0.05 mg/L và độ không đảm bảo đo mở rộng U = 8.5%.',
+        attachments: []
+      },
+      {
+        id: 'evt-08',
+        docId: 'doc-007',
+        docCode: 'HDTB-01',
+        docName: 'Hướng dẫn sử dụng, kiểm tra hàng ngày và bảo dưỡng cân phân tích 4 số lẻ',
+        type: 'Soát xét (không có sửa đổi)',
+        date: '2026-04-10',
+        issueNo: '01',
+        revNo: '01',
+        proposer: 'Lê Văn An',
+        checker: 'Trần Thu Hà',
+        approver: 'Trần Thu Hà',
+        decisionNo: 'BBSX 04/BBSX-TB',
+        content: 'Đã rà soát định kỳ hàng năm theo Khoản 8.3.2.b. Hướng dẫn sử dụng cân phân tích 4 số lẻ vẫn phù hợp, thao tác chính xác, không cần sửa đổi. Tiếp tục duy trì hiệu lực (+12 tháng).',
+        attachments: []
+      },
+      {
+        id: 'evt-09',
+        docId: 'doc-014-v0',
+        docCode: 'HDC-02',
+        docName: 'Hướng dẫn an toàn phòng thử nghiệm và trang bị bảo hộ lao động',
+        type: 'Hủy',
+        date: '2024-08-20',
+        issueNo: '01',
+        revNo: '00',
+        proposer: 'Nguyễn Thị Oanh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 39/QĐ-PTN',
+        content: 'Tuyên bố hủy bỏ hiệu lực phiên bản cũ Rev 00 để thay thế bằng phiên bản mới Rev 01 có bổ sung phân loại hóa chất GHS. Thu hồi toàn bộ bản in tại các phòng lab.',
+        attachments: []
+      },
+      {
+        id: 'evt-10',
+        docId: 'doc-003',
+        docCode: 'QTQL-02',
+        docName: 'Quy trình quản lý rủi ro và cơ hội',
+        type: 'Soát xét (không có sửa đổi)',
+        date: '2025-05-10',
+        issueNo: '01',
+        revNo: '00',
+        proposer: 'Trần Thị Mai',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'BBSX 02/BBSX-QL',
+        content: 'Soát xét quy trình quản lý rủi ro và cơ hội. Quy trình phù hợp với bối cảnh phòng lab, gia hạn hiệu lực 12 tháng.',
+        attachments: []
+      },
+      {
+        id: 'evt-11',
+        docId: 'doc-006',
+        docCode: 'QTTN-02',
+        docName: 'Quy trình thử nghiệm xác định Escherichia coli trong thực phẩm bằng phương pháp MPN',
+        type: 'Sửa đổi',
+        date: '2026-05-10',
+        issueNo: '01',
+        revNo: '02',
+        proposer: 'Phạm Thị Lan',
+        checker: 'Đỗ Đức Thắng',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 29/QĐ-PTN',
+        content: 'Cập nhật dải pha loãng và môi trường nuôi cấy EC Broth theo TCVN 6846:2007 mới.',
+        attachments: []
+      },
+      {
+        id: 'evt-12',
+        docId: 'doc-009',
+        docCode: 'BM-01/QTQL-01',
+        docName: 'Danh mục phân phối và thu hồi tài liệu',
+        type: 'Sửa đổi',
+        date: '2025-08-15',
+        issueNo: '01',
+        revNo: '01',
+        proposer: 'Nguyễn Văn Minh',
+        checker: 'Trần Thu Hà',
+        approver: 'TS. Lê Hoàng Nam',
+        decisionNo: 'QĐ 48/QĐ-PTN',
+        content: 'Sửa đổi biểu mẫu bổ sung cột hình thức tài liệu và ngày thu hồi.',
+        attachments: []
+      } ];
 
-    // 4. SỔ THEO DÕI PHÂN PHỐI & THU HỒI (Khởi tạo sạch - 0 dữ liệu giả định)
-    const DEFAULT_DISTRIBUTIONS = [];
+    // 4. SỔ THEO DÕI PHÂN PHỐI & THU HỒI (BM-01/QTQL-01)
+    const DEFAULT_DISTRIBUTIONS = [ {
+        id: 'dist-01',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        issueNo: '02',
+        revNo: '01',
+        recipientDept: 'Ban Giám Đốc',
+        receiveDate: '2025-06-21',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'TS. Lê Hoàng Nam',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Lưu tại văn phòng Giám đốc'
+      },
+      {
+        id: 'dist-02',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        issueNo: '02',
+        revNo: '01',
+        recipientDept: 'Ban QLCL (ĐBCL)',
+        receiveDate: '2025-06-21',
+        docType: 'Bản gốc lưu trữ (Master Copy)',
+        recipient: 'Trần Thu Hà',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản Gốc',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Lưu giữ tại tủ hồ sơ chất lượng'
+      },
+      {
+        id: 'dist-03',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        issueNo: '02',
+        revNo: '01',
+        recipientDept: 'Phòng Kiểm nghiệm Hóa học',
+        receiveDate: '2025-06-21',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'ThS. Hoàng Bích Ngọc',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 02',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Điểm sử dụng: Bàn trưởng phòng KN Hóa'
+      },
+      {
+        id: 'dist-04',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        issueNo: '02',
+        revNo: '01',
+        recipientDept: 'Phòng Kiểm nghiệm Vi sinh',
+        receiveDate: '2025-06-21',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Đỗ Đức Thắng',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 03',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Điểm sử dụng: Bàn trưởng phòng Vi sinh'
+      },
+      {
+        id: 'dist-05',
+        docId: 'doc-001',
+        docCode: 'STCL-01',
+        docName: 'Sổ tay chất lượng phòng thí nghiệm',
+        issueNo: '01',
+        revNo: '00',
+        recipientDept: 'Phòng Kiểm nghiệm Hóa học',
+        receiveDate: '2024-01-16',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'ThS. Hoàng Bích Ngọc',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 02',
+        status: 'Đã thu hồi',
+        recallDate: '2025-06-21',
+        note: 'Đã thu hồi và đóng dấu hết hiệu lực khi phát hành Rev 01'
+      },
+      {
+        id: 'dist-06',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        issueNo: '01',
+        revNo: '02',
+        recipientDept: 'Phòng Kiểm nghiệm Hóa học',
+        receiveDate: '2025-08-16',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'ThS. Hoàng Bích Ngọc',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Tủ tài liệu phòng Hóa'
+      },
+      {
+        id: 'dist-07',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        issueNo: '01',
+        revNo: '02',
+        recipientDept: 'Phòng Kiểm nghiệm Vi sinh',
+        receiveDate: '2025-08-16',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Đỗ Đức Thắng',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 02',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Tủ tài liệu phòng Vi sinh'
+      },
+      {
+        id: 'dist-08',
+        docId: 'doc-002',
+        docCode: 'QTQL-01',
+        docName: 'Quy trình kiểm soát tài liệu và hồ sơ',
+        issueNo: '01',
+        revNo: '02',
+        recipientDept: 'Toàn thể Cán bộ PTN',
+        receiveDate: '2025-08-16',
+        docType: 'Bản điện tử PDF (Chữ ký số)',
+        recipient: 'Hệ thống mạng nội bộ / LIMS',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản Softcopy',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Phân quyền đọc trên máy chủ lab'
+      },
+      {
+        id: 'dist-09',
+        docId: 'doc-005',
+        docCode: 'QTTN-01',
+        docName: 'Quy trình thử nghiệm xác định hàm lượng Chì (Pb) trong nước bằng phổ hấp thụ nguyên tử (F-AAS)',
+        issueNo: '01',
+        revNo: '01',
+        recipientDept: 'Phòng Kiểm nghiệm Hóa học',
+        receiveDate: '2026-02-19',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Đặng Thanh Tùng',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Điểm sử dụng: Phòng máy F-AAS'
+      },
+      {
+        id: 'dist-10',
+        docId: 'doc-007',
+        docCode: 'HDTB-01',
+        docName: 'Hướng dẫn sử dụng, kiểm tra hàng ngày và bảo dưỡng cân phân tích 4 số lẻ',
+        issueNo: '01',
+        revNo: '01',
+        recipientDept: 'Phòng Cân phân tích',
+        receiveDate: '2025-04-11',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Đặng Thanh Tùng',
+        distributor: 'Lê Văn An',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Đóng khung kính treo tại buồng cân'
+      },
+      {
+        id: 'dist-11',
+        docId: 'doc-014',
+        docCode: 'HDC-02',
+        docName: 'Hướng dẫn kiểm soát an toàn hóa chất, trang bị bảo hộ lao động và xử lý sự cố tràn đổ trong phòng lab',
+        issueNo: '01',
+        revNo: '01',
+        recipientDept: 'Khu vực chuẩn bị hóa chất',
+        receiveDate: '2024-08-21',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Nguyễn Thị Oanh',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Treo tại phòng pha chế hóa chất & tủ hút'
+      },
+      {
+        id: 'dist-12',
+        docId: 'doc-014-v0',
+        docCode: 'HDC-02',
+        docName: 'Hướng dẫn an toàn phòng thử nghiệm và trang bị bảo hộ lao động',
+        issueNo: '01',
+        revNo: '00',
+        recipientDept: 'Khu vực chuẩn bị hóa chất',
+        receiveDate: '2023-06-16',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Nguyễn Thị Oanh',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đã thu hồi',
+        recallDate: '2024-08-21',
+        note: 'Đã thu hồi và đóng dấu hết hiệu lực khi phát hành Rev 01'
+      },
+      {
+        id: 'dist-13',
+        docId: 'doc-006',
+        docCode: 'QTTN-02',
+        docName: 'Quy trình thử nghiệm xác định Escherichia coli trong thực phẩm bằng phương pháp MPN',
+        issueNo: '01',
+        revNo: '02',
+        recipientDept: 'Phòng Kiểm nghiệm Vi sinh',
+        receiveDate: '2026-05-11',
+        docType: 'Bản in có kiểm soát (Controlled Copy)',
+        recipient: 'Phạm Thị Lan',
+        distributor: 'Nguyễn Văn Minh',
+        copyNo: 'Bản số 01',
+        status: 'Đang lưu hành (Sử dụng)',
+        recallDate: '',
+        note: 'Bàn thao tác cấy vi sinh'
+      } ];
 
     // Trạng thái ứng dụng
     let appState = {
+      sortField: 'code',
+      sortDirection: 'asc',
       documents: [],
       events: [],
       distributions: [],
@@ -2802,40 +3534,55 @@
       const syncChk = document.getElementById('gsheet-auto-sync');
       if (syncChk) syncChk.checked = appState.gsheetAutoSync;
 
-      // 3. Tải danh sách tài liệu từ bộ nhớ đệm LocalStorage (để hiển thị tức thì, cuộn chuột được ngay)
+      // 3. Tải danh sách tài liệu từ bộ nhớ đệm LocalStorage (tự động nạp dữ liệu chuẩn ISO 17025 khi chưa có hoặc rỗng)
       const savedDocs = localStorage.getItem(LS_KEY_DOCS);
       if (savedDocs !== null) {
         try {
-          appState.documents = JSON.parse(savedDocs);
+          const parsed = JSON.parse(savedDocs);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            appState.documents = parsed;
+          } else {
+            appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+          }
         } catch(e) {
-          appState.documents = [];
+          appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
         }
       } else {
-        appState.documents = [];
+        appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
       }
 
       // 4. Tải danh sách sự kiện vòng đời
       const savedEvents = localStorage.getItem(LS_KEY_EVENTS);
       if (savedEvents !== null) {
         try {
-          appState.events = JSON.parse(savedEvents);
+          const parsedEv = JSON.parse(savedEvents);
+          if (Array.isArray(parsedEv) && parsedEv.length > 0) {
+            appState.events = parsedEv;
+          } else {
+            appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+          }
         } catch(e) {
-          appState.events = [];
+          appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
         }
       } else {
-        appState.events = [];
+        appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
       }
 
       // 5. Tải danh sách phân phối tài liệu
       const savedDist = localStorage.getItem(LS_KEY_DISTRIBUTIONS);
       if (savedDist !== null) {
         try {
-          appState.distributions = JSON.parse(savedDist);
+          const parsedDist = JSON.parse(savedDist);
+          if (Array.isArray(parsedDist) && parsedDist.length > 0) {
+            appState.distributions = parsedDist;
+          } else {
+            appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
+          }
         } catch(e) {
-          appState.distributions = [];
+          appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
         }
       } else {
-        appState.distributions = [];
+        appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
       }
 
       // 6. Tải danh sách tài khoản người dùng
@@ -2880,6 +3627,8 @@
       renderEventsTable();
       renderDistributionTable();
       checkAndRenderAlerts();
+      updateSortHeaderIndicators();
+      seedDemoAttachments();
 
       const codeArea = document.getElementById('apps-script-code-area');
       if (codeArea) {
@@ -3694,6 +4443,39 @@
       container.classList.remove('hidden');
     }
 
+    function sortDocuments(field) {
+      if (appState.sortField === field) {
+        appState.sortDirection = appState.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        appState.sortField = field;
+        appState.sortDirection = 'asc';
+      }
+      renderDocumentList();
+      updateSortHeaderIndicators();
+    }
+
+    function updateSortHeaderIndicators() {
+      const headers = {
+        'code': document.getElementById('th-sort-code'),
+        'name': document.getElementById('th-sort-name'),
+        'issueDate': document.getElementById('th-sort-issue-date'),
+        'revDate': document.getElementById('th-sort-rev-date')
+      };
+      for (const [key, el] of Object.entries(headers)) {
+        if (!el) continue;
+        const icon = el.querySelector('.sort-icon');
+        if (icon) {
+          if (appState.sortField === key) {
+            icon.textContent = appState.sortDirection === 'asc' ? ' ▲' : ' ▼';
+            icon.className = 'sort-icon text-blue-600 font-bold';
+          } else {
+            icon.textContent = ' ↕';
+            icon.className = 'sort-icon opacity-40';
+          }
+        }
+      }
+    }
+
     function renderDocumentList() {
       const tbody = document.getElementById('document-table-body');
       const cardContainer = document.getElementById('container-card-view');
@@ -3750,10 +4532,36 @@
       });
 
       filtered.sort((a, b) => {
-        if (a.code.localeCompare(b.code) !== 0) return a.code.localeCompare(b.code);
-        const revA = parseFloat(a.revNo) || 0;
-        const revB = parseFloat(b.revNo) || 0;
-        return revB - revA;
+        let fieldA, fieldB;
+        if (appState.sortField === 'name') {
+          fieldA = (a.name || '').toLowerCase();
+          fieldB = (b.name || '').toLowerCase();
+        } else if (appState.sortField === 'type') {
+          fieldA = (a.type || '').toLowerCase();
+          fieldB = (b.type || '').toLowerCase();
+        } else if (appState.sortField === 'issueDate') {
+          fieldA = new Date(a.issueDate || 0).getTime();
+          fieldB = new Date(b.issueDate || 0).getTime();
+        } else if (appState.sortField === 'revDate') {
+          fieldA = new Date(a.revDate || a.issueDate || 0).getTime();
+          fieldB = new Date(b.revDate || b.issueDate || 0).getTime();
+        } else {
+          // Mặc định: Sắp xếp theo Mã hiệu rồi đến Lần sửa đổi (Rev)
+          if (a.code.localeCompare(b.code) !== 0) {
+            return appState.sortDirection === 'asc' ? a.code.localeCompare(b.code) : b.code.localeCompare(a.code);
+          }
+          const revA = parseFloat(a.revNo) || 0;
+          const revB = parseFloat(b.revNo) || 0;
+          return appState.sortDirection === 'asc' ? (revA - revB) : (revB - revA);
+        }
+
+        if (typeof fieldA === 'string') {
+          const cmp = fieldA.localeCompare(fieldB, 'vi');
+          return appState.sortDirection === 'asc' ? cmp : -cmp;
+        } else {
+          const cmp = fieldA - fieldB;
+          return appState.sortDirection === 'asc' ? cmp : -cmp;
+        }
       });
 
       if (filteredCountEl) filteredCountEl.textContent = filtered.length;
@@ -3830,7 +4638,7 @@
             </td>
             <td class="py-3 px-4">
               <div class="flex items-center space-x-1.5 flex-wrap">
-                <button type="button" onclick="viewDocumentDetail('${doc.id}')" class="text-left text-blue-600 hover:text-blue-800 font-bold hover:underline text-sm cursor-pointer">
+                <button type="button" onclick="viewDocumentDetail('${doc.id}')" class="text-left text-blue-600 hover:text-blue-800 font-bold hover:underline text-sm cursor-pointer transition active:scale-95" title="Nhấp để xem toàn bộ thông tin chi tiết tài liệu">
                   ${escapeHtml(doc.name)}
                 </button>
                 ${!st.isLatest ? '<span class="text-[10px] px-1.5 py-0.2 bg-slate-200 text-slate-600 rounded font-normal italic">Lịch sử</span>' : ''}
@@ -3842,7 +4650,7 @@
                 ` : ''}
               </div>
               <div class="mt-1 flex items-center space-x-1.5">
-                <span class="px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">${escapeHtml(doc.type)}</span>
+                <span onclick="filterByCategory('${escapeHtml(doc.type)}'); event.stopPropagation();" class="px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 cursor-pointer hover:bg-slate-200 hover:text-blue-700 transition" title="Lọc theo loại: ${escapeHtml(doc.type)}">${escapeHtml(doc.type)}</span>
               </div>
             </td>
             <td class="py-3 px-2 text-center text-slate-700 font-medium">${doc.pages || 1}</td>
@@ -5210,14 +6018,51 @@
     function viewDocumentDetail(idOrCode) {
       if (!idOrCode) return;
       const targetStr = String(idOrCode).trim().toUpperCase();
-      let doc = appState.documents.find(d => 
+      const targetNorm = targetStr.replace(/\s+/g, '');
+      const targetLower = String(idOrCode).trim().toLowerCase();
+
+      // Đảm bảo nếu danh sách rỗng thì khôi phục ngay từ dữ liệu mặc định chuẩn
+      if (!appState.documents || appState.documents.length === 0) {
+        if (typeof DEFAULT_DOCUMENTS !== 'undefined' && Array.isArray(DEFAULT_DOCUMENTS) && DEFAULT_DOCUMENTS.length > 0) {
+          appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+          saveDocumentsToStorage(true);
+          renderStats();
+          renderCategoryPills();
+          renderDocumentList();
+          renderReviewPlan();
+        }
+      }
+
+      let doc = (appState.documents || []).find(d => 
         d.id === idOrCode || 
         String(d.id) === String(idOrCode) || 
         (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
-        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetStr.replace(/\s+/g, ''))
+        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetNorm) ||
+        (d.name && String(d.name).trim().toLowerCase() === targetLower) ||
+        (d.name && String(d.name).trim().toLowerCase().includes(targetLower))
       );
+
+      // Tra cứu dự phòng trong DEFAULT_DOCUMENTS nếu vẫn chưa tìm thấy
+      if (!doc && typeof DEFAULT_DOCUMENTS !== 'undefined' && Array.isArray(DEFAULT_DOCUMENTS)) {
+        const fallbackDoc = DEFAULT_DOCUMENTS.find(d =>
+          d.id === idOrCode || 
+          String(d.id) === String(idOrCode) || 
+          (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
+          (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetNorm) ||
+          (d.name && String(d.name).trim().toLowerCase() === targetLower)
+        );
+        if (fallbackDoc) {
+          doc = JSON.parse(JSON.stringify(fallbackDoc));
+          if (!appState.documents.some(d => d.id === doc.id)) {
+            appState.documents.push(doc);
+            saveDocumentsToStorage(true);
+            renderDocumentList();
+          }
+        }
+      }
+
       if (!doc) {
-        showToast('Không tìm thấy thông tin tài liệu!', 'warning');
+        showToast('Không tìm thấy thông tin tài liệu phù hợp!', 'warning');
         return;
       }
 
@@ -5477,12 +6322,35 @@
     async function openDocumentReaderById(docId) {
       if (!docId) return;
       const targetStr = String(docId).trim().toUpperCase();
-      const doc = appState.documents.find(d => 
+      const targetNorm = targetStr.replace(/\s+/g, '');
+      const targetLower = String(docId).trim().toLowerCase();
+
+      if (!appState.documents || appState.documents.length === 0) {
+        if (typeof DEFAULT_DOCUMENTS !== 'undefined' && Array.isArray(DEFAULT_DOCUMENTS) && DEFAULT_DOCUMENTS.length > 0) {
+          appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+          saveDocumentsToStorage(true);
+          renderDocumentList();
+        }
+      }
+
+      let doc = (appState.documents || []).find(d => 
         d.id === docId || 
         String(d.id) === String(docId) || 
         (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
-        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetStr.replace(/\s+/g, ''))
+        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetNorm) ||
+        (d.name && String(d.name).trim().toLowerCase() === targetLower)
       );
+
+      if (!doc && typeof DEFAULT_DOCUMENTS !== 'undefined' && Array.isArray(DEFAULT_DOCUMENTS)) {
+        doc = DEFAULT_DOCUMENTS.find(d =>
+          d.id === docId || 
+          String(d.id) === String(docId) || 
+          (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
+          (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetNorm) ||
+          (d.name && String(d.name).trim().toLowerCase() === targetLower)
+        );
+      }
+
       if (!doc) {
         showToast('Không tìm thấy tài liệu cần đọc!', 'warning');
         return;
@@ -5761,8 +6629,32 @@
     }
 
     async function seedDemoAttachments() {
-      // Khởi tạo sạch không tải tệp mẫu giả định
-      return;
+      try {
+        const db = await getFileDb();
+        if (!db) return;
+        const existingDocx = await getFileBlob('doc-002');
+        if (!existingDocx && typeof SAMPLE_DOCX_B64 !== 'undefined' && SAMPLE_DOCX_B64) {
+          await saveFileBlob('doc-002', {
+            fileName: 'QTQL-01_Kiem_soat_tai_lieu_Rev02.docx',
+            fileType: 'docx',
+            fileSize: 50504,
+            fileData: 'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,' + SAMPLE_DOCX_B64,
+            uploadDate: '2025-08-15'
+          });
+        }
+        const existingPdf = await getFileBlob('doc-005');
+        if (!existingPdf && typeof SAMPLE_PDF_B64 !== 'undefined' && SAMPLE_PDF_B64) {
+          await saveFileBlob('doc-005', {
+            fileName: 'QTTN-01_Xac_dinh_Chi_Pb_F-AAS.pdf',
+            fileType: 'pdf',
+            fileSize: 2124,
+            fileData: 'data:application/pdf;base64,' + SAMPLE_PDF_B64,
+            uploadDate: '2026-02-18'
+          });
+        }
+      } catch(e) {
+        console.warn('seedDemoAttachments warning:', e);
+      }
     }
 
     // ========================================================
@@ -6220,13 +7112,14 @@
     }
 
     function resetToFactoryDefault() {
-      if (confirm('Xác nhận làm sạch toàn bộ dữ liệu (0 tài liệu, 0 sự kiện, 0 phân phối)?')) {
-        appState.documents = [];
-        appState.events = [];
-        appState.distributions = [];
+      if (confirm('Xác nhận khôi phục toàn bộ danh mục tài liệu mẫu chuẩn ISO/IEC 17025 (16 tài liệu, sự kiện và phân phối)?')) {
+        appState.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+        appState.events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+        appState.distributions = JSON.parse(JSON.stringify(DEFAULT_DISTRIBUTIONS));
         saveDocumentsToStorage();
         saveEventsToStorage();
         saveDistributionsToStorage();
+        seedDemoAttachments();
 
         // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ ngay sau khi nạp
         appState.searchQuery = '';
