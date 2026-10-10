@@ -2218,7 +2218,7 @@
   </div>
 
   <!-- 11. MODAL: GOOGLE SHEET ĐỒNG BỘ HAI CHIỀU -->
-  <div id="modal-google-sheet" class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden">
+  <div id="modal-google-sheet" class="fixed inset-0 z-[60] hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-5 py-4 bg-emerald-700 text-white flex items-center justify-between shrink-0">
         <div class="flex items-center space-x-3">
@@ -5179,10 +5179,13 @@
     // ========================================================
     function viewDocumentDetail(idOrCode) {
       if (!idOrCode) return;
-      let doc = appState.documents.find(d => d.id === idOrCode);
-      if (!doc) {
-        doc = appState.documents.find(d => (d.code || '').trim().toUpperCase() === String(idOrCode).trim().toUpperCase());
-      }
+      const targetStr = String(idOrCode).trim().toUpperCase();
+      let doc = appState.documents.find(d => 
+        d.id === idOrCode || 
+        String(d.id) === String(idOrCode) || 
+        (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
+        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetStr.replace(/\s+/g, ''))
+      );
       if (!doc) {
         showToast('Không tìm thấy thông tin tài liệu!', 'warning');
         return;
@@ -5442,7 +5445,14 @@
     // TRÌNH ĐỌC TOÀN VĂN TÀI LIỆU (PDF / WORD)
     // ========================================================
     async function openDocumentReaderById(docId) {
-      const doc = appState.documents.find(d => d.id === docId);
+      if (!docId) return;
+      const targetStr = String(docId).trim().toUpperCase();
+      const doc = appState.documents.find(d => 
+        d.id === docId || 
+        String(d.id) === String(docId) || 
+        (d.code && String(d.code).trim().toUpperCase() === targetStr) ||
+        (d.code && String(d.code).trim().toUpperCase().replace(/\s+/g, '') === targetStr.replace(/\s+/g, ''))
+      );
       if (!doc) {
         showToast('Không tìm thấy tài liệu cần đọc!', 'warning');
         return;
@@ -6172,6 +6182,27 @@
         saveEventsToStorage();
         saveDistributionsToStorage();
 
+        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ ngay sau khi nạp
+        appState.searchQuery = '';
+        appState.selectedCategory = 'ALL';
+        appState.selectedStatus = 'ALL';
+        appState.selectedPersonnel = 'ALL';
+        appState.docPage = 1;
+
+        const sInp = document.getElementById('search-input');
+        if (sInp) sInp.value = '';
+        const clearBtn = document.getElementById('btn-clear-search');
+        if (clearBtn) clearBtn.classList.add('hidden');
+        const stSelect = document.getElementById('filter-status-select');
+        if (stSelect) stSelect.value = 'ALL';
+        const pSelect = document.getElementById('filter-personnel-select');
+        if (pSelect) pSelect.value = 'ALL';
+        const toggleLatest = document.getElementById('toggle-latest-only');
+        if (toggleLatest) toggleLatest.checked = true;
+
+        populatePersonnelDropdown();
+        populateDeptFilterDropdown();
+        populateModalDocDropdowns();
         renderStats();
         renderCategoryPills();
         renderDocumentList();
@@ -6641,7 +6672,7 @@ function getAccountsFromSheet(ss) {
         if (data && data.documents && Array.isArray(data.documents)) {
           appState.documents = data.documents.map((doc, idx) => ({
             ...doc,
-            id: doc.id || ('doc_' + (idx + 1)),
+            id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
             code: String(doc.code || '').trim(),
             name: String(doc.name || '').trim(),
             type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
@@ -6684,6 +6715,27 @@ function getAccountsFromSheet(ss) {
           countMsg.push(`${data.accounts.length} tài khoản`);
         }
 
+        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ ngay sau khi nạp
+        appState.searchQuery = '';
+        appState.selectedCategory = 'ALL';
+        appState.selectedStatus = 'ALL';
+        appState.selectedPersonnel = 'ALL';
+        appState.docPage = 1;
+
+        const sInp = document.getElementById('search-input');
+        if (sInp) sInp.value = '';
+        const clearBtn = document.getElementById('btn-clear-search');
+        if (clearBtn) clearBtn.classList.add('hidden');
+        const stSelect = document.getElementById('filter-status-select');
+        if (stSelect) stSelect.value = 'ALL';
+        const pSelect = document.getElementById('filter-personnel-select');
+        if (pSelect) pSelect.value = 'ALL';
+        const toggleLatest = document.getElementById('toggle-latest-only');
+        if (toggleLatest) toggleLatest.checked = true;
+
+        populatePersonnelDropdown();
+        populateDeptFilterDropdown();
+        populateModalDocDropdowns();
         renderStats();
         renderCategoryPills();
         renderDocumentList();
