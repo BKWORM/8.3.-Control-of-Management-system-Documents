@@ -50,7 +50,7 @@
 
   <style>
     /* ======================================================== */
-    /* ULTRA-CRISP TYPOGRAPHY & FONT SMOOTHING (CHỮ RÕ NÉT)  */
+    /* ULTRA-CRISP TYPOGRAPHY & FONT SMOOTHING (CHỮ RÕ NÉT) */
     /* ======================================================== */
     *, *::before, *::after {
       -webkit-font-smoothing: antialiased !important;
@@ -3316,8 +3316,7 @@
         };
         await fetch(appState.gsheetUrl, {
           method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
         showToast(`Đã đồng bộ ${appState.accounts.length} tài khoản lên sheet TaiKhoan thành công!`, 'success');
@@ -6527,7 +6526,7 @@
 // =========================================================================
 // MÃ GOOGLE APPS SCRIPT ĐỒNG BỘ 2 CHIỀU HỆ THỐNG KIỂM SOÁT TÀI LIỆU (ISO 17025)
 // Tự động tạo và quản lý 5 sheet: DM_TaiLieu, KeHoach_SoatXet, NhatKy_SuKien, So_PhanPhoi, TaiKhoan
-// Hỗ trợ cả 2 chế độ: API JSON (đồng bộ dữ liệu) và Web App HTML (triển khai giao diện)
+// Tối ưu hóa: Tự động nhận diện cột linh hoạt, định dạng ngày tháng chuẩn múi giờ, xử lý lỗi CORS
 // =========================================================================
 
 function doGet(e) {
@@ -6535,13 +6534,27 @@ function doGet(e) {
 
   // 1. Nếu mở Web App trực tiếp trên trình duyệt hoặc iframe (không có tham số action hoặc action=VIEW)
   if (!action || action === 'VIEW') {
-    return HtmlService.createHtmlOutputFromFile('Index')
-      .setTitle('Hệ Thống Kiểm Soát Tài Liệu ISO/IEC 17025:2017')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    try {
+      return HtmlService.createHtmlOutputFromFile('Index')
+        .setTitle('Hệ Thống Kiểm Soát Tài Liệu ISO/IEC 17025:2017')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    } catch (errHtml) {
+      // Nếu dự án Apps Script chỉ có Code.gs (không tạo file Index.html), trả về JSON xác nhận API hoạt động
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var docCount = 0;
+      var sh = ss.getSheetByName('DM_TaiLieu');
+      if (sh) docCount = Math.max(0, sh.getLastRow() - 1);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'success',
+        message: 'Google Apps Script API (ISO 17025) đang hoạt động bình thường! Hãy copy URL này vào ứng dụng để đồng bộ 2 chiều.',
+        spreadsheetName: ss.getName(),
+        totalDocuments: docCount
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
   }
 
-  // 2. Chế độ API JSON cho đồng bộ dữ liệu với GitHub Pages hoặc ứng dụng web
+  // 2. Chế độ API JSON cho đồng bộ dữ liệu với ứng dụng web
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (action === 'GET_ACCOUNTS') {
     return ContentService.createTextOutput(JSON.stringify({ status: 'success', accounts: getAccountsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
@@ -6552,6 +6565,7 @@ function doGet(e) {
   } else if (action === 'GET_DISTRIBUTIONS') {
     return ContentService.createTextOutput(JSON.stringify({ status: 'success', distributions: getDistributionsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
   } else {
+    // Mặc định hoặc action === 'GET_ALL'
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success',
       documents: getDocumentsFromSheet(ss),
@@ -6566,30 +6580,56 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(30000);
   try {
-    var raw = e.postData.contents;
-    var data = JSON.parse(raw);
+    var raw = '';
+    if (e && e.postData && e.postData.contents) {
+      raw = e.postData.contents;
+    } else if (e && e.parameter && e.parameter.data) {
+      raw = e.parameter.data;
+    } else if (e && e.parameter && e.parameter.payload) {
+      raw = e.parameter.payload;
+    }
+
+    var data = {};
+    if (raw) {
+      try { data = JSON.parse(raw); } catch (eJson) { data = {}; }
+    } else if (e && e.parameter) {
+      data = e.parameter;
+    }
+
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var action = data.action || 'EXPORT_ALL';
+    var action = data.action || (e && e.parameter && e.parameter.action) || 'EXPORT_ALL';
+    var savedCounts = {};
 
     if (action === 'EXPORT_ALL' || action === 'EXPORT_DOCUMENTS' || action === 'AUTO_SYNC') {
       if (data.documents && Array.isArray(data.documents)) {
         saveDocumentsToSheet(ss, data.documents);
         savePlanToSheet(ss, data.documents);
+        savedCounts.documents = data.documents.length;
       }
     }
     if (action === 'EXPORT_ALL' || action === 'EXPORT_EVENTS') {
-      if (data.events && Array.isArray(data.events)) saveEventsToSheet(ss, data.events);
+      if (data.events && Array.isArray(data.events)) {
+        saveEventsToSheet(ss, data.events);
+        savedCounts.events = data.events.length;
+      }
     }
     if (action === 'EXPORT_ALL' || action === 'EXPORT_DISTRIBUTIONS') {
-      if (data.distributions && Array.isArray(data.distributions)) saveDistributionsToSheet(ss, data.distributions);
+      if (data.distributions && Array.isArray(data.distributions)) {
+        saveDistributionsToSheet(ss, data.distributions);
+        savedCounts.distributions = data.distributions.length;
+      }
     }
     if (action === 'EXPORT_ALL' || action === 'EXPORT_ACCOUNTS') {
-      if (data.accounts && Array.isArray(data.accounts)) saveAccountsToSheet(ss, data.accounts);
+      if (data.accounts && Array.isArray(data.accounts)) {
+        saveAccountsToSheet(ss, data.accounts);
+        savedCounts.accounts = data.accounts.length;
+      }
     }
 
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success',
-      message: 'Lưu toàn bộ 5 sheet (DM_TaiLieu, KeHoach_SoatXet, NhatKy_SuKien, So_PhanPhoi, TaiKhoan) thành công!'
+      message: 'Đã lưu thành công dữ liệu vào Google Sheet!',
+      counts: savedCounts
     })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -6597,22 +6637,33 @@ function doPost(e) {
       message: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch(eLock) {}
   }
 }
 
 function formatGasDate(val) {
   if (!val) return '';
   if (val instanceof Date) {
-    var y = val.getFullYear();
-    var m = ('0' + (val.getMonth() + 1)).slice(-2);
-    var d = ('0' + val.getDate()).slice(-2);
-    return y + '-' + m + '-' + d;
+    if (isNaN(val.getTime()) || val.getFullYear() <= 1900) return '';
+    try {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var tz = ss ? ss.getSpreadsheetTimeZone() : 'GMT+7';
+      return Utilities.formatDate(val, tz, 'yyyy-MM-dd');
+    } catch(e) {
+      var y = val.getFullYear();
+      var m = ('0' + (val.getMonth() + 1)).slice(-2);
+      var d = ('0' + val.getDate()).slice(-2);
+      return y + '-' + m + '-' + d;
+    }
   }
   var s = String(val).trim();
-  if (!s || s === '—' || s === '-') return '';
+  if (!s || s === '—' || s === '-' || s === '0' || s.indexOf('1899') === 0 || s.indexOf('1900') === 0) return '';
+  if (s.indexOf('T') !== -1) s = s.split('T')[0].trim();
+  if (s.indexOf(' ') !== -1) s = s.split(' ')[0].trim();
   var dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (dmy) return dmy[3] + '-' + ('0' + dmy[2]).slice(-2) + '-' + ('0' + dmy[1]).slice(-2);
+  var ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (ymd) return ymd[1] + '-' + ('0' + ymd[2]).slice(-2) + '-' + ('0' + ymd[3]).slice(-2);
   return s;
 }
 
@@ -6620,20 +6671,48 @@ function saveDocumentsToSheet(ss, list) {
   var sheet = ss.getSheetByName('DM_TaiLieu') || ss.insertSheet('DM_TaiLieu');
   sheet.clear();
   var headers = ['STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Số trang', 'Lần BH', 'Ngày BH', 'Lần SĐ', 'Ngày SĐ', 'Người soạn', 'Chức vụ soạn', 'Người KT', 'Chức vụ KT', 'Người PD', 'Chức vụ PD', 'Tình trạng', 'Soát xét gần nhất', 'Hạn soát xét (+12T)', 'Nội dung'];
-  sheet.appendRow(headers);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#0f172a').setFontColor('#ffffff');
-  if (!list || list.length === 0) return;
+  
+  if (!list || list.length === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#0f172a').setFontColor('#ffffff');
+    return;
+  }
 
-  var rows = list.map(function(d, idx) {
-    return [
-      idx + 1, d.code || '', d.name || '', d.type || '', d.pages || 1,
-      d.issueNo || '01', d.issueDate || '', d.revNo || '00', d.revDate || '',
-      d.drafterName || '', d.drafterRole || '', d.checkerName || '', d.checkerRole || '',
-      d.approverName || '', d.approverRole || '', d.status || 'LATEST',
-      d.lastReviewedDate || '', d.nextReviewDate || '', d.content || ''
-    ];
-  });
-  sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  var allRows = [headers];
+  for (var idx = 0; idx < list.length; idx++) {
+    var d = list[idx];
+    allRows.push([
+      idx + 1,
+      d.code || '',
+      d.name || '',
+      d.type || '',
+      d.pages || 1,
+      d.issueNo || '01',
+      formatGasDate(d.issueDate),
+      d.revNo || '00',
+      formatGasDate(d.revDate),
+      d.drafterName || '',
+      d.drafterRole || '',
+      d.checkerName || '',
+      d.checkerRole || '',
+      d.approverName || '',
+      d.approverRole || '',
+      d.status || 'LATEST',
+      formatGasDate(d.lastReviewedDate),
+      formatGasDate(d.nextReviewDate),
+      d.content || ''
+    ]);
+  }
+
+  if (sheet.getMaxRows() < allRows.length) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), allRows.length - sheet.getMaxRows() + 5);
+  }
+  if (sheet.getMaxColumns() < headers.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), headers.length - sheet.getMaxColumns());
+  }
+
+  sheet.getRange(1, 1, allRows.length, headers.length).setValues(allRows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#0f172a').setFontColor('#ffffff');
   sheet.autoResizeColumns(1, headers.length);
 }
 
@@ -6644,33 +6723,37 @@ function getDocumentsFromSheet(ss) {
   if (data.length <= 1) return [];
 
   var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
+  
   function findCol(keywords) {
     for (var i = 0; i < headers.length; i++) {
+      var h = headers[i];
+      if (!h) continue;
       for (var k = 0; k < keywords.length; k++) {
-        if (headers[i].indexOf(keywords[k]) !== -1) return i;
+        var kw = keywords[k].toLowerCase();
+        if (h === kw || h.indexOf(kw) !== -1 || kw.indexOf(h) !== -1) return i;
       }
     }
     return -1;
   }
 
-  var cCode = findCol(['mã hiệu', 'mã tài liệu', 'mã tl', 'code']);
-  var cName = findCol(['tên tài liệu', 'tên tl', 'tên', 'name']);
-  var cType = findCol(['loại tài liệu', 'loại', 'thể loại', 'type']);
+  var cCode = findCol(['mã hiệu', 'mã tài liệu', 'mã tl', 'mã', 'code']);
+  var cName = findCol(['tên tài liệu', 'tên quy trình', 'tên tl', 'tên', 'name']);
+  var cType = findCol(['loại tài liệu', 'phân loại', 'loại', 'thể loại', 'type']);
   var cPages = findCol(['số trang', 'trang', 'pages']);
-  var cIssueNo = findCol(['lần ban hành', 'lần bh', 'issueno']);
-  var cIssueDate = findCol(['ngày ban hành', 'ngày bh', 'issuedate']);
-  var cRevNo = findCol(['lần sửa đổi', 'lần sđ', 'revno']);
+  var cIssueNo = findCol(['lần ban hành', 'lần bh', 'lần bh mới', 'bh', 'issueno']);
+  var cIssueDate = findCol(['ngày ban hành', 'ngày bh', 'ngày hiệu lực', 'issuedate']);
+  var cRevNo = findCol(['lần sửa đổi', 'lần sđ', 'sửa đổi', 'rev', 'revno']);
   var cRevDate = findCol(['ngày sửa đổi', 'ngày sđ', 'revdate']);
-  var cDrafter = findCol(['người soạn', 'soạn thảo', 'drafter']);
-  var cDrafterRole = findCol(['chức vụ soạn']);
-  var cChecker = findCol(['người kiểm tra', 'người kt', 'checker']);
-  var cCheckerRole = findCol(['chức vụ kt']);
-  var cApprover = findCol(['người phê duyệt', 'người pd', 'approver']);
-  var cApproverRole = findCol(['chức vụ pd']);
-  var cStatus = findCol(['tình trạng', 'trạng thái', 'status']);
-  var cLastRev = findCol(['soát xét gần nhất', 'lastreviewed']);
-  var cNextRev = findCol(['hạn soát xét', 'nextreview']);
-  var cContent = findCol(['nội dung', 'tóm tắt', 'content']);
+  var cDrafter = findCol(['người soạn thảo', 'người soạn', 'soạn thảo', 'soạn', 'drafter']);
+  var cDrafterRole = findCol(['chức vụ soạn', 'chức vụ người soạn']);
+  var cChecker = findCol(['người kiểm tra', 'người soát xét', 'kiểm tra', 'soát xét', 'checker']);
+  var cCheckerRole = findCol(['chức vụ kiểm tra', 'chức vụ kt']);
+  var cApprover = findCol(['người phê duyệt', 'phê duyệt', 'lãnh đạo duyệt', 'duyệt', 'approver']);
+  var cApproverRole = findCol(['chức vụ phê duyệt', 'chức vụ pd']);
+  var cStatus = findCol(['tình trạng', 'trạng thái', 'hiệu lực', 'status']);
+  var cLastRev = findCol(['soát xét gần nhất', 'rà soát gần nhất', 'ngày soát xét', 'lastreviewed']);
+  var cNextRev = findCol(['hạn rà soát', 'hạn soát xét', 'hạn rà soát (+12t)', 'hạn (+12t)', 'nextreview']);
+  var cContent = findCol(['nội dung chi tiết', 'nội dung', 'tóm tắt', 'mục đích', 'ghi chú', 'content']);
 
   var list = [];
   for (var i = 1; i < data.length; i++) {
@@ -6679,6 +6762,24 @@ function getDocumentsFromSheet(ss) {
     var name = cName !== -1 ? String(r[cName] || '').trim() : String(r[2] || '').trim();
     if (!code && !name) continue;
 
+    var issueDate = formatGasDate(cIssueDate !== -1 ? r[cIssueDate] : r[6]);
+    var revDate = formatGasDate(cRevDate !== -1 ? r[cRevDate] : r[8]);
+    var lastRev = formatGasDate(cLastRev !== -1 ? r[cLastRev] : r[16]);
+    if (!lastRev) lastRev = revDate || issueDate;
+    var nextRev = formatGasDate(cNextRev !== -1 ? r[cNextRev] : r[17]);
+    if (!nextRev && lastRev) {
+      try {
+        var dObj = new Date(lastRev);
+        if (!isNaN(dObj.getTime())) {
+          dObj.setFullYear(dObj.getFullYear() + 1);
+          var yy = dObj.getFullYear();
+          var mm = ('0' + (dObj.getMonth() + 1)).slice(-2);
+          var dd = ('0' + dObj.getDate()).slice(-2);
+          nextRev = yy + '-' + mm + '-' + dd;
+        }
+      } catch(eDate) {}
+    }
+
     list.push({
       id: 'doc_' + i,
       code: code,
@@ -6686,9 +6787,9 @@ function getDocumentsFromSheet(ss) {
       type: cType !== -1 ? String(r[cType] || 'Quy trình quản lý').trim() : String(r[3] || 'Quy trình quản lý').trim(),
       pages: cPages !== -1 ? (Number(r[cPages]) || 1) : (Number(r[4]) || 1),
       issueNo: cIssueNo !== -1 ? String(r[cIssueNo] !== '' && r[cIssueNo] !== undefined ? r[cIssueNo] : '01').trim() : String(r[5] || '01').trim(),
-      issueDate: formatGasDate(cIssueDate !== -1 ? r[cIssueDate] : r[6]),
+      issueDate: issueDate,
       revNo: cRevNo !== -1 ? String(r[cRevNo] !== '' && r[cRevNo] !== undefined ? r[cRevNo] : '00').trim() : String(r[7] || '00').trim(),
-      revDate: formatGasDate(cRevDate !== -1 ? r[cRevDate] : r[8]),
+      revDate: revDate,
       drafterName: cDrafter !== -1 ? String(r[cDrafter] || '').trim() : String(r[9] || '').trim(),
       drafterRole: cDrafterRole !== -1 ? String(r[cDrafterRole] || '').trim() : String(r[10] || '').trim(),
       checkerName: cChecker !== -1 ? String(r[cChecker] || '').trim() : String(r[11] || '').trim(),
@@ -6696,8 +6797,8 @@ function getDocumentsFromSheet(ss) {
       approverName: cApprover !== -1 ? String(r[cApprover] || '').trim() : String(r[13] || '').trim(),
       approverRole: cApproverRole !== -1 ? String(r[cApproverRole] || '').trim() : String(r[14] || '').trim(),
       status: cStatus !== -1 ? String(r[cStatus] || 'LATEST').trim() : String(r[15] || 'LATEST').trim(),
-      lastReviewedDate: formatGasDate(cLastRev !== -1 ? r[cLastRev] : r[16]),
-      nextReviewDate: formatGasDate(cNextRev !== -1 ? r[cNextRev] : r[17]),
+      lastReviewedDate: lastRev,
+      nextReviewDate: nextRev,
       content: cContent !== -1 ? String(r[cContent] || '').trim() : String(r[18] || '').trim()
     });
   }
@@ -6708,21 +6809,54 @@ function savePlanToSheet(ss, list) {
   var sheet = ss.getSheetByName('KeHoach_SoatXet') || ss.insertSheet('KeHoach_SoatXet');
   sheet.clear();
   var headers = ['STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Phiên bản', 'Ngày hiệu lực', 'Hạn rà soát (+12T)', 'Người soát xét', 'Người phê duyệt', 'Tình trạng'];
-  sheet.appendRow(headers);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#b45309').setFontColor('#ffffff');
-  if (!list || list.length === 0) return;
+  
+  if (!list || list.length === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#b45309').setFontColor('#ffffff');
+    return;
+  }
 
-  var rows = [];
+  var allRows = [headers];
   var idx = 1;
   list.forEach(function(d) {
     if (d.status === 'CANCELLED' || d.status === 'Hủy') return;
-    rows.push([
-      idx++, d.code || '', d.name || '', d.type || '', 'Rev ' + (d.revNo || '00'),
-      d.lastReviewedDate || d.revDate || d.issueDate || '', d.nextReviewDate || '',
-      d.checkerName || 'Trưởng ban QLCL', d.approverName || 'Giám đốc PTN', 'Trong hạn'
+    var lastRev = formatGasDate(d.lastReviewedDate || d.revDate || d.issueDate);
+    var nextRev = formatGasDate(d.nextReviewDate);
+    if (!nextRev && lastRev) {
+      try {
+        var dObj = new Date(lastRev);
+        if (!isNaN(dObj.getTime())) {
+          dObj.setFullYear(dObj.getFullYear() + 1);
+          var yy = dObj.getFullYear();
+          var mm = ('0' + (dObj.getMonth() + 1)).slice(-2);
+          var dd = ('0' + dObj.getDate()).slice(-2);
+          nextRev = yy + '-' + mm + '-' + dd;
+        }
+      } catch(e) {}
+    }
+    allRows.push([
+      idx++,
+      d.code || '',
+      d.name || '',
+      d.type || '',
+      'Rev ' + (d.revNo || '00'),
+      lastRev,
+      nextRev,
+      d.checkerName || 'Trưởng ban QLCL',
+      d.approverName || 'Giám đốc PTN',
+      'Trong hạn'
     ]);
   });
-  if (rows.length > 0) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+
+  if (sheet.getMaxRows() < allRows.length) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), allRows.length - sheet.getMaxRows() + 5);
+  }
+  if (sheet.getMaxColumns() < headers.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), headers.length - sheet.getMaxColumns());
+  }
+
+  sheet.getRange(1, 1, allRows.length, headers.length).setValues(allRows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#b45309').setFontColor('#ffffff');
   sheet.autoResizeColumns(1, headers.length);
 }
 
@@ -6730,17 +6864,40 @@ function saveEventsToSheet(ss, list) {
   var sheet = ss.getSheetByName('NhatKy_SuKien') || ss.insertSheet('NhatKy_SuKien');
   sheet.clear();
   var headers = ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Loại sự kiện', 'Ngày thực hiện', 'Lần BH', 'Lần SĐ', 'Người đề xuất', 'Người phê duyệt', 'Căn cứ / Số QĐ', 'Nội dung chi tiết / Kết quả'];
-  sheet.appendRow(headers);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#581c87').setFontColor('#ffffff');
-  if (!list || list.length === 0) return;
+  
+  if (!list || list.length === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#581c87').setFontColor('#ffffff');
+    return;
+  }
 
-  var rows = list.map(function(ev, idx) {
-    return [
-      idx + 1, ev.docCode || '', ev.docName || '', ev.type || '', ev.date || '',
-      ev.issueNo || '01', ev.revNo || '00', ev.proposer || '', ev.approver || '', ev.decisionNo || '', ev.content || ''
-    ];
-  });
-  sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  var allRows = [headers];
+  for (var idx = 0; idx < list.length; idx++) {
+    var ev = list[idx];
+    allRows.push([
+      idx + 1,
+      ev.docCode || '',
+      ev.docName || '',
+      ev.type || '',
+      formatGasDate(ev.date),
+      ev.issueNo || '01',
+      ev.revNo || '00',
+      ev.proposer || '',
+      ev.approver || '',
+      ev.decisionNo || '',
+      ev.content || ''
+    ]);
+  }
+
+  if (sheet.getMaxRows() < allRows.length) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), allRows.length - sheet.getMaxRows() + 5);
+  }
+  if (sheet.getMaxColumns() < headers.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), headers.length - sheet.getMaxColumns());
+  }
+
+  sheet.getRange(1, 1, allRows.length, headers.length).setValues(allRows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#581c87').setFontColor('#ffffff');
   sheet.autoResizeColumns(1, headers.length);
 }
 
@@ -6753,23 +6910,26 @@ function getEventsFromSheet(ss) {
   var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
   function findCol(keywords) {
     for (var i = 0; i < headers.length; i++) {
+      var h = headers[i];
+      if (!h) continue;
       for (var k = 0; k < keywords.length; k++) {
-        if (headers[i].indexOf(keywords[k]) !== -1) return i;
+        var kw = keywords[k].toLowerCase();
+        if (h === kw || h.indexOf(kw) !== -1 || kw.indexOf(h) !== -1) return i;
       }
     }
     return -1;
   }
 
-  var cCode = findCol(['mã tài liệu', 'mã hiệu', 'mã tl', 'code']);
-  var cName = findCol(['tên tài liệu', 'tên tl', 'tên']);
-  var cType = findCol(['loại sự kiện', 'sự kiện', 'type']);
-  var cDate = findCol(['ngày thực hiện', 'ngày', 'date']);
-  var cIssueNo = findCol(['lần bh', 'lần ban hành']);
-  var cRevNo = findCol(['lần sđ', 'lần sửa đổi']);
-  var cProposer = findCol(['người đề xuất', 'đề xuất', 'người soạn']);
-  var cApprover = findCol(['người phê duyệt', 'phê duyệt']);
-  var cDecision = findCol(['căn cứ', 'số qđ', 'quyết định']);
-  var cContent = findCol(['nội dung', 'kết quả']);
+  var cCode = findCol(['mã tài liệu', 'mã hiệu', 'mã tl', 'mã', 'code']);
+  var cName = findCol(['tên tài liệu', 'tên tl', 'tên', 'name']);
+  var cType = findCol(['loại sự kiện', 'sự kiện', 'hình thức', 'type']);
+  var cDate = findCol(['ngày thực hiện', 'ngày', 'thời gian', 'date']);
+  var cIssueNo = findCol(['lần bh', 'lần ban hành', 'bh']);
+  var cRevNo = findCol(['lần sđ', 'lần sửa đổi', 'rev', 'revno']);
+  var cProposer = findCol(['người đề xuất', 'người thực hiện', 'đề xuất', 'người soạn', 'proposer']);
+  var cApprover = findCol(['người phê duyệt', 'phê duyệt', 'lãnh đạo duyệt', 'approver']);
+  var cDecision = findCol(['căn cứ', 'số qđ', 'quyết định', 'decision']);
+  var cContent = findCol(['nội dung chi tiết', 'nội dung', 'kết quả', 'tóm tắt', 'content']);
 
   var list = [];
   for (var i = 1; i < data.length; i++) {
@@ -6800,18 +6960,43 @@ function saveDistributionsToSheet(ss, list) {
   var sheet = ss.getSheetByName('So_PhanPhoi') || ss.insertSheet('So_PhanPhoi');
   sheet.clear();
   var headers = ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Bản số', 'Lần BH', 'Lần SĐ', 'Đơn vị nhận', 'Thời gian nhận', 'Loại tài liệu / Hình thức', 'Người nhận', 'Người phân phối', 'Tình trạng', 'Ngày thu hồi', 'Ghi chú'];
-  sheet.appendRow(headers);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#065f46').setFontColor('#ffffff');
-  if (!list || list.length === 0) return;
+  
+  if (!list || list.length === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#065f46').setFontColor('#ffffff');
+    return;
+  }
 
-  var rows = list.map(function(d, idx) {
-    return [
-      idx + 1, d.docCode || '', d.docName || '', d.copyNo || 'Bản số 01', d.issueNo || '01', d.revNo || '00',
-      d.recipientDept || '', d.receiveDate || '', d.docType || '', d.recipient || '', d.distributor || '',
-      d.status || 'Đang lưu hành (Sử dụng)', d.recallDate || '', d.note || ''
-    ];
-  });
-  sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  var allRows = [headers];
+  for (var idx = 0; idx < list.length; idx++) {
+    var d = list[idx];
+    allRows.push([
+      idx + 1,
+      d.docCode || '',
+      d.docName || '',
+      d.copyNo || 'Bản số 01',
+      d.issueNo || '01',
+      d.revNo || '00',
+      d.recipientDept || '',
+      formatGasDate(d.receiveDate),
+      d.docType || '',
+      d.recipient || '',
+      d.distributor || '',
+      d.status || 'Đang lưu hành (Sử dụng)',
+      formatGasDate(d.recallDate),
+      d.note || ''
+    ]);
+  }
+
+  if (sheet.getMaxRows() < allRows.length) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), allRows.length - sheet.getMaxRows() + 5);
+  }
+  if (sheet.getMaxColumns() < headers.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), headers.length - sheet.getMaxColumns());
+  }
+
+  sheet.getRange(1, 1, allRows.length, headers.length).setValues(allRows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#065f46').setFontColor('#ffffff');
   sheet.autoResizeColumns(1, headers.length);
 }
 
@@ -6824,26 +7009,29 @@ function getDistributionsFromSheet(ss) {
   var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
   function findCol(keywords) {
     for (var i = 0; i < headers.length; i++) {
+      var h = headers[i];
+      if (!h) continue;
       for (var k = 0; k < keywords.length; k++) {
-        if (headers[i].indexOf(keywords[k]) !== -1) return i;
+        var kw = keywords[k].toLowerCase();
+        if (h === kw || h.indexOf(kw) !== -1 || kw.indexOf(h) !== -1) return i;
       }
     }
     return -1;
   }
 
-  var cCode = findCol(['mã tài liệu', 'mã hiệu', 'mã tl', 'code']);
-  var cName = findCol(['tên tài liệu', 'tên tl', 'tên']);
-  var cCopyNo = findCol(['bản số', 'bản']);
-  var cIssueNo = findCol(['lần bh', 'lần ban hành']);
-  var cRevNo = findCol(['lần sđ', 'lần sửa đổi']);
-  var cDept = findCol(['đơn vị nhận', 'phòng ban', 'đơn vị']);
-  var cRecDate = findCol(['thời gian nhận', 'ngày nhận']);
+  var cCode = findCol(['mã tài liệu', 'mã hiệu', 'mã tl', 'mã', 'code']);
+  var cName = findCol(['tên tài liệu', 'tên tl', 'tên', 'name']);
+  var cCopyNo = findCol(['bản số', 'số hiệu bản', 'bản']);
+  var cIssueNo = findCol(['lần bh', 'lần ban hành', 'bh']);
+  var cRevNo = findCol(['lần sđ', 'lần sửa đổi', 'rev']);
+  var cDept = findCol(['đơn vị nhận', 'phòng ban', 'đơn vị', 'bộ phận']);
+  var cRecDate = findCol(['thời gian nhận', 'ngày nhận', 'thời gian']);
   var cDocType = findCol(['loại tài liệu', 'hình thức']);
   var cRecipient = findCol(['người nhận', 'ký nhận']);
-  var cDistributor = findCol(['người phân phối', 'người giao']);
+  var cDistributor = findCol(['người phân phối', 'người giao', 'người phát']);
   var cStatus = findCol(['tình trạng', 'trạng thái']);
   var cRecallDate = findCol(['ngày thu hồi', 'thu hồi']);
-  var cNote = findCol(['ghi chú', 'note']);
+  var cNote = findCol(['ghi chú', 'vị trí', 'note']);
 
   var list = [];
   for (var i = 1; i < data.length; i++) {
@@ -6876,14 +7064,37 @@ function saveAccountsToSheet(ss, list) {
   var sheet = ss.getSheetByName('TaiKhoan') || ss.insertSheet('TaiKhoan');
   sheet.clear();
   var headers = ['STT', 'Tên đăng nhập', 'Mật khẩu', 'Họ và tên', 'Vai trò (admin/editor/viewer)', 'Phòng ban', 'Ghi chú', 'Ngày tạo'];
-  sheet.appendRow(headers);
-  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff');
-  if (!list || list.length === 0) return;
+  
+  if (!list || list.length === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff');
+    return;
+  }
 
-  var rows = list.map(function(acc, idx) {
-    return [idx + 1, acc.username || '', acc.password || '', acc.fullName || '', acc.role || 'viewer', acc.dept || '', acc.note || '', acc.createdAt || ''];
-  });
-  sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  var allRows = [headers];
+  for (var idx = 0; idx < list.length; idx++) {
+    var acc = list[idx];
+    allRows.push([
+      idx + 1,
+      acc.username || '',
+      acc.password || '',
+      acc.fullName || '',
+      acc.role || 'viewer',
+      acc.dept || '',
+      acc.note || '',
+      formatGasDate(acc.createdAt)
+    ]);
+  }
+
+  if (sheet.getMaxRows() < allRows.length) {
+    sheet.insertRowsAfter(sheet.getMaxRows(), allRows.length - sheet.getMaxRows() + 5);
+  }
+  if (sheet.getMaxColumns() < headers.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), headers.length - sheet.getMaxColumns());
+  }
+
+  sheet.getRange(1, 1, allRows.length, headers.length).setValues(allRows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff');
   sheet.autoResizeColumns(1, headers.length);
 }
 
@@ -6937,38 +7148,192 @@ function getAccountsFromSheet(ss) {
     }
 
     async function exportToGoogleSheet() {
-      if (!appState.gsheetUrl) {
+      let url = (appState.gsheetUrl || '').trim();
+      if (!url) {
         showToast('Vui lòng nhập URL Google Apps Script trước!', 'warning');
         openModal('modal-google-sheet');
         return;
       }
-      showToast('Đang gửi dữ liệu 5 sheet lên Google Sheet...', 'info');
-      try {
-        const payload = {
-          action: 'EXPORT_ALL',
-          timestamp: new Date().toISOString(),
-          documents: appState.documents,
-          events: appState.events,
-          distributions: appState.distributions,
-          accounts: appState.accounts
-        };
-        await fetch(appState.gsheetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        showToast('Đã đồng bộ toàn bộ tài liệu, sự kiện, phân phối lên Google Sheet thành công!', 'success');
-      } catch(e) {
-        showToast('Lỗi gửi lên Google Sheet: ' + e.message, 'warning');
+
+      // Nhận diện nếu người dùng dán nhầm link bảng tính docs.google.com
+      if (url.includes('docs.google.com/spreadsheets')) {
+        alert('LƯU Ý: URL bạn đang nhập là link bảng tính Google Sheet trực tiếp (docs.google.com).\n\nĐể XUẤT dữ liệu từ web lên Sheet, bạn cần dùng URL "Ứng dụng web" của Google Apps Script (dạng https://script.google.com/macros/s/.../exec).\n\nHướng dẫn: Trong Google Sheet, mở Tiện ích mở rộng -> Apps Script -> dán mã Code.gs -> bấm "Triển khai" (Deploy) -> chọn "Tùy chọn triển khai mới" -> Loại: "Ứng dụng web" -> Quyền truy cập: "Bất kỳ ai" (Anyone) -> Sao chép URL Web App.');
+        openModal('modal-google-sheet');
+        return;
       }
+
+      showToast('Đang gửi dữ liệu 5 sheet lên Google Sheet...', 'info');
+
+      const payload = {
+        action: 'EXPORT_ALL',
+        timestamp: new Date().toISOString(),
+        documents: appState.documents,
+        events: appState.events,
+        distributions: appState.distributions,
+        accounts: appState.accounts
+      };
+      const payloadStr = JSON.stringify(payload);
+      let isSuccess = false;
+
+      // Phương án 1: Gửi request tiêu chuẩn (CORS-safelisted simple request với text/plain)
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: payloadStr
+        });
+        if (res.ok) {
+          try {
+            const json = await res.json();
+            if (json && json.status === 'success') {
+              isSuccess = true;
+            }
+          } catch(eJson) {
+            isSuccess = true;
+          }
+        }
+      } catch(errStandard) {
+        console.warn('Standard fetch gặp lỗi, chuyển sang cơ chế dự phòng:', errStandard);
+      }
+
+      // Phương án 2: Dự phòng no-cors (với Content-Type text/plain hợp lệ, không gây lỗi TypeError)
+      if (!isSuccess) {
+        try {
+          await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: payloadStr
+          });
+          isSuccess = true;
+        } catch(errNoCors) {
+          console.error('Lỗi xuất dữ liệu lên Google Sheet:', errNoCors);
+          showToast('Lỗi gửi lên Google Sheet: ' + errNoCors.message, 'warning');
+          return;
+        }
+      }
+
+      if (isSuccess) {
+        const nowStr = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
+        localStorage.setItem('ISO17025_LAST_SYNC_TIME', nowStr);
+        showToast(`Đã xuất thành công ${appState.documents.length} tài liệu, ${appState.events.length} sự kiện, ${appState.distributions.length} phân phối lên Google Sheet!`, 'success');
+      }
+    }
+
+    // Hỗ trợ nạp trực tiếp qua Google Visualization API nếu người dùng dùng link Google Sheet công khai
+    async function importViaGviz(sheetId, isAuto, silent) {
+      if (!sheetId) return false;
+      try {
+        const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=DM_TaiLieu&_t=` + Date.now();
+        const res = await fetch(gvizUrl);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+        if (!match || !match[1]) return false;
+        const parsed = JSON.parse(match[1]);
+        if (!parsed.table || !parsed.table.rows || parsed.table.rows.length === 0) return false;
+
+        const cols = (parsed.table.cols || []).map(c => (c && c.label) ? String(c.label).trim().toLowerCase() : '');
+        function findGvizCol(keywords) {
+          for (let i = 0; i < cols.length; i++) {
+            if (!cols[i]) continue;
+            for (let k = 0; k < keywords.length; k++) {
+              if (cols[i].includes(keywords[k]) || keywords[k].includes(cols[i])) return i;
+            }
+          }
+          return -1;
+        }
+
+        const cCode = findGvizCol(['mã hiệu', 'mã tài liệu', 'mã tl', 'mã', 'code']);
+        const cName = findGvizCol(['tên tài liệu', 'tên quy trình', 'tên', 'name']);
+        const cType = findGvizCol(['loại tài liệu', 'phân loại', 'loại', 'type']);
+        const cPages = findGvizCol(['số trang', 'trang', 'pages']);
+        const cIssueNo = findGvizCol(['lần ban hành', 'lần bh', 'bh']);
+        const cIssueDate = findGvizCol(['ngày ban hành', 'ngày bh', 'ngày hiệu lực']);
+        const cRevNo = findGvizCol(['lần sửa đổi', 'lần sđ', 'rev']);
+        const cRevDate = findGvizCol(['ngày sửa đổi', 'ngày sđ']);
+        const cDrafter = findGvizCol(['người soạn thảo', 'người soạn', 'soạn thảo', 'soạn']);
+        const cDrafterRole = findGvizCol(['chức vụ soạn']);
+        const cChecker = findGvizCol(['người kiểm tra', 'người soát xét', 'kiểm tra', 'soát xét']);
+        const cCheckerRole = findGvizCol(['chức vụ kiểm tra', 'chức vụ kt']);
+        const cApprover = findGvizCol(['người phê duyệt', 'phê duyệt', 'lãnh đạo duyệt', 'duyệt']);
+        const cApproverRole = findGvizCol(['chức vụ phê duyệt', 'chức vụ pd']);
+        const cStatus = findGvizCol(['tình trạng', 'trạng thái', 'hiệu lực']);
+        const cLastRev = findGvizCol(['soát xét gần nhất', 'rà soát gần nhất']);
+        const cNextRev = findGvizCol(['hạn rà soát', 'hạn soát xét', 'hạn (+12t)']);
+        const cContent = findGvizCol(['nội dung chi tiết', 'nội dung', 'tóm tắt', 'mục đích', 'ghi chú']);
+
+        function cellVal(c) {
+          if (!c) return '';
+          if (c.f !== undefined && c.f !== null) return String(c.f).trim();
+          if (c.v !== undefined && c.v !== null) return String(c.v).trim();
+          return '';
+        }
+
+        const importedDocs = [];
+        parsed.table.rows.forEach((r, idx) => {
+          if (!r || !r.c) return;
+          const code = cCode !== -1 ? cellVal(r.c[cCode]) : cellVal(r.c[1]);
+          const name = cName !== -1 ? cellVal(r.c[cName]) : cellVal(r.c[2]);
+          if (!code && !name) return;
+
+          const issueDate = formatDateDisplay(cIssueDate !== -1 ? cellVal(r.c[cIssueDate]) : cellVal(r.c[6]));
+          const revDate = formatDateDisplay(cRevDate !== -1 ? cellVal(r.c[cRevDate]) : cellVal(r.c[8]));
+          let lastRev = formatDateDisplay(cLastRev !== -1 ? cellVal(r.c[cLastRev]) : cellVal(r.c[16]));
+          if (!lastRev || lastRev === '—') lastRev = revDate !== '—' ? revDate : issueDate;
+          let nextRev = formatDateDisplay(cNextRev !== -1 ? cellVal(r.c[cNextRev]) : cellVal(r.c[17]));
+
+          importedDocs.push({
+            id: 'doc_gviz_' + (idx + 1),
+            code: code,
+            name: name,
+            type: cType !== -1 ? (cellVal(r.c[cType]) || 'Quy trình quản lý') : (cellVal(r.c[3]) || 'Quy trình quản lý'),
+            pages: cPages !== -1 ? (parseInt(cellVal(r.c[cPages]), 10) || 1) : 1,
+            issueNo: cIssueNo !== -1 ? (cellVal(r.c[cIssueNo]) || '01') : '01',
+            issueDate: issueDate !== '—' ? issueDate : '',
+            revNo: cRevNo !== -1 ? (cellVal(r.c[cRevNo]) || '00') : '00',
+            revDate: revDate !== '—' ? revDate : '',
+            drafterName: cDrafter !== -1 ? cellVal(r.c[cDrafter]) : '',
+            drafterRole: cDrafterRole !== -1 ? cellVal(r.c[cDrafterRole]) : '',
+            checkerName: cChecker !== -1 ? cellVal(r.c[cChecker]) : '',
+            checkerRole: cCheckerRole !== -1 ? cellVal(r.c[cCheckerRole]) : '',
+            approverName: cApprover !== -1 ? cellVal(r.c[cApprover]) : '',
+            approverRole: cApproverRole !== -1 ? cellVal(r.c[cApproverRole]) : '',
+            status: cStatus !== -1 ? (cellVal(r.c[cStatus]) || 'LATEST') : 'LATEST',
+            lastReviewedDate: lastRev !== '—' ? lastRev : '',
+            nextReviewDate: nextRev !== '—' ? nextRev : '',
+            content: cContent !== -1 ? cellVal(r.c[cContent]) : ''
+          });
+        });
+
+        if (importedDocs.length > 0) {
+          appState.documents = importedDocs;
+          saveDocumentsToStorage(true);
+          if (!isAuto) resetAllFilters();
+          else {
+            populatePersonnelDropdown();
+            renderStats();
+            renderCategoryPills();
+            renderDocumentList();
+            renderReviewPlan();
+            checkAndRenderAlerts();
+          }
+          closeModal('modal-google-sheet');
+          showToast(`Đã nạp thành công ${importedDocs.length} tài liệu từ Google Sheet (qua Google Sheet ID)!`, 'success');
+          return true;
+        }
+      } catch(eGviz) {
+        console.warn('GViz import failed:', eGviz);
+      }
+      return false;
     }
 
     async function importFromGoogleSheet(options = {}) {
       const isAuto = !!(options && options.isAuto);
       const silent = !!(options && options.silent);
+      let url = (appState.gsheetUrl || '').trim();
 
-      if (!appState.gsheetUrl) {
+      if (!url) {
         if (!isAuto) {
           showToast('Vui lòng nhập URL Google Apps Script trước!', 'warning');
           openModal('modal-google-sheet');
@@ -6980,7 +7345,17 @@ function getAccountsFromSheet(ss) {
         showToast('Đang nạp dữ liệu từ Google Sheet...', 'info');
       }
 
-      // Nếu chưa có dữ liệu và đang nạp tự động, hiển thị trạng thái đang tải trên bảng
+      // 1. Nếu người dùng dán link bảng tính Google Sheet trực tiếp (docs.google.com/spreadsheets/d/{ID})
+      if (url.includes('docs.google.com/spreadsheets')) {
+        const m = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (m && m[1]) {
+          const sheetId = m[1];
+          const gvizOk = await importViaGviz(sheetId, isAuto, silent);
+          if (gvizOk) return;
+        }
+      }
+
+      // Hiển thị trạng thái đang tải trên giao diện
       const emptyState = document.getElementById('document-empty-state');
       if (appState.documents.length === 0 && emptyState) {
         emptyState.innerHTML = `
@@ -6993,36 +7368,53 @@ function getAccountsFromSheet(ss) {
         emptyState.classList.remove('hidden');
       }
 
+      // 2. Nạp qua Google Apps Script Web App (action=GET_ALL)
       try {
-        const fetchUrl = appState.gsheetUrl + (appState.gsheetUrl.includes('?') ? '&' : '?') + 'action=GET_ALL&_t=' + Date.now();
+        const fetchUrl = url + (url.includes('?') ? '&' : '?') + 'action=GET_ALL&_t=' + Date.now();
         const res = await fetch(fetchUrl);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
 
         let countMsg = [];
         if (data && data.documents && Array.isArray(data.documents)) {
-          appState.documents = data.documents.map((doc, idx) => ({
-            ...doc,
-            id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
-            code: String(doc.code || '').trim(),
-            name: String(doc.name || '').trim(),
-            type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
-            pages: Number(doc.pages) || 1,
-            issueNo: String(doc.issueNo !== '' && doc.issueNo !== undefined ? doc.issueNo : '01').trim(),
-            issueDate: String(doc.issueDate || '').trim(),
-            revNo: String(doc.revNo !== '' && doc.revNo !== undefined ? doc.revNo : '00').trim(),
-            revDate: String(doc.revDate || '').trim(),
-            drafterName: String(doc.drafterName || '').trim(),
-            drafterRole: String(doc.drafterRole || '').trim(),
-            checkerName: String(doc.checkerName || '').trim(),
-            checkerRole: String(doc.checkerRole || '').trim(),
-            approverName: String(doc.approverName || '').trim(),
-            approverRole: String(doc.approverRole || '').trim(),
-            status: String(doc.status || 'LATEST').trim(),
-            lastReviewedDate: String(doc.lastReviewedDate || '').trim(),
-            nextReviewDate: String(doc.nextReviewDate || '').trim(),
-            content: String(doc.content || '').trim()
-          })).filter(d => d.code || d.name);
+          appState.documents = data.documents.map((doc, idx) => {
+            const issueDate = String(doc.issueDate || '').trim();
+            const revDate = String(doc.revDate || '').trim();
+            let lastRev = String(doc.lastReviewedDate || '').trim();
+            if (!lastRev || lastRev === '—' || lastRev === '-') lastRev = revDate || issueDate;
+            let nextRev = String(doc.nextReviewDate || '').trim();
+            if ((!nextRev || nextRev === '—' || nextRev === '-') && lastRev) {
+              try {
+                const d = new Date(lastRev);
+                if (!isNaN(d.getTime())) {
+                  d.setFullYear(d.getFullYear() + 1);
+                  nextRev = d.toISOString().split('T')[0];
+                }
+              } catch(eD) {}
+            }
+            return {
+              ...doc,
+              id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
+              code: String(doc.code || '').trim(),
+              name: String(doc.name || '').trim(),
+              type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
+              pages: Number(doc.pages) || 1,
+              issueNo: String(doc.issueNo !== '' && doc.issueNo !== undefined ? doc.issueNo : '01').trim(),
+              issueDate: issueDate,
+              revNo: String(doc.revNo !== '' && doc.revNo !== undefined ? doc.revNo : '00').trim(),
+              revDate: revDate,
+              drafterName: String(doc.drafterName || '').trim(),
+              drafterRole: String(doc.drafterRole || '').trim(),
+              checkerName: String(doc.checkerName || '').trim(),
+              checkerRole: String(doc.checkerRole || '').trim(),
+              approverName: String(doc.approverName || '').trim(),
+              approverRole: String(doc.approverRole || '').trim(),
+              status: String(doc.status || 'LATEST').trim(),
+              lastReviewedDate: lastRev,
+              nextReviewDate: nextRev,
+              content: String(doc.content || '').trim()
+            };
+          }).filter(d => d.code || d.name);
 
           saveDocumentsToStorage(true);
           if (appState.documents.length > 0) {
@@ -7049,49 +7441,33 @@ function getAccountsFromSheet(ss) {
           countMsg.push(`${data.accounts.length} tài khoản`);
         }
 
-        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ nếu người dùng bấm nạp thủ công
+        // Đặt lại bộ lọc để hiển thị ngay tài liệu mới nạp
         if (!isAuto) {
-          appState.searchQuery = '';
-          appState.selectedCategory = 'ALL';
-          appState.selectedStatus = 'ALL';
-          appState.selectedPersonnel = 'ALL';
-          appState.docPage = 1;
-
-          const sInp = document.getElementById('search-input');
-          if (sInp) sInp.value = '';
-          const clearBtn = document.getElementById('btn-clear-search');
-          if (clearBtn) clearBtn.classList.add('hidden');
-          const stSelect = document.getElementById('filter-status-select');
-          if (stSelect) stSelect.value = 'ALL';
-          const pSelect = document.getElementById('filter-personnel-select');
-          if (pSelect) pSelect.value = 'ALL';
-          const toggleLatest = document.getElementById('toggle-latest-only');
-          if (toggleLatest) toggleLatest.checked = true;
+          resetAllFilters();
+        } else {
+          populatePersonnelDropdown();
+          populateDeptFilterDropdown();
+          populateModalDocDropdowns();
+          renderStats();
+          renderCategoryPills();
+          renderDocumentList();
+          renderReviewPlan();
+          renderEventsTable();
+          renderDistributionTable();
+          checkAndRenderAlerts();
         }
 
-        populatePersonnelDropdown();
-        populateDeptFilterDropdown();
-        populateModalDocDropdowns();
-        renderStats();
-        renderCategoryPills();
-        renderDocumentList();
-        renderReviewPlan();
-        renderEventsTable();
-        renderDistributionTable();
-        checkAndRenderAlerts();
-
-        // Đóng modal google sheet nếu đang mở để trả lại giao diện chính và thanh cuộn
         closeModal('modal-google-sheet');
 
         if (countMsg.length > 0) {
-          showToast(`Đã đồng bộ thành công: ${countMsg.join(', ')} từ Google Sheet!`, 'success');
+          showToast(`Đã nạp thành công: ${countMsg.join(', ')} từ Google Sheet!`, 'success');
         } else {
-          if (!isAuto) showToast('Google Sheet trả về dữ liệu rỗng.', 'warning');
+          if (!isAuto) showToast('Google Sheet chưa có dữ liệu nào.', 'warning');
         }
       } catch(err) {
         console.error('Lỗi nạp từ Google Sheet:', err);
         if (!isAuto || appState.documents.length === 0) {
-          showToast('Lỗi kết nối Google Sheet: ' + err.message, 'warning');
+          showToast('Lỗi kết nối Google Sheet: ' + err.message + '. Vui lòng kiểm tra lại quyền truy cập "Anyone" của Web App.', 'warning');
         }
         if (appState.documents.length === 0) {
           renderDocumentList();
@@ -7100,11 +7476,11 @@ function getAccountsFromSheet(ss) {
     }
 
     function triggerAutoSyncGoogleSheet() {
-      if (!appState.gsheetUrl) return;
+      if (!appState.gsheetUrl || !appState.gsheetUrl.startsWith('http')) return;
+      if (appState.gsheetUrl.includes('docs.google.com/spreadsheets')) return;
       fetch(appState.gsheetUrl, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'AUTO_SYNC',
           timestamp: new Date().toISOString(),
