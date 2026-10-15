@@ -557,13 +557,13 @@
     <!-- ======================================================== -->
     <section id="section-doc-master" class="space-y-4">
       
-      <!-- SUMMARY METRIC CARDS -->
+      <!-- SUMMARY METRIC CARDS (CLICKABLE DASHBOARD FILTER CARDS) -->
       <div id="summary-cards-container" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <!-- Tổng số tài liệu -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div id="dash-card-all" onclick="filterByDashboardCard('ALL')" role="button" tabindex="0" title="Nhấp để hiển thị toàn bộ danh mục tài liệu xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Tổng Số Tài Liệu</span>
-            <div class="p-2 rounded-lg bg-blue-50 text-blue-600">
+            <span class="text-xs font-bold text-slate-700 group-hover:text-blue-700 uppercase tracking-wider transition-colors">Tổng Số Tài Liệu</span>
+            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
           </div>
@@ -571,14 +571,17 @@
             <span id="metric-total-docs" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
             <span class="text-xs text-slate-600 font-medium">tài liệu</span>
           </div>
-          <p class="text-xs text-slate-600 font-medium mt-1"><span id="metric-total-entries" class="font-bold">0</span> bản ghi phiên bản</p>
+          <div class="mt-1 flex items-center justify-between gap-1">
+            <p class="text-xs text-slate-600 font-medium truncate"><span id="metric-total-entries" class="font-bold">0</span> bản ghi phiên bản</p>
+            <span id="dash-badge-all" class="dash-card-badge text-[10px] font-bold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Xem tất cả ↓</span>
+          </div>
         </div>
 
         <!-- Đang hiệu lực (mới nhất) -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div id="dash-card-latest" onclick="filterByDashboardCard('LATEST')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu đang hiệu lực (bản mới nhất) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Đang Hiệu Lực</span>
-            <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+            <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
           </div>
@@ -586,14 +589,17 @@
             <span id="metric-active-docs" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</span>
             <span class="text-xs text-emerald-600/80 font-medium">bản mới nhất</span>
           </div>
-          <p class="text-xs text-slate-600 font-medium mt-1">Lưu hành tại điểm sử dụng</p>
+          <div class="mt-1 flex items-center justify-between gap-1">
+            <p class="text-xs text-slate-600 font-medium truncate">Lưu hành tại điểm sử dụng</p>
+            <span id="dash-badge-latest" class="dash-card-badge text-[10px] font-bold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
+          </div>
         </div>
 
         <!-- Cần rà soát định kỳ (> 1 năm) -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div id="dash-card-due-review" onclick="filterByDashboardCard('DUE_REVIEW')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu cần rà soát định kỳ (> 1 năm) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Cần Rà Soát Định Kỳ</span>
-            <div class="p-2 rounded-lg bg-amber-50 text-amber-600">
+            <div class="p-2 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
           </div>
@@ -601,14 +607,17 @@
             <span id="metric-due-review" class="text-2xl sm:text-3xl font-extrabold text-amber-600">0</span>
             <span class="text-xs text-amber-600/80 font-medium">&gt; 1 năm</span>
           </div>
-          <p class="text-xs text-slate-600 font-medium mt-1">Tuân thủ Khoản 8.3.2.b</p>
+          <div class="mt-1 flex items-center justify-between gap-1">
+            <p class="text-xs text-slate-600 font-medium truncate">Tuân thủ Khoản 8.3.2.b</p>
+            <span id="dash-badge-due-review" class="dash-card-badge text-[10px] font-bold text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
+          </div>
         </div>
 
         <!-- Lịch sử (Đã thay thế / Thu hồi) -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div id="dash-card-superseded" onclick="filterByDashboardCard('SUPERSEDED')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu lịch sử / đã thay thế xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Lịch Sử / Đã Thay Thế</span>
-            <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+            <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
           </div>
@@ -616,7 +625,10 @@
             <span id="metric-superseded" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0</span>
             <span class="text-xs text-indigo-600/80 font-medium">bản cũ</span>
           </div>
-          <p class="text-xs text-slate-600 font-medium mt-1">Thu hồi theo Khoản 8.3.2.f</p>
+          <div class="mt-1 flex items-center justify-between gap-1">
+            <p class="text-xs text-slate-600 font-medium truncate">Thu hồi theo Khoản 8.3.2.f</p>
+            <span id="dash-badge-superseded" class="dash-card-badge text-[10px] font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
+          </div>
         </div>
       </div>
 
@@ -700,7 +712,17 @@
       </div>
 
       <!-- BẢNG TỔNG HỢP DANH MỤC TÀI LIỆU NỘI BỘ -->
-      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div id="master-table-card" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden transition-all duration-300">
+        <!-- Thanh thông báo danh mục đang lọc từ Dashboard -->
+        <div id="dashboard-active-filter-bar" class="hidden px-4 py-2.5 bg-blue-50/90 border-b border-blue-200 flex items-center justify-between gap-2 text-xs sm:text-sm no-print">
+          <div class="flex items-center space-x-2">
+            <span id="dashboard-filter-dot" class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse shrink-0"></span>
+            <span id="dashboard-filter-text" class="font-bold text-slate-800">Đang hiển thị: Tất cả tài liệu</span>
+          </div>
+          <button type="button" onclick="resetAllFilters()" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs transition shrink-0">
+            Hiển thị mặc định
+          </button>
+        </div>
         <!-- 1. Table View -->
         <div id="container-table-view" class="overflow-x-auto">
           <table class="min-w-full divide-y divide-slate-200 text-left border-collapse">
@@ -910,14 +932,14 @@
           </div>
         </div>
 
-        <!-- 4 Thẻ thống kê 4 loại sự kiện (Yêu cầu 5) -->
+        <!-- 4 Thẻ thống kê 4 loại sự kiện (Click để lọc bảng phía dưới) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <!-- 1. Ban hành mới -->
-          <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 flex items-center justify-between">
+          <div id="events-dash-card-new" onclick="filterEventsByDashboardCard('Ban hành mới')" role="button" tabindex="0" title="Nhấp để lọc sự kiện Ban hành mới xuống bảng phía dưới" class="p-3 bg-blue-50/60 hover:bg-blue-100/70 rounded-xl border border-blue-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-blue-700 font-semibold block uppercase">1. Ban Hành Mới</span>
               <span id="events-metric-new" class="text-2xl font-extrabold text-blue-900">0</span>
-              <span class="text-[10px] text-blue-600 block">lần ban hành</span>
+              <span class="text-[10px] text-blue-600 block">lần ban hành (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-blue-200/60 text-blue-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -925,11 +947,11 @@
           </div>
 
           <!-- 2. Sửa đổi -->
-          <div class="p-3 bg-indigo-50/60 rounded-xl border border-indigo-200 flex items-center justify-between">
+          <div id="events-dash-card-revise" onclick="filterEventsByDashboardCard('Sửa đổi')" role="button" tabindex="0" title="Nhấp để lọc sự kiện Sửa đổi (Rev) xuống bảng phía dưới" class="p-3 bg-indigo-50/60 hover:bg-indigo-100/70 rounded-xl border border-indigo-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-indigo-700 font-semibold block uppercase">2. Sửa Đổi (Rev)</span>
               <span id="events-metric-revise" class="text-2xl font-extrabold text-indigo-900">0</span>
-              <span class="text-[10px] text-indigo-600 block">lần sửa đổi</span>
+              <span class="text-[10px] text-indigo-600 block">lần sửa đổi (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-indigo-200/60 text-indigo-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -937,11 +959,11 @@
           </div>
 
           <!-- 3. Soát xét không sửa đổi -->
-          <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 flex items-center justify-between">
+          <div id="events-dash-card-review" onclick="filterEventsByDashboardCard('REVIEW_NO_CHANGE')" role="button" tabindex="0" title="Nhấp để lọc sự kiện Soát xét định kỳ (+12T) xuống bảng phía dưới" class="p-3 bg-emerald-50/60 hover:bg-emerald-100/70 rounded-xl border border-emerald-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-emerald-700 font-semibold block uppercase">3. Soát Xét (+12T)</span>
               <span id="events-metric-review" class="text-2xl font-extrabold text-emerald-900">0</span>
-              <span class="text-[10px] text-emerald-600 block">không sửa đổi</span>
+              <span class="text-[10px] text-emerald-600 block">không sửa đổi (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-emerald-200/60 text-emerald-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -949,11 +971,11 @@
           </div>
 
           <!-- 4. Hủy -->
-          <div class="p-3 bg-rose-50/60 rounded-xl border border-rose-200 flex items-center justify-between">
+          <div id="events-dash-card-cancel" onclick="filterEventsByDashboardCard('Hủy')" role="button" tabindex="0" title="Nhấp để lọc sự kiện Hủy / Thu hồi xuống bảng phía dưới" class="p-3 bg-rose-50/60 hover:bg-rose-100/70 rounded-xl border border-rose-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-rose-700 font-semibold block uppercase">4. Hủy / Thu Hồi</span>
               <span id="events-metric-cancel" class="text-2xl font-extrabold text-rose-900">0</span>
-              <span class="text-[10px] text-rose-600 block">hết hiệu lực</span>
+              <span class="text-[10px] text-rose-600 block">hết hiệu lực (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-rose-200/60 text-rose-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1064,46 +1086,46 @@
           </div>
         </div>
 
-        <!-- 4 Thẻ thống kê phân phối (Yêu cầu 6) -->
+        <!-- 4 Thẻ thống kê phân phối (Click để lọc bảng phía dưới) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-          <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 flex items-center justify-between">
+          <div id="dist-dash-card-all" onclick="filterDistByDashboardCard('ALL')" role="button" tabindex="0" title="Nhấp để hiển thị toàn bộ lượt phân phối xuống bảng phía dưới" class="p-3 bg-emerald-50/60 hover:bg-emerald-100/70 rounded-xl border border-emerald-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-emerald-700 font-semibold block uppercase">Tổng Lượt Phân Phối</span>
               <span id="dist-metric-total" class="text-2xl font-extrabold text-emerald-900">0</span>
-              <span class="text-[10px] text-emerald-600 block">bản ghi</span>
+              <span class="text-[10px] text-emerald-600 block">bản ghi (Nhấp xem ↓)</span>
             </div>
             <div class="p-2 bg-emerald-200/60 text-emerald-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             </div>
           </div>
 
-          <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 flex items-center justify-between">
+          <div id="dist-dash-card-active" onclick="filterDistByDashboardCard('ACTIVE')" role="button" tabindex="0" title="Nhấp để lọc các bản sao đang lưu hành xuống bảng phía dưới" class="p-3 bg-blue-50/60 hover:bg-blue-100/70 rounded-xl border border-blue-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-blue-700 font-semibold block uppercase">Đang Lưu Hành</span>
               <span id="dist-metric-active" class="text-2xl font-extrabold text-blue-900">0</span>
-              <span class="text-[10px] text-blue-600 block">tại điểm sử dụng</span>
+              <span class="text-[10px] text-blue-600 block">tại điểm sử dụng (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-blue-200/60 text-blue-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
           </div>
 
-          <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 flex items-center justify-between">
+          <div id="dist-dash-card-recalled" onclick="filterDistByDashboardCard('RECALLED')" role="button" tabindex="0" title="Nhấp để lọc các bản sao đã thu hồi xuống bảng phía dưới" class="p-3 bg-amber-50/60 hover:bg-amber-100/70 rounded-xl border border-amber-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-amber-700 font-semibold block uppercase">Đã Thu Hồi</span>
               <span id="dist-metric-recalled" class="text-2xl font-extrabold text-amber-900">0</span>
-              <span class="text-[10px] text-amber-600 block">khi sửa đổi mới</span>
+              <span class="text-[10px] text-amber-600 block">khi sửa đổi mới (Nhấp lọc ↓)</span>
             </div>
             <div class="p-2 bg-amber-200/60 text-amber-800 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </div>
           </div>
 
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div id="dist-dash-card-depts" onclick="filterDistByDashboardCard('DEPTS')" role="button" tabindex="0" title="Nhấp để chọn lọc theo đơn vị tiếp nhận" class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-between cursor-pointer select-none hover:shadow-sm hover:-translate-y-0.5 transition-all">
             <div>
               <span class="text-xs text-slate-600 font-semibold block uppercase">Đơn Vị Tiếp Nhận</span>
               <span id="dist-metric-depts" class="text-2xl font-extrabold text-slate-800">0</span>
-              <span class="text-[10px] text-slate-500 block">phòng ban / bộ phận</span>
+              <span class="text-[10px] text-slate-500 block">phòng ban (Nhấp chọn ↓)</span>
             </div>
             <div class="p-2 bg-slate-200 text-slate-700 rounded-lg">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -2760,23 +2782,12 @@
       toggleSidebar(false);
       switchMainView('master');
 
-      if (type === 'DUE_REVIEW') {
-        const stSelect = document.getElementById('filter-status-select');
-        if (stSelect) stSelect.value = 'DUE_REVIEW';
-        appState.selectedStatus = 'DUE_REVIEW';
-        renderDocumentList();
-      } else if (type === 'WARNING_DUE') {
-        const stSelect = document.getElementById('filter-status-select');
-        if (stSelect) stSelect.value = 'DUE_REVIEW';
-        appState.selectedStatus = 'DUE_REVIEW';
-        renderDocumentList();
+      if (type === 'DUE_REVIEW' || type === 'WARNING_DUE') {
+        filterByDashboardCard('DUE_REVIEW');
       } else if (type === 'SUPERSEDED') {
-        const stSelect = document.getElementById('filter-status-select');
-        if (stSelect) stSelect.value = 'SUPERSEDED';
-        appState.selectedStatus = 'SUPERSEDED';
-        const toggleLatest = document.getElementById('toggle-latest-only');
-        if (toggleLatest) toggleLatest.checked = false;
-        renderDocumentList();
+        filterByDashboardCard('SUPERSEDED');
+      } else {
+        filterByDashboardCard('ALL');
       }
     }
 
@@ -4001,6 +4012,216 @@
       container.innerHTML = html;
     }
 
+    // Cập nhật giao diện highlight cho 4 thẻ Dashboard và thanh trạng thái lọc
+    function updateDashboardCardsActiveUI(activeKey) {
+      const cardsConfig = [
+        {
+          key: 'ALL',
+          cardId: 'dash-card-all',
+          badgeId: 'dash-badge-all',
+          activeClass: 'ring-2 ring-blue-500 border-blue-400 bg-blue-50/40 shadow-md',
+          defaultText: 'Xem tất cả ↓',
+          activeText: '● Đang hiển thị',
+          barBg: 'bg-blue-50/90 border-blue-200',
+          dotColor: 'bg-blue-600',
+          label: 'Tổng số tài liệu (Tất cả bản ghi phiên bản)'
+        },
+        {
+          key: 'LATEST',
+          cardId: 'dash-card-latest',
+          badgeId: 'dash-badge-latest',
+          activeClass: 'ring-2 ring-emerald-500 border-emerald-400 bg-emerald-50/40 shadow-md',
+          defaultText: 'Lọc danh sách ↓',
+          activeText: '● Đang hiển thị',
+          barBg: 'bg-emerald-50/90 border-emerald-200',
+          dotColor: 'bg-emerald-600',
+          label: 'Tài liệu đang hiệu lực (Bản mới nhất lưu hành tại điểm sử dụng)'
+        },
+        {
+          key: 'DUE_REVIEW',
+          cardId: 'dash-card-due-review',
+          badgeId: 'dash-badge-due-review',
+          activeClass: 'ring-2 ring-amber-500 border-amber-400 bg-amber-50/50 shadow-md',
+          defaultText: 'Lọc danh sách ↓',
+          activeText: '● Đang hiển thị',
+          barBg: 'bg-amber-50/90 border-amber-300',
+          dotColor: 'bg-amber-600',
+          label: 'Tài liệu cần rà soát định kỳ (> 1 năm theo Khoản 8.3.2.b)'
+        },
+        {
+          key: 'SUPERSEDED',
+          cardId: 'dash-card-superseded',
+          badgeId: 'dash-badge-superseded',
+          activeClass: 'ring-2 ring-indigo-500 border-indigo-400 bg-indigo-50/40 shadow-md',
+          defaultText: 'Lọc danh sách ↓',
+          activeText: '● Đang hiển thị',
+          barBg: 'bg-indigo-50/90 border-indigo-200',
+          dotColor: 'bg-indigo-600',
+          label: 'Tài liệu lịch sử / Đã thay thế / Thu hồi (Khoản 8.3.2.f)'
+        }
+      ];
+
+      const baseCardClass = 'dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden';
+
+      cardsConfig.forEach(cfg => {
+        const cardEl = document.getElementById(cfg.cardId);
+        const badgeEl = document.getElementById(cfg.badgeId);
+        const isCurrent = (activeKey === cfg.key);
+        if (cardEl) {
+          cardEl.className = isCurrent ? `${baseCardClass} ${cfg.activeClass}` : baseCardClass;
+        }
+        if (badgeEl) {
+          badgeEl.textContent = isCurrent ? cfg.activeText : cfg.defaultText;
+          if (isCurrent) {
+            badgeEl.classList.remove('opacity-0');
+            badgeEl.classList.add('opacity-100');
+          } else {
+            badgeEl.classList.remove('opacity-100');
+            badgeEl.classList.add('opacity-0');
+          }
+        }
+      });
+
+      const barEl = document.getElementById('dashboard-active-filter-bar');
+      const dotEl = document.getElementById('dashboard-filter-dot');
+      const txtEl = document.getElementById('dashboard-filter-text');
+      if (barEl && dotEl && txtEl) {
+        const matchedCfg = cardsConfig.find(c => c.key === activeKey);
+        if (matchedCfg && appState.activeDashboardCard) {
+          barEl.className = `px-4 py-2.5 border-b flex items-center justify-between gap-2 text-xs sm:text-sm no-print ${matchedCfg.barBg}`;
+          dotEl.className = `w-2.5 h-2.5 rounded-full animate-pulse shrink-0 ${matchedCfg.dotColor}`;
+          txtEl.textContent = `Đang lọc từ Dashboard: ${matchedCfg.label}`;
+          barEl.classList.remove('hidden');
+        } else {
+          barEl.classList.add('hidden');
+        }
+      }
+    }
+
+    // Khi click vào 1 trong 4 thẻ Dashboard tổng quan tài liệu
+    function filterByDashboardCard(cardType) {
+      if (appState.currentView !== 'master') {
+        switchMainView('master');
+      }
+
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('btn-clear-search');
+      const stSelect = document.getElementById('filter-status-select');
+      const pSelect = document.getElementById('filter-personnel-select');
+      const toggleLatest = document.getElementById('toggle-latest-only');
+
+      // Đặt lại bộ lọc tìm kiếm / phân loại phụ để số lượng hiển thị dưới bảng khớp 100% với con số trên thẻ Dashboard
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      if (pSelect) pSelect.value = 'ALL';
+      appState.searchQuery = '';
+      appState.selectedCategory = 'ALL';
+      appState.selectedPersonnel = 'ALL';
+      appState.docPage = 1;
+      appState.activeDashboardCard = cardType;
+
+      if (cardType === 'ALL') {
+        appState.selectedStatus = 'ALL';
+        if (stSelect) stSelect.value = 'ALL';
+        if (toggleLatest) toggleLatest.checked = false;
+      } else if (cardType === 'LATEST') {
+        appState.selectedStatus = 'LATEST';
+        if (stSelect) stSelect.value = 'LATEST';
+        if (toggleLatest) toggleLatest.checked = true;
+      } else if (cardType === 'DUE_REVIEW') {
+        appState.selectedStatus = 'DUE_REVIEW';
+        if (stSelect) stSelect.value = 'DUE_REVIEW';
+        if (toggleLatest) toggleLatest.checked = true;
+      } else if (cardType === 'SUPERSEDED') {
+        appState.selectedStatus = 'SUPERSEDED';
+        if (stSelect) stSelect.value = 'SUPERSEDED';
+        if (toggleLatest) toggleLatest.checked = false;
+      }
+
+      renderCategoryPills();
+      renderDocumentList();
+      updateDashboardCardsActiveUI(cardType);
+
+      // Hiệu ứng nháy viền bảng và cuộn mượt xuống bảng danh mục phía dưới
+      const tableCard = document.getElementById('master-table-card');
+      if (tableCard) {
+        tableCard.classList.add('ring-2', 'ring-blue-400');
+        setTimeout(() => tableCard.classList.remove('ring-2', 'ring-blue-400'), 900);
+        const rect = tableCard.getBoundingClientRect();
+        if (rect.top > window.innerHeight * 0.65 || rect.top < 60) {
+          tableCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+
+    // Khi click vào 4 thẻ thống kê trong mục Nhật ký sự kiện vòng đời
+    function filterEventsByDashboardCard(type) {
+      const targetType = (type === 'REVIEW_NO_CHANGE') ? 'Soát xét (không có sửa đổi)' : type;
+      if (appState.eventsFilterType === targetType) {
+        filterEventsType('ALL');
+      } else {
+        filterEventsType(type);
+      }
+      const evCards = {
+        'Ban hành mới': 'events-dash-card-new',
+        'Sửa đổi': 'events-dash-card-revise',
+        'Soát xét (không có sửa đổi)': 'events-dash-card-review',
+        'Hủy': 'events-dash-card-cancel'
+      };
+      Object.entries(evCards).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (appState.eventsFilterType === k) {
+          el.classList.add('ring-2', 'ring-purple-500', 'shadow-md');
+        } else {
+          el.classList.remove('ring-2', 'ring-purple-500', 'shadow-md');
+        }
+      });
+    }
+
+    // Khi click vào 4 thẻ thống kê trong mục Sổ phân phối & thu hồi
+    function filterDistByDashboardCard(mode) {
+      const deptFilter = document.getElementById('dist-dept-filter');
+      const statusFilter = document.getElementById('dist-status-filter');
+      const searchInput = document.getElementById('dist-search-input');
+
+      if (mode === 'DEPTS') {
+        if (statusFilter) statusFilter.value = 'ALL';
+        renderDistributionTable();
+        if (deptFilter) {
+          deptFilter.focus();
+          deptFilter.classList.add('ring-2', 'ring-emerald-500');
+          setTimeout(() => deptFilter.classList.remove('ring-2', 'ring-emerald-500'), 1200);
+        }
+        return;
+      }
+
+      if (searchInput) searchInput.value = '';
+      appState.distSearchQuery = '';
+      if (deptFilter) deptFilter.value = 'ALL';
+      if (statusFilter) {
+        statusFilter.value = (statusFilter.value === mode && mode !== 'ALL') ? 'ALL' : mode;
+      }
+      appState.distPage = 1;
+      renderDistributionTable();
+
+      const distCards = {
+        'ALL': 'dist-dash-card-all',
+        'ACTIVE': 'dist-dash-card-active',
+        'RECALLED': 'dist-dash-card-recalled'
+      };
+      const currentVal = statusFilter ? statusFilter.value : 'ALL';
+      Object.entries(distCards).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (currentVal === k) {
+          el.classList.add('ring-2', 'ring-emerald-500', 'shadow-md');
+        } else {
+          el.classList.remove('ring-2', 'ring-emerald-500', 'shadow-md');
+        }
+      });
+    }
+
     function filterByCategory(type) {
       appState.selectedCategory = type;
       appState.docPage = 1;
@@ -4013,15 +4234,24 @@
       const stSelect = document.getElementById('filter-status-select');
       const pSelect = document.getElementById('filter-personnel-select');
       const clearBtn = document.getElementById('btn-clear-search');
+      const toggleLatest = document.getElementById('toggle-latest-only');
 
       appState.searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
       appState.selectedStatus = stSelect ? stSelect.value : 'ALL';
       appState.selectedPersonnel = pSelect ? pSelect.value : 'ALL';
 
+      // Nếu người dùng chọn lọc "Lịch sử (Đã sửa đổi / Thay thế)" hoặc "Đã hủy", tự động tắt toggle "Bản mới nhất" để hiển thị được bản cũ
+      if ((appState.selectedStatus === 'SUPERSEDED' || appState.selectedStatus === 'CANCELLED') && toggleLatest) {
+        toggleLatest.checked = false;
+      }
+
       if (clearBtn) {
         if (appState.searchQuery) clearBtn.classList.remove('hidden');
         else clearBtn.classList.add('hidden');
       }
+
+      appState.activeDashboardCard = appState.selectedStatus !== 'ALL' ? appState.selectedStatus : null;
+      updateDashboardCardsActiveUI(appState.activeDashboardCard);
 
       appState.docPage = 1;
       renderDocumentList();
@@ -4038,8 +4268,10 @@
       const stSelect = document.getElementById('filter-status-select');
       const pSelect = document.getElementById('filter-personnel-select');
       const toggleLatest = document.getElementById('toggle-latest-only');
+      const clearBtn = document.getElementById('btn-clear-search');
 
       if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
       if (stSelect) stSelect.value = 'ALL';
       if (pSelect) pSelect.value = 'ALL';
       if (toggleLatest) toggleLatest.checked = true;
@@ -4048,8 +4280,10 @@
       appState.selectedCategory = 'ALL';
       appState.selectedStatus = 'ALL';
       appState.selectedPersonnel = 'ALL';
+      appState.activeDashboardCard = null;
       appState.docPage = 1;
 
+      updateDashboardCardsActiveUI(null);
       renderCategoryPills();
       renderDocumentList();
     }
