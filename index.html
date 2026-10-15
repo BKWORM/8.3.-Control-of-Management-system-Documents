@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <base target="_top">
   <!-- PWA & Mobile Optimization -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -430,7 +429,7 @@
         <!-- Right: Actions & Auth Controls (Google Sheet, Thêm TL, In, Bánh răng, Quyền & Đăng nhập đồng bộ theo bản index) -->
         <div class="flex items-center space-x-1.5 sm:space-x-2">
           <!-- Google Sheet Direct Sync Button -->
-          <button onclick="openModal('modal-google-sheet')" class="inline-flex items-center px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow transition duration-150 active:scale-95 border border-emerald-400/40" title="Nạp / Xuất trực tiếp dữ liệu tài liệu trên Google Sheet">
+          <button type="button" onclick="openModal('modal-google-sheet')" class="inline-flex items-center px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow transition duration-150 active:scale-95 border border-emerald-400/40" title="Nạp / Xuất trực tiếp dữ liệu tài liệu trên Google Sheet">
             <svg class="w-4 h-4 mr-1 sm:mr-1.5 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-2h6v2zm4-4H6v-2h10v2zm0-4H6V7h10v2z"></path>
             </svg>
@@ -439,7 +438,7 @@
           </button>
 
           <!-- Add Document Button -->
-          <button id="btn-add-doc-header" onclick="checkEditAction(() => openAddDocumentModal())" class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow transition duration-150 active:scale-95">
+          <button type="button" id="btn-add-doc-header" onclick="checkEditAction(() => openAddDocumentModal())" class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow transition duration-150 active:scale-95">
             <svg class="w-4 h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -447,14 +446,14 @@
           </button>
 
           <!-- Print / PDF Button -->
-          <button onclick="window.print()" class="p-1.5 sm:p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition" title="In / Xuất PDF (Khổ A4 Ngang)">
+          <button type="button" onclick="window.print()" class="p-1.5 sm:p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition" title="In / Xuất PDF (Khổ A4 Ngang)">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
             </svg>
           </button>
 
           <!-- Data / Settings Button (Bánh răng) -->
-          <button id="btn-settings-header" onclick="checkAdminAction(() => openModal('modal-settings'))" class="p-1.5 sm:p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Cài đặt &amp; Sao lưu dữ liệu">
+          <button type="button" id="btn-settings-header" onclick="checkAdminAction(() => openModal('modal-settings'))" class="p-1.5 sm:p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Cài đặt &amp; Sao lưu dữ liệu">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -631,7 +630,7 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
             <input type="text" id="search-input" oninput="handleSearchFilter()" placeholder="Tìm theo tên tài liệu, mã hiệu (QTQL-..., QTTN-...), người soạn/duyệt, nội dung..." class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition placeholder-slate-400">
-            <button id="btn-clear-search" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition" title="Xóa tìm kiếm">
+            <button type="button" id="btn-clear-search" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition" title="Xóa tìm kiếm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
@@ -661,18 +660,18 @@
             </div>
 
             <!-- Nút Reset bộ lọc -->
-            <button onclick="resetAllFilters()" class="p-2 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 border border-slate-200 transition shrink-0" title="Đặt lại bộ lọc về mặc định">
+            <button type="button" onclick="resetAllFilters()" class="p-2 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 border border-slate-200 transition shrink-0" title="Đặt lại bộ lọc về mặc định">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
 
             <!-- Nút Xuất Excel Danh Mục -->
-            <button onclick="exportDocumentListExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95 shrink-0" title="Xuất danh mục tài liệu ra file Excel">
+            <button type="button" onclick="exportDocumentListExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95 shrink-0" title="Xuất toàn bộ dữ liệu 5 sheet ra file Excel (đầy đủ như Google Sheet)">
               <svg class="w-4 h-4 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Xuất Excel</span>
             </button>
 
             <!-- Nút Nhập Excel -->
-            <button id="btn-import-excel-toolbar" onclick="checkEditAction(() => openModal('modal-import-excel'))" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95 shrink-0" title="Nhập tài liệu từ file Excel">
+            <button type="button" id="btn-import-excel-toolbar" onclick="checkEditAction(() => openModal('modal-import-excel'))" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95 shrink-0" title="Nhập tài liệu từ file Excel">
               <svg class="w-4 h-4 mr-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
               <span>+ Nhập Excel</span>
             </button>
@@ -737,7 +736,7 @@
           </div>
           <h3 class="text-base font-bold text-slate-800">Không tìm thấy tài liệu phù hợp</h3>
           <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Vui lòng thử từ khóa tìm kiếm khác hoặc bấm "Đặt lại bộ lọc" để xem toàn bộ danh mục.</p>
-          <button onclick="resetAllFilters()" class="mt-4 px-4 py-2 text-sm font-semibold rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
+          <button type="button" onclick="resetAllFilters()" class="mt-4 px-4 py-2 text-sm font-semibold rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
             Đặt lại bộ lọc
           </button>
         </div>
@@ -781,13 +780,13 @@
 
           <div class="flex items-center space-x-2 shrink-0">
             <!-- Nút In Kế Hoạch -->
-            <button onclick="window.print()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95">
+            <button type="button" onclick="window.print()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95">
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
               <span>In Kế Hoạch</span>
             </button>
 
             <!-- Nút Xuất Excel Kế Hoạch -->
-            <button onclick="exportReviewPlanExcel()" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-amber-600 hover:bg-amber-500 text-white shadow-xs transition active:scale-95">
+            <button type="button" onclick="exportReviewPlanExcel()" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-amber-600 hover:bg-amber-500 text-white shadow-xs transition active:scale-95">
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Xuất Excel Kế Hoạch</span>
             </button>
@@ -899,12 +898,12 @@
           </div>
 
           <div class="flex items-center space-x-2 shrink-0">
-            <button onclick="checkEditAction(() => openAddEventModal())" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-purple-600 hover:bg-purple-500 text-white shadow-xs transition active:scale-95">
+            <button type="button" onclick="checkEditAction(() => openAddEventModal())" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-purple-600 hover:bg-purple-500 text-white shadow-xs transition active:scale-95">
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
               <span>+ Thêm Sự Kiện Mới</span>
             </button>
 
-            <button onclick="exportEventsExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95" title="Xuất toàn bộ nhật ký sự kiện tài liệu ra file Excel">
+            <button type="button" onclick="exportEventsExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95" title="Xuất toàn bộ nhật ký sự kiện tài liệu ra file Excel">
               <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Xuất Excel Sự Kiện</span>
             </button>
@@ -983,7 +982,7 @@
             <button type="button" onclick="filterEventsType('Sửa đổi')" id="event-filter-btn-revise" class="event-filter-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100">
               Sửa đổi (0)
             </button>
-            <button type="button" onclick="filterEventsType('Soát xét (không có sửa đổi)')" id="event-filter-btn-review" class="event-filter-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100">
+            <button type="button" onclick="filterEventsType('REVIEW_NO_CHANGE')" id="event-filter-btn-review" class="event-filter-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100">
               Soát xét (+12T) (0)
             </button>
             <button type="button" onclick="filterEventsType('Hủy')" id="event-filter-btn-cancel" class="event-filter-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100">
@@ -1053,12 +1052,12 @@
           </div>
 
           <div class="flex items-center space-x-2 shrink-0">
-            <button onclick="checkEditAction(() => openAddDistributionModal())" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition active:scale-95">
+            <button type="button" onclick="checkEditAction(() => openAddDistributionModal())" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition active:scale-95">
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
               <span>+ Phân Phối Tài Liệu</span>
             </button>
 
-            <button onclick="exportDistributionExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95" title="Xuất sổ phân phối tài liệu ra file Excel">
+            <button type="button" onclick="exportDistributionExcel()" class="inline-flex items-center px-3 py-2 text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95" title="Xuất sổ phân phối tài liệu ra file Excel">
               <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Xuất Excel Sổ Phân Phối</span>
             </button>
@@ -2566,9 +2565,11 @@
       sortField: 'code',
       sortDirection: 'asc',
       documents: [],
+      plan: [],
       events: [],
       distributions: [],
       accounts: [],
+      hasUnsavedLocalChanges: false,
       currentUser: null,
       currentView: 'master', // 'master', 'review-plan', 'events', 'distribution'
       searchQuery: '',
@@ -2605,11 +2606,89 @@
 
     // Keys
     const LS_KEY_DOCS = 'ISO17025_DOC_MASTER_CLEAN';
+    const LS_KEY_PLAN = 'ISO17025_DOC_PLAN_CLEAN';
     const LS_KEY_EVENTS = 'ISO17025_DOC_EVENTS_CLEAN';
     const LS_KEY_DISTRIBUTIONS = 'ISO17025_DOC_DIST_CLEAN';
     const LS_KEY_ACCOUNTS = 'ISO17025_DOC_ACCOUNTS_CLEAN';
     const LS_KEY_USER = 'ISO17025_DOC_CURRENT_USER';
     const LS_KEY_GSHEET = 'ISO17025_DOC_GSHEET_CONFIG';
+
+    // Bộ nhớ dự phòng an toàn khi chạy trong iframe của Google Apps Script (chặn third-party localStorage)
+    const memoryStorageFallback = {};
+    function safeGetStorage(key) {
+      try {
+        if (window.localStorage) {
+          const val = window.localStorage.getItem(key);
+          if (val !== null && val !== undefined) return val;
+        }
+      } catch (e) {}
+      return Object.prototype.hasOwnProperty.call(memoryStorageFallback, key) ? memoryStorageFallback[key] : null;
+    }
+
+    function safeSetStorage(key, val) {
+      memoryStorageFallback[key] = String(val);
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(key, String(val));
+        }
+      } catch (e) {}
+    }
+
+    function isRunningInGas() {
+      try {
+        return Boolean(typeof google !== 'undefined' && google && google.script && google.script.run);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function showConfirmModal(title, htmlMessage, onConfirmCallback, confirmBtnText = 'Đồng Ý') {
+      const modal = document.getElementById('modal-confirm-dialog');
+      const titleEl = document.getElementById('confirm-dialog-title');
+      const msgEl = document.getElementById('confirm-dialog-message');
+      const btnEl = document.getElementById('confirm-dialog-action-btn');
+      if (!modal || !btnEl) {
+        if (typeof onConfirmCallback === 'function') onConfirmCallback();
+        return;
+      }
+      if (titleEl) titleEl.textContent = title || 'Xác Nhận Thao Tác?';
+      if (msgEl) msgEl.innerHTML = htmlMessage || 'Bạn có chắc chắn muốn thực hiện thao tác này?';
+      btnEl.textContent = confirmBtnText || 'Đồng Ý';
+      btnEl.onclick = function() {
+        closeModal('modal-confirm-dialog');
+        if (typeof onConfirmCallback === 'function') onConfirmCallback();
+      };
+      openModal('modal-confirm-dialog');
+    }
+
+    function copyTextSafe(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg || 'Đã sao chép vào bộ nhớ tạm!', 'success');
+        }).catch(() => {
+          fallbackCopyText(text, successMsg);
+        });
+      } else {
+        fallbackCopyText(text, successMsg);
+      }
+    }
+
+    function fallbackCopyText(text, successMsg) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(successMsg || 'Đã sao chép vào bộ nhớ tạm!', 'success');
+      } catch (e) {
+        showToast('Nội dung sao chép: ' + text, 'info');
+      }
+    }
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -2795,49 +2874,61 @@
     // KHỞI TẠO VÀ XÁC THỰC PHÂN QUYỀN
     // ========================================================
     async function initApp() {
-      // Đảm bảo không bị khóa cuộn trang
+      // Đảm bảo không bị khóa cuộn trang và đóng các modal còn mở nếu file HTML được lưu từ DOM
       document.body.classList.remove('overflow-hidden');
+      document.querySelectorAll('[id^="modal-"]').forEach(m => m.classList.add('hidden'));
 
-      // 1. Tải mật khẩu admin
-      const savedPw = localStorage.getItem('ISO17025_ADMIN_PASSWORD');
+      // 1. Tải mật khẩu admin an toàn
+      const savedPw = safeGetStorage('ISO17025_ADMIN_PASSWORD');
       if (savedPw) appState.adminPassword = savedPw;
 
-      // 2. Nhận diện cấu hình Google Sheet tự động từ URL (param, hash, host hoặc LocalStorage)
+      // 2. Nhận diện cấu hình Google Sheet tự động từ URL (param, hash, host, input hoặc LocalStorage)
       const detectedUrl = detectGoogleSheetUrl();
       if (detectedUrl) {
         appState.gsheetUrl = detectedUrl;
         try {
-          const cfg = { url: detectedUrl, autoSync: true };
-          localStorage.setItem(LS_KEY_GSHEET, JSON.stringify(cfg));
+          const cfg = { url: detectedUrl, autoSync: appState.gsheetAutoSync !== false };
+          safeSetStorage(LS_KEY_GSHEET, JSON.stringify(cfg));
         } catch(e) {}
-      } else {
-        const gsheetCfg = localStorage.getItem(LS_KEY_GSHEET);
-        if (gsheetCfg) {
-          try {
-            const parsed = JSON.parse(gsheetCfg);
-            appState.gsheetUrl = parsed.url || '';
-            appState.gsheetAutoSync = (parsed.autoSync !== false);
-          } catch(e) {}
-        }
       }
 
       const urlInput = document.getElementById('gsheet-app-url');
-      if (urlInput && appState.gsheetUrl) urlInput.value = appState.gsheetUrl;
-      const syncChk = document.getElementById('gsheet-auto-sync');
-      if (syncChk) syncChk.checked = appState.gsheetAutoSync;
+      if (urlInput) {
+        if (appState.gsheetUrl) urlInput.value = appState.gsheetUrl;
+        urlInput.addEventListener('input', function() {
+          const v = this.value.trim();
+          if (v) {
+            appState.gsheetUrl = v;
+            safeSetStorage(LS_KEY_GSHEET, JSON.stringify({ url: v, autoSync: appState.gsheetAutoSync !== false }));
+          }
+        });
+        urlInput.addEventListener('change', function() {
+          const v = this.value.trim();
+          appState.gsheetUrl = v;
+          safeSetStorage(LS_KEY_GSHEET, JSON.stringify({ url: v, autoSync: appState.gsheetAutoSync !== false }));
+        });
+      }
 
-      // 3. Tải danh sách tài liệu từ bộ nhớ đệm LocalStorage
-      const savedDocs = localStorage.getItem(LS_KEY_DOCS);
+      const syncChk = document.getElementById('gsheet-auto-sync');
+      if (syncChk) {
+        syncChk.checked = appState.gsheetAutoSync;
+        syncChk.addEventListener('change', function() {
+          appState.gsheetAutoSync = this.checked;
+          safeSetStorage(LS_KEY_GSHEET, JSON.stringify({ url: appState.gsheetUrl || '', autoSync: appState.gsheetAutoSync }));
+        });
+      }
+
+      // 3. Tải danh sách tài liệu từ bộ nhớ đệm
+      const savedDocs = safeGetStorage(LS_KEY_DOCS);
       if (savedDocs !== null) {
         try {
           const parsed = JSON.parse(savedDocs);
-          // Tự động loại bỏ dữ liệu giả định nếu còn tồn tại trong cache trình duyệt
           const isMock = Array.isArray(parsed) && parsed.some(d => d.id === 'doc-001' && d.code === 'STCL-01');
           if (Array.isArray(parsed) && !isMock) {
             appState.documents = parsed;
           } else {
             appState.documents = [];
-            localStorage.setItem(LS_KEY_DOCS, JSON.stringify([]));
+            safeSetStorage(LS_KEY_DOCS, JSON.stringify([]));
           }
         } catch(e) {
           appState.documents = [];
@@ -2846,8 +2937,21 @@
         appState.documents = [];
       }
 
+      // 3b. Tải kế hoạch rà soát từ bộ nhớ đệm
+      const savedPlan = safeGetStorage(LS_KEY_PLAN);
+      if (savedPlan !== null) {
+        try {
+          const parsedPlan = JSON.parse(savedPlan);
+          appState.plan = Array.isArray(parsedPlan) ? parsedPlan : [];
+        } catch(e) {
+          appState.plan = [];
+        }
+      } else {
+        appState.plan = [];
+      }
+
       // 4. Tải danh sách sự kiện vòng đời
-      const savedEvents = localStorage.getItem(LS_KEY_EVENTS);
+      const savedEvents = safeGetStorage(LS_KEY_EVENTS);
       if (savedEvents !== null) {
         try {
           const parsedEv = JSON.parse(savedEvents);
@@ -2856,7 +2960,7 @@
             appState.events = parsedEv;
           } else {
             appState.events = [];
-            localStorage.setItem(LS_KEY_EVENTS, JSON.stringify([]));
+            safeSetStorage(LS_KEY_EVENTS, JSON.stringify([]));
           }
         } catch(e) {
           appState.events = [];
@@ -2866,7 +2970,7 @@
       }
 
       // 5. Tải danh sách phân phối tài liệu
-      const savedDist = localStorage.getItem(LS_KEY_DISTRIBUTIONS);
+      const savedDist = safeGetStorage(LS_KEY_DISTRIBUTIONS);
       if (savedDist !== null) {
         try {
           const parsedDist = JSON.parse(savedDist);
@@ -2875,7 +2979,7 @@
             appState.distributions = parsedDist;
           } else {
             appState.distributions = [];
-            localStorage.setItem(LS_KEY_DISTRIBUTIONS, JSON.stringify([]));
+            safeSetStorage(LS_KEY_DISTRIBUTIONS, JSON.stringify([]));
           }
         } catch(e) {
           appState.distributions = [];
@@ -2885,10 +2989,11 @@
       }
 
       // 6. Tải danh sách tài khoản người dùng
-      const savedAcc = localStorage.getItem(LS_KEY_ACCOUNTS);
+      const savedAcc = safeGetStorage(LS_KEY_ACCOUNTS);
       if (savedAcc) {
         try {
-          appState.accounts = JSON.parse(savedAcc);
+          const parsedAcc = JSON.parse(savedAcc);
+          appState.accounts = (Array.isArray(parsedAcc) && parsedAcc.length > 0) ? parsedAcc : JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS));
         } catch(e) {
           appState.accounts = JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS));
         }
@@ -2897,7 +3002,7 @@
       }
 
       // 7. Tải phiên đăng nhập người dùng hiện tại
-      const savedUser = localStorage.getItem(LS_KEY_USER);
+      const savedUser = safeGetStorage(LS_KEY_USER);
       if (savedUser) {
         try {
           appState.currentUser = JSON.parse(savedUser);
@@ -2929,19 +3034,34 @@
       updateSortHeaderIndicators();
       seedDemoAttachments();
 
-const codeArea = document.getElementById('apps-script-code-area');
+      const codeArea = document.getElementById('apps-script-code-area');
       if (codeArea) {
         codeArea.value = GOOGLE_APPS_SCRIPT_DOC_CODE.trim();
       }
 
+      // Nếu chạy trong Google Apps Script Web App, tự động lấy Web App URL từ server nếu có
+      if (isRunningInGas()) {
+        try {
+          if (typeof google.script.run.gasGetWebAppUrl === 'function') {
+            google.script.run.withSuccessHandler(function(wUrl) {
+              if (wUrl && !appState.gsheetUrl) {
+                appState.gsheetUrl = wUrl;
+                if (urlInput) urlInput.value = wUrl;
+                safeSetStorage(LS_KEY_GSHEET, JSON.stringify({ url: wUrl, autoSync: appState.gsheetAutoSync }));
+              }
+            }).gasGetWebAppUrl();
+          }
+        } catch(e) {}
+      }
+
       // 8. TỰ ĐỘNG NẠP DỮ LIỆU TỪ GOOGLE SHEET KHI MỞ FILE VÀ ĐỊNH KỲ MỖI 5 PHÚT
-      if (appState.gsheetUrl) {
+      if (appState.gsheetUrl || isRunningInGas()) {
         importFromGoogleSheet({ isAuto: true, silent: (appState.documents.length > 0) });
       }
 
       // Tự động đồng bộ định kỳ sau mỗi 5 phút (300.000 ms)
       setInterval(() => {
-        if (appState.gsheetAutoSync && appState.gsheetUrl) {
+        if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
           importFromGoogleSheet({ isAuto: true, silent: true });
         }
       }, 5 * 60 * 1000);
@@ -3042,7 +3162,7 @@ const codeArea = document.getElementById('apps-script-code-area');
         appState.currentUser = matched;
         appState.isAdmin = (matched.role === 'admin');
         appState.isEditor = (matched.role === 'admin' || matched.role === 'editor');
-        localStorage.setItem(LS_KEY_USER, JSON.stringify(matched));
+        safeSetStorage(LS_KEY_USER, JSON.stringify(matched));
         
         updateUserInterface();
         closeModal('modal-login-admin');
@@ -3059,7 +3179,7 @@ const codeArea = document.getElementById('apps-script-code-area');
         appState.currentUser = adminAcc;
         appState.isAdmin = true;
         appState.isEditor = true;
-        localStorage.setItem(LS_KEY_USER, JSON.stringify(adminAcc));
+        safeSetStorage(LS_KEY_USER, JSON.stringify(adminAcc));
         updateUserInterface();
         closeModal('modal-login-admin');
         uInput.value = '';
@@ -3090,7 +3210,7 @@ const codeArea = document.getElementById('apps-script-code-area');
       appState.currentUser = viewerAcc;
       appState.isAdmin = false;
       appState.isEditor = false;
-      localStorage.setItem(LS_KEY_USER, JSON.stringify(viewerAcc));
+      safeSetStorage(LS_KEY_USER, JSON.stringify(viewerAcc));
       updateUserInterface();
       renderDocumentList();
       renderReviewPlan();
@@ -3144,9 +3264,9 @@ const codeArea = document.getElementById('apps-script-code-area');
     // QUẢN LÝ TÀI KHOẢN (GOOGLE SHEET: TaiKhoan) (YÊU CẦU 3)
     // ========================================================
     function saveAccountsToStorage() {
-      localStorage.setItem(LS_KEY_ACCOUNTS, JSON.stringify(appState.accounts));
+      safeSetStorage(LS_KEY_ACCOUNTS, JSON.stringify(appState.accounts));
       if (appState.currentUser) {
-        localStorage.setItem(LS_KEY_USER, JSON.stringify(appState.currentUser));
+        safeSetStorage(LS_KEY_USER, JSON.stringify(appState.currentUser));
       }
     }
 
@@ -3320,35 +3440,50 @@ const codeArea = document.getElementById('apps-script-code-area');
         return;
       }
 
-      if (confirm(`Bạn có chắc chắn muốn xóa tài khoản "${acc.username}" (${acc.fullName}) không?`)) {
-        appState.accounts = appState.accounts.filter(a => a.id !== accId);
-        saveAccountsToStorage();
-        renderAccountsTable();
-        showToast(`Đã xóa tài khoản "${acc.username}" thành công!`, 'info');
-        if (appState.gsheetAutoSync) {
-          exportAccountsToGoogleSheet();
-        }
-      }
+      showConfirmModal(
+        'Xác Nhận Xóa Tài Khoản?',
+        `Bạn có chắc chắn muốn xóa tài khoản <strong>"${escapeHtml(acc.username)}" (${escapeHtml(acc.fullName)})</strong> không?`,
+        function() {
+          appState.accounts = appState.accounts.filter(a => a.id !== accId);
+          saveAccountsToStorage();
+          renderAccountsTable();
+          showToast(`Đã xóa tài khoản "${acc.username}" thành công!`, 'info');
+          if (appState.gsheetAutoSync) {
+            exportAccountsToGoogleSheet();
+          }
+        },
+        'Xóa Tài Khoản'
+      );
     }
 
     async function exportAccountsToGoogleSheet() {
-      if (!appState.gsheetUrl) {
+      const url = getEffectiveGsheetUrl();
+      if (!url && !isRunningInGas()) {
         showToast('Vui lòng cấu hình URL Google Apps Script trước trong mục Google Sheet!', 'warning');
         openModal('modal-google-sheet');
         return;
       }
       showToast('Đang đồng bộ danh sách tài khoản sang sheet TaiKhoan...', 'info');
+      const payload = {
+        action: 'EXPORT_ACCOUNTS',
+        timestamp: new Date().toISOString(),
+        accounts: appState.accounts
+      };
+
+      if (isRunningInGas() && typeof google.script.run.gasSaveAccounts === 'function') {
+        google.script.run
+          .withSuccessHandler(() => {
+            showToast(`Đã đồng bộ ${appState.accounts.length} tài khoản lên sheet TaiKhoan thành công!`, 'success');
+          })
+          .withFailureHandler((err) => {
+            showToast('Lỗi đồng bộ tài khoản: ' + (err && err.message ? err.message : err), 'warning');
+          })
+          .gasSaveAccounts(JSON.stringify(appState.accounts));
+        return;
+      }
+
       try {
-        const payload = {
-          action: 'EXPORT_ACCOUNTS',
-          timestamp: new Date().toISOString(),
-          accounts: appState.accounts
-        };
-        await fetch(appState.gsheetUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
+        await postToGoogleSheetEndpoint(url, payload);
         showToast(`Đã đồng bộ ${appState.accounts.length} tài khoản lên sheet TaiKhoan thành công!`, 'success');
       } catch(err) {
         console.error(err);
@@ -3357,16 +3492,36 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     async function importAccountsFromGoogleSheet() {
-      if (!appState.gsheetUrl) {
+      const url = getEffectiveGsheetUrl();
+      if (!url && !isRunningInGas()) {
         showToast('Vui lòng cấu hình URL Google Apps Script trước!', 'warning');
         openModal('modal-google-sheet');
         return;
       }
       showToast('Đang nạp danh sách tài khoản từ sheet TaiKhoan...', 'info');
+
+      if (isRunningInGas() && typeof google.script.run.gasGetAccounts === 'function') {
+        google.script.run
+          .withSuccessHandler((res) => {
+            const accounts = (res && res.accounts) ? res.accounts : (Array.isArray(res) ? res : []);
+            if (accounts.length > 0) {
+              appState.accounts = accounts;
+              saveAccountsToStorage();
+              renderAccountsTable();
+              showToast(`Đã nạp thành công ${accounts.length} tài khoản từ Google Sheet!`, 'success');
+            } else {
+              showToast('Sheet TaiKhoan chưa có dữ liệu tài khoản hoặc chưa khởi tạo.', 'warning');
+            }
+          })
+          .withFailureHandler((err) => {
+            showToast('Lỗi nạp tài khoản: ' + (err && err.message ? err.message : err), 'warning');
+          })
+          .gasGetAccounts();
+        return;
+      }
+
       try {
-        const fetchUrl = appState.gsheetUrl + (appState.gsheetUrl.includes('?') ? '&' : '?') + 'action=GET_ACCOUNTS';
-        const res = await fetch(fetchUrl);
-        const data = await res.json();
+        const data = await fetchFromGoogleSheetEndpoint(url, 'GET_ACCOUNTS');
         if (data && data.accounts && Array.isArray(data.accounts) && data.accounts.length > 0) {
           appState.accounts = data.accounts;
           saveAccountsToStorage();
@@ -4583,28 +4738,42 @@ const codeArea = document.getElementById('apps-script-code-area');
       const doc = appState.documents.find(d => d.id === id);
       if (!doc) return;
 
-      if (confirm(`Bạn có chắc chắn muốn xóa tài liệu "${doc.code} - ${doc.name}" khỏi hệ thống?`)) {
-        appState.documents = appState.documents.filter(d => d.id !== id);
-        saveDocumentsToStorage();
-        populatePersonnelDropdown();
-        populateModalDocDropdowns();
-        renderStats();
-        renderCategoryPills();
-        renderDocumentList();
-        renderReviewPlan();
-        checkAndRenderAlerts();
-        showToast(`Đã xóa tài liệu ${doc.code}!`, 'info');
-      }
+      showConfirmModal(
+        'Xác Nhận Xóa Tài Liệu?',
+        `Bạn có chắc chắn muốn xóa tài liệu <strong>"${escapeHtml(doc.code)} - ${escapeHtml(doc.name)}"</strong> khỏi hệ thống?`,
+        function() {
+          appState.documents = appState.documents.filter(d => d.id !== id);
+          saveDocumentsToStorage();
+          populatePersonnelDropdown();
+          populateModalDocDropdowns();
+          renderStats();
+          renderCategoryPills();
+          renderDocumentList();
+          renderReviewPlan();
+          checkAndRenderAlerts();
+          showToast(`Đã xóa tài liệu ${doc.code}!`, 'info');
+        },
+        'Xóa Tài Liệu'
+      );
+    }
+
+    function savePlanToStorage() {
+      try {
+        safeSetStorage(LS_KEY_PLAN, JSON.stringify(appState.plan || []));
+      } catch(e) {}
     }
 
     function saveDocumentsToStorage(skipRemoteSync = false) {
       try {
-        localStorage.setItem(LS_KEY_DOCS, JSON.stringify(appState.documents));
+        safeSetStorage(LS_KEY_DOCS, JSON.stringify(appState.documents));
       } catch(e) {
         console.error('Lỗi lưu tài liệu:', e);
       }
-      if (!skipRemoteSync && appState.gsheetAutoSync && appState.gsheetUrl) {
-        triggerAutoSyncGoogleSheet();
+      if (!skipRemoteSync) {
+        appState.hasUnsavedLocalChanges = true;
+        if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
+          triggerAutoSyncGoogleSheet();
+        }
       }
     }
 
@@ -4858,54 +5027,22 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     function exportReviewPlanExcel() {
-      try {
-        const rows = [];
-        rows.push([`KẾ HOẠCH RÀ SOÁT TÀI LIỆU NĂM ${appState.planYear} (ISO/IEC 17025:2017)`]);
-        rows.push(['Phòng Kiểm nghiệm Hóa học - NAFIQPM Center 1']);
-        rows.push([]);
-        rows.push(['STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Phiên bản', 'Ngày hiệu lực', 'Hạn rà soát (+12T)', 'Người soát xét', 'Người phê duyệt', 'Tình trạng']);
-
-        let idx = 1;
-        appState.documents.forEach(doc => {
-          if (doc.status === 'CANCELLED' || doc.status === 'Hủy') return;
-          const st = getDocumentStatus(doc, appState.documents);
-          if (!st.isLatest) return;
-
-          const nextDateStr = st.nextReviewDate || doc.nextReviewDate;
-          if (!nextDateStr) return;
-
-          const d = new Date(nextDateStr);
-          if (isNaN(d.getTime())) return;
-          if (appState.planYear !== 'ALL' && d.getFullYear() !== parseInt(appState.planYear)) return;
-
-          rows.push([
-            idx++, doc.code || '', doc.name || '', doc.type || '', `Rev ${doc.revNo || '00'}`,
-            formatDateDisplay(doc.lastReviewedDate || doc.revDate || doc.issueDate),
-            formatDateDisplay(nextDateStr),
-            doc.checkerName || 'Trưởng ban QLCL',
-            doc.approverName || 'Giám đốc PTN',
-            st.label
-          ]);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, `KeHoach_SoatXet_${appState.planYear}`);
-        XLSX.writeFile(wb, `Ke_Hoach_Soat_Xet_Tai_Lieu_${appState.planYear}.xlsx`);
-        showToast(`Đã xuất file Excel kế hoạch rà soát năm ${appState.planYear}!`, 'success');
-      } catch(e) {
-        console.error(e);
-        showToast('Có lỗi khi tạo file Excel kế hoạch rà soát!', 'warning');
-      }
+      exportCompleteWorkbookExcel('KeHoach_SoatXet', `Ke_Hoach_Soat_Xet_Tai_Lieu_${appState.planYear}_DayDu5Sheet.xlsx`);
     }
 
     // ========================================================
     // NHẬT KÝ SỰ KIỆN VÒNG ĐỜI TÀI LIỆU (YÊU CẦU 5)
     // ========================================================
-    function saveEventsToStorage() {
+    function saveEventsToStorage(skipRemoteSync = false) {
       try {
-        localStorage.setItem(LS_KEY_EVENTS, JSON.stringify(appState.events));
+        safeSetStorage(LS_KEY_EVENTS, JSON.stringify(appState.events));
       } catch(e) {}
+      if (!skipRemoteSync) {
+        appState.hasUnsavedLocalChanges = true;
+        if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
+          triggerAutoSyncGoogleSheet();
+        }
+      }
     }
 
     function openAddEventModal(preselectedDocId) {
@@ -5059,6 +5196,7 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     function filterEventsType(type) {
+      if (type === 'REVIEW_NO_CHANGE') type = 'Soát xét (không có sửa đổi)';
       appState.eventsFilterType = type;
       appState.eventsPage = 1;
       document.querySelectorAll('.event-filter-pill').forEach(btn => {
@@ -5184,7 +5322,7 @@ const codeArea = document.getElementById('apps-script-code-area');
               ${ev.decisionNo ? `<p class="text-[10px] text-purple-700 mt-0.5">Căn cứ: ${escapeHtml(ev.decisionNo)}</p>` : ''}
             </td>
             <td class="py-3 px-3 text-center whitespace-nowrap no-print">
-              <button type="button" onclick="viewDocumentDetail('${ev.docId}')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition">
+              <button type="button" onclick="viewDocumentDetail('${escapeHtml(ev.docId || ev.docCode || '')}')"  class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition">
                 Xem tài liệu
               </button>
             </td>
@@ -5248,38 +5386,22 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     function exportEventsExcel() {
-      try {
-        const rows = [];
-        rows.push(['NHẬT KÝ SỰ KIỆN VÒNG ĐỜI TÀI LIỆU (ISO/IEC 17025:2017)']);
-        rows.push(['Ban hành mới, Sửa đổi, Soát xét định kỳ, Hủy tài liệu']);
-        rows.push([]);
-        rows.push(['STT', 'Mã tài liệu', 'Tên tài liệu', 'Loại sự kiện', 'Ngày thực hiện', 'Lần BH', 'Lần SĐ', 'Người đề xuất/soạn thảo', 'Người phê duyệt', 'Căn cứ / Số QĐ', 'Nội dung chi tiết / Kết quả']);
-
-        let idx = 1;
-        appState.events.forEach(ev => {
-          rows.push([
-            idx++, ev.docCode || '', ev.docName || '', ev.type || '', formatDateDisplay(ev.date),
-            ev.issueNo || '01', ev.revNo || '00', ev.proposer || '', ev.approver || '', ev.decisionNo || '', ev.content || ''
-          ]);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'NhatKy_SuKien');
-        XLSX.writeFile(wb, `Nhat_Ky_Su_Kien_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast('Xuất file Excel nhật ký sự kiện tài liệu thành công!', 'success');
-      } catch(e) {
-        showToast('Lỗi xuất Excel: ' + e.message, 'warning');
-      }
+      exportCompleteWorkbookExcel('NhatKy_SuKien', `Nhat_Ky_Su_Kien_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     // ========================================================
     // SỔ THEO DÕI PHÂN PHỐI & THU HỒI TÀI LIỆU (YÊU CẦU 6)
     // ========================================================
-    function saveDistributionsToStorage() {
+    function saveDistributionsToStorage(skipRemoteSync = false) {
       try {
-        localStorage.setItem(LS_KEY_DISTRIBUTIONS, JSON.stringify(appState.distributions));
+        safeSetStorage(LS_KEY_DISTRIBUTIONS, JSON.stringify(appState.distributions));
       } catch(e) {}
+      if (!skipRemoteSync) {
+        appState.hasUnsavedLocalChanges = true;
+        if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
+          triggerAutoSyncGoogleSheet();
+        }
+      }
     }
 
     function populateDeptFilterDropdown() {
@@ -5567,41 +5689,27 @@ const codeArea = document.getElementById('apps-script-code-area');
         const item = appState.distributions.find(d => d.id === distId);
         if (!item) return;
 
-        if (confirm(`Xác nhận đã thu hồi bản sao "${item.copyNo}" của tài liệu ${item.docCode} từ "${item.recipientDept}"?`)) {
-          item.status = 'Đã thu hồi';
-          item.recallDate = new Date().toISOString().split('T')[0];
-          saveDistributionsToStorage();
-          renderDistributionTable();
-          showToast(`Đã ghi nhận thu hồi bản sao của ${item.docCode}!`, 'success');
-        }
+        showConfirmModal(
+          'Xác Nhận Thu Hồi Bản Sao?',
+          `Xác nhận đã thu hồi bản sao <strong>"${escapeHtml(item.copyNo)}"</strong> của tài liệu <strong>${escapeHtml(item.docCode)}</strong> từ <strong>"${escapeHtml(item.recipientDept)}"</strong>?`,
+          function() {
+            item.status = 'Đã thu hồi';
+            item.recallDate = new Date().toISOString().split('T')[0];
+            saveDistributionsToStorage();
+            renderDistributionTable();
+            if (currentViewDoc && (currentViewDoc.id === item.docId || currentViewDoc.code === item.docCode)) {
+              viewDocumentDetail(currentViewDoc.id);
+              switchViewDocTab('distribution');
+            }
+            showToast(`Đã ghi nhận thu hồi bản sao của ${item.docCode}!`, 'success');
+          },
+          'Xác Nhận Thu Hồi'
+        );
       });
     }
 
     function exportDistributionExcel() {
-      try {
-        const rows = [];
-        rows.push(['SỔ THEO DÕI PHÂN PHỐI & THU HỒI TÀI LIỆU (BM-01/QTQL-01)']);
-        rows.push(['Theo dõi vị trí lưu hành bản sao có kiểm soát theo ISO/IEC 17025:2017']);
-        rows.push([]);
-        rows.push(['STT', 'Mã tài liệu', 'Tên tài liệu', 'Bản số', 'Lần BH', 'Lần SĐ', 'Đơn vị nhận tài liệu', 'Thời gian nhận', 'Loại tài liệu / Hình thức', 'Người nhận (ký nhận)', 'Người phân phối', 'Tình trạng', 'Ngày thu hồi', 'Ghi chú']);
-
-        let idx = 1;
-        appState.distributions.forEach(d => {
-          rows.push([
-            idx++, d.docCode || '', d.docName || '', d.copyNo || 'Bản số 01', d.issueNo || '01', d.revNo || '00',
-            d.recipientDept || '', formatDateDisplay(d.receiveDate), d.docType || '', d.recipient || '', d.distributor || '',
-            d.status || '', formatDateDisplay(d.recallDate), d.note || ''
-          ]);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'So_PhanPhoi');
-        XLSX.writeFile(wb, `So_Phan_Phoi_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast('Xuất file Excel sổ phân phối tài liệu thành công!', 'success');
-      } catch(e) {
-        showToast('Lỗi xuất Excel: ' + e.message, 'warning');
-      }
+      exportCompleteWorkbookExcel('So_PhanPhoi', `So_Phan_Phoi_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     // ========================================================
@@ -6470,121 +6578,381 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     // ========================================================
-    // XUẤT / NHẬP EXCEL & SAO LƯU DỮ LIỆU (YÊU CẦU 2)
+    // XUẤT / NHẬP EXCEL & SAO LƯU DỮ LIỆU (ĐẦY ĐỦ 5 SHEET NHƯ GOOGLE SHEET)
     // ========================================================
-    function exportDocumentListExcel() {
-      try {
-        const rows = [
-          ['STT', 'Mã hiệu tài liệu', 'Tên tài liệu', 'Loại tài liệu', 'Số trang', 'Lần ban hành', 'Ngày ban hành', 'Lần sửa đổi', 'Ngày sửa đổi', 'Người soạn thảo', 'Chức vụ soạn', 'Người kiểm tra', 'Chức vụ KT', 'Người phê duyệt', 'Chức vụ PD', 'Tình trạng', 'Thời gian gần nhất', 'Soát xét gần nhất', 'Hạn soát xét tiếp theo (+12T)', 'Nội dung tóm tắt']
-        ];
+    function autoFitWorksheetColumns(ws, aoaData) {
+      if (!ws || !Array.isArray(aoaData) || aoaData.length === 0) return;
+      const colCount = aoaData.reduce((max, row) => Math.max(max, Array.isArray(row) ? row.length : 0), 0);
+      const colWidths = [];
+      for (let c = 0; c < colCount; c++) {
+        let maxLen = 10;
+        for (let r = 0; r < aoaData.length; r++) {
+          const cellVal = (aoaData[r] && aoaData[r][c] !== undefined && aoaData[r][c] !== null) ? String(aoaData[r][c]) : '';
+          const lines = cellVal.split(/\r?\n/);
+          lines.forEach(line => {
+            if (line.length > maxLen) maxLen = line.length;
+          });
+        }
+        colWidths.push({ wch: Math.min(Math.max(maxLen + 3, 10), 55) });
+      }
+      ws['!cols'] = colWidths;
+    }
 
-        appState.documents.forEach((d, idx) => {
+    function getEffectiveEventsForExport() {
+      const docMap = new Map();
+      (appState.documents || []).forEach(d => {
+        if (d.code) docMap.set(String(d.code).trim().toUpperCase(), d);
+        if (d.id) docMap.set(String(d.id), d);
+      });
+
+      if (Array.isArray(appState.events) && appState.events.length > 0) {
+        return appState.events.map(ev => {
+          const matchedDoc = docMap.get(String(ev.docCode || '').trim().toUpperCase()) || docMap.get(String(ev.docId || ''));
+          return {
+            ...ev,
+            docId: ev.docId || (matchedDoc ? matchedDoc.id : ''),
+            docCode: ev.docCode || (matchedDoc ? matchedDoc.code : ''),
+            docName: ev.docName || (matchedDoc ? matchedDoc.name : ''),
+            issueNo: ev.issueNo || (matchedDoc ? matchedDoc.issueNo : '01') || '01',
+            revNo: ev.revNo || (matchedDoc ? matchedDoc.revNo : '00') || '00',
+            proposer: ev.proposer || (matchedDoc ? matchedDoc.drafterName : ''),
+            checker: ev.checker || (matchedDoc ? matchedDoc.checkerName : ''),
+            approver: ev.approver || (matchedDoc ? matchedDoc.approverName : '')
+          };
+        });
+      }
+
+      // Nếu chưa có sự kiện riêng nhưng đã có danh mục tài liệu, tự động tổng hợp lịch sử ban hành/sửa đổi/soát xét từ danh mục tài liệu
+      const derived = [];
+      (appState.documents || []).forEach(doc => {
+        const hasRev = doc.revNo && String(doc.revNo).trim() !== '00' && String(doc.revNo).trim() !== '0';
+        if (doc.issueDate) {
+          derived.push({
+            docId: doc.id,
+            docCode: doc.code || '',
+            docName: doc.name || '',
+            type: 'Ban hành mới',
+            date: doc.issueDate,
+            issueNo: doc.issueNo || '01',
+            revNo: '00',
+            proposer: doc.drafterName || '',
+            checker: doc.checkerName || '',
+            approver: doc.approverName || '',
+            decisionNo: '',
+            content: doc.content || 'Ban hành tài liệu áp dụng trong hệ thống quản lý chất lượng ISO/IEC 17025.'
+          });
+        }
+        if (hasRev && doc.revDate) {
+          derived.push({
+            docId: doc.id,
+            docCode: doc.code || '',
+            docName: doc.name || '',
+            type: 'Sửa đổi',
+            date: doc.revDate,
+            issueNo: doc.issueNo || '01',
+            revNo: doc.revNo || '01',
+            proposer: doc.drafterName || '',
+            checker: doc.checkerName || '',
+            approver: doc.approverName || '',
+            decisionNo: '',
+            content: doc.content || `Cập nhật, sửa đổi tài liệu lần ${doc.revNo}.`
+          });
+        }
+        if (doc.lastReviewedDate && doc.lastReviewedDate !== doc.issueDate && doc.lastReviewedDate !== doc.revDate) {
+          derived.push({
+            docId: doc.id,
+            docCode: doc.code || '',
+            docName: doc.name || '',
+            type: 'Soát xét (không có sửa đổi)',
+            date: doc.lastReviewedDate,
+            issueNo: doc.issueNo || '01',
+            revNo: doc.revNo || '00',
+            proposer: doc.checkerName || doc.drafterName || '',
+            checker: doc.checkerName || '',
+            approver: doc.approverName || '',
+            decisionNo: '',
+            content: `Rà soát định kỳ tài liệu theo Khoản 8.3.2.b ISO/IEC 17025. Hạn rà soát tiếp theo: ${formatDateDisplay(doc.nextReviewDate)}.`
+          });
+        }
+      });
+      return derived;
+    }
+
+    function generateReviewPlanFromDocuments() {
+      const planRows = [];
+      const seenCodes = new Set();
+      let idx = 1;
+
+      const planMap = new Map();
+      (appState.plan || []).forEach(p => {
+        if (p && p.code) planMap.set(String(p.code).trim().toUpperCase(), p);
+      });
+
+      (appState.documents || []).forEach(doc => {
+        if (doc.status === 'CANCELLED' || doc.status === 'Hủy') return;
+        const st = getDocumentStatus(doc, appState.documents);
+        if (!st.isLatest) return;
+        const codeUpper = String(doc.code || '').trim().toUpperCase();
+        if (codeUpper) seenCodes.add(codeUpper);
+
+        const customPlanItem = planMap.get(codeUpper);
+        const effDate = doc.lastReviewedDate || doc.revDate || doc.issueDate || (customPlanItem ? customPlanItem.effectiveDate : '') || '';
+        const nextDateStr = st.nextReviewDate || doc.nextReviewDate || (customPlanItem ? customPlanItem.reviewDueDate : '') || '';
+        planRows.push({
+          stt: idx++,
+          code: doc.code || '',
+          name: doc.name || '',
+          type: doc.type || 'Quy trình quản lý',
+          revNo: `Rev ${doc.revNo || '00'}`,
+          effectiveDate: effDate,
+          reviewDueDate: nextDateStr,
+          checker: doc.checkerName || (customPlanItem ? customPlanItem.checker : '') || 'Trưởng ban QLCL',
+          approver: doc.approverName || (customPlanItem ? customPlanItem.approver : '') || 'Giám đốc PTN',
+          status: st.label || (customPlanItem ? customPlanItem.status : '') || 'Đang hiệu lực',
+          note: (customPlanItem && customPlanItem.note) ? customPlanItem.note : (doc.content || '')
+        });
+      });
+
+      // Bổ sung các dòng kế hoạch từ sheet KeHoach_SoatXet nếu chưa có trong DM_TaiLieu
+      (appState.plan || []).forEach(p => {
+        if (!p || (!p.code && !p.name)) return;
+        const codeUpper = String(p.code || '').trim().toUpperCase();
+        if (codeUpper && seenCodes.has(codeUpper)) return;
+        planRows.push({
+          stt: idx++,
+          code: p.code || '',
+          name: p.name || '',
+          type: p.type || 'Quy trình quản lý',
+          revNo: p.revNo || 'Rev 00',
+          effectiveDate: p.effectiveDate || '',
+          reviewDueDate: p.reviewDueDate || '',
+          checker: p.checker || 'Trưởng ban QLCL',
+          approver: p.approver || 'Giám đốc PTN',
+          status: p.status || 'Đang hiệu lực',
+          note: p.note || ''
+        });
+      });
+
+      return planRows;
+    }
+
+    function exportCompleteWorkbookExcel(primarySheetName = 'DM_TaiLieu', customFilename = '') {
+      try {
+        const wb = XLSX.utils.book_new();
+
+        // 1. Sheet DM_TaiLieu (Đầy đủ 21 cột khớp 100% với Google Sheet & giao diện)
+        const rowsDocs = [
+          [
+            'STT', 'Mã hiệu tài liệu', 'Tên tài liệu', 'Loại tài liệu', 'Số trang',
+            'Lần ban hành', 'Ngày ban hành', 'Lần sửa đổi', 'Ngày sửa đổi',
+            'Người soạn thảo', 'Chức vụ soạn', 'Người kiểm tra', 'Chức vụ KT',
+            'Người phê duyệt', 'Chức vụ PD', 'Tình trạng', 'Thời gian gần nhất',
+            'Soát xét gần nhất', 'Hạn soát xét (+12T)', 'Đường dẫn tài liệu (URL)', 'Nội dung tóm tắt'
+          ]
+        ];
+        (appState.documents || []).forEach((d, idx) => {
           const st = getDocumentStatus(d, appState.documents);
           const milestoneText = st.latestMilestone ? `${st.latestMilestone.type}: ${formatDateDisplay(st.latestMilestone.date)}` : '—';
-          rows.push([
-            idx + 1, d.code || '', d.name || '', d.type || '', d.pages || 1,
-            d.issueNo || '01', formatDateDisplay(d.issueDate), d.revNo || '00', formatDateDisplay(d.revDate),
-            d.drafterName || '', d.drafterRole || '', d.checkerName || '', d.checkerRole || '',
-            d.approverName || '', d.approverRole || '', st.label, milestoneText,
-            formatDateDisplay(d.lastReviewedDate), formatDateDisplay(st.nextReviewDate), d.content || ''
+          const docUrl = d.fileUrl || (d.fileAttachment && d.fileAttachment.fileUrl) || '';
+          rowsDocs.push([
+            idx + 1,
+            d.code || '',
+            d.name || '',
+            d.type || '',
+            d.pages || 1,
+            d.issueNo || '01',
+            formatDateDisplay(d.issueDate),
+            d.revNo || '00',
+            formatDateDisplay(d.revDate),
+            d.drafterName || '',
+            d.drafterRole || '',
+            d.checkerName || '',
+            d.checkerRole || '',
+            d.approverName || '',
+            d.approverRole || '',
+            st.label,
+            milestoneText,
+            formatDateDisplay(d.lastReviewedDate),
+            formatDateDisplay(st.nextReviewDate || d.nextReviewDate),
+            docUrl,
+            d.content || ''
           ]);
         });
+        const wsDocs = XLSX.utils.aoa_to_sheet(rowsDocs);
+        autoFitWorksheetColumns(wsDocs, rowsDocs);
 
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'DM_TaiLieu');
-        XLSX.writeFile(wb, `Danh_Muc_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast('Xuất danh mục tài liệu ra Excel thành công!', 'success');
+        // 2. Sheet KeHoach_SoatXet (Đầy đủ 11 cột khớp 100% với Google Sheet)
+        const rowsPlan = [
+          [
+            'STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Phiên bản',
+            'Ngày hiệu lực', 'Hạn rà soát (+12T)', 'Người soát xét',
+            'Người phê duyệt', 'Tình trạng', 'Ghi chú'
+          ]
+        ];
+        const planItems = generateReviewPlanFromDocuments();
+        planItems.forEach((item, idx) => {
+          rowsPlan.push([
+            idx + 1,
+            item.code || '',
+            item.name || '',
+            item.type || '',
+            item.revNo || 'Rev 00',
+            formatDateDisplay(item.effectiveDate),
+            formatDateDisplay(item.reviewDueDate),
+            item.checker || 'Trưởng ban QLCL',
+            item.approver || 'Giám đốc PTN',
+            item.status || 'Đang hiệu lực',
+            item.note || ''
+          ]);
+        });
+        const wsPlan = XLSX.utils.aoa_to_sheet(rowsPlan);
+        autoFitWorksheetColumns(wsPlan, rowsPlan);
+
+        // 3. Sheet NhatKy_SuKien (Đầy đủ 12 cột khớp 100% với Google Sheet, bao gồm Người kiểm tra)
+        const rowsEvents = [
+          [
+            'STT', 'Mã tài liệu', 'Tên tài liệu', 'Loại sự kiện', 'Ngày thực hiện',
+            'Lần BH', 'Lần SĐ', 'Người đề xuất', 'Người kiểm tra',
+            'Người phê duyệt', 'Căn cứ / Số QĐ', 'Nội dung chi tiết / Kết quả'
+          ]
+        ];
+        const effectiveEvents = getEffectiveEventsForExport();
+        effectiveEvents.forEach((ev, idx) => {
+          rowsEvents.push([
+            idx + 1,
+            ev.docCode || '',
+            ev.docName || '',
+            ev.type || '',
+            formatDateDisplay(ev.date),
+            ev.issueNo || '01',
+            ev.revNo || '00',
+            ev.proposer || '',
+            ev.checker || '',
+            ev.approver || '',
+            ev.decisionNo || '',
+            ev.content || ''
+          ]);
+        });
+        const wsEvents = XLSX.utils.aoa_to_sheet(rowsEvents);
+        autoFitWorksheetColumns(wsEvents, rowsEvents);
+
+        // 4. Sheet So_PhanPhoi (Đầy đủ 14 cột khớp 100% với Google Sheet)
+        const rowsDist = [
+          [
+            'STT', 'Mã tài liệu', 'Tên tài liệu', 'Bản số', 'Lần BH', 'Lần SĐ',
+            'Đơn vị nhận', 'Thời gian nhận', 'Loại tài liệu / Hình thức',
+            'Người nhận', 'Người phân phối', 'Tình trạng', 'Ngày thu hồi', 'Ghi chú'
+          ]
+        ];
+        const docLookup = new Map();
+        (appState.documents || []).forEach(d => {
+          if (d.code) docLookup.set(String(d.code).trim().toUpperCase(), d);
+          if (d.id) docLookup.set(String(d.id), d);
+        });
+        (appState.distributions || []).forEach((d, idx) => {
+          const matchedDoc = docLookup.get(String(d.docCode || '').trim().toUpperCase()) || docLookup.get(String(d.docId || ''));
+          rowsDist.push([
+            idx + 1,
+            d.docCode || (matchedDoc ? matchedDoc.code : '') || '',
+            d.docName || (matchedDoc ? matchedDoc.name : '') || '',
+            d.copyNo || 'Bản số 01',
+            d.issueNo || (matchedDoc ? matchedDoc.issueNo : '01') || '01',
+            d.revNo || (matchedDoc ? matchedDoc.revNo : '00') || '00',
+            d.recipientDept || '',
+            formatDateDisplay(d.receiveDate),
+            d.docType || '',
+            d.recipient || '',
+            d.distributor || '',
+            d.status || '',
+            formatDateDisplay(d.recallDate),
+            d.note || ''
+          ]);
+        });
+        const wsDist = XLSX.utils.aoa_to_sheet(rowsDist);
+        autoFitWorksheetColumns(wsDist, rowsDist);
+
+        // 5. Sheet TaiKhoan (Đầy đủ 8 cột khớp 100% với Google Sheet)
+        const rowsAcc = [
+          [
+            'STT', 'Tên đăng nhập', 'Mật khẩu', 'Họ và tên cán bộ',
+            'Quyền hạn', 'Phòng ban', 'Ghi chú', 'Ngày tạo'
+          ]
+        ];
+        (appState.accounts || []).forEach((acc, idx) => {
+          rowsAcc.push([
+            idx + 1,
+            acc.username || '',
+            acc.password || '',
+            acc.fullName || '',
+            acc.role || 'viewer',
+            acc.dept || '',
+            acc.note || '',
+            acc.createdAt || ''
+          ]);
+        });
+        const wsAcc = XLSX.utils.aoa_to_sheet(rowsAcc);
+        autoFitWorksheetColumns(wsAcc, rowsAcc);
+
+        // Sắp xếp thứ tự 5 sheet chuẩn hóa như Google Sheet
+        const sheetsOrder = [
+          { name: 'DM_TaiLieu', ws: wsDocs },
+          { name: 'KeHoach_SoatXet', ws: wsPlan },
+          { name: 'NhatKy_SuKien', ws: wsEvents },
+          { name: 'So_PhanPhoi', ws: wsDist },
+          { name: 'TaiKhoan', ws: wsAcc }
+        ];
+
+        sheetsOrder.forEach(s => {
+          XLSX.utils.book_append_sheet(wb, s.ws, s.name);
+        });
+
+        const fileName = customFilename || `He_Thong_Kiem_Soat_Tai_Lieu_ISO17025_5Sheet_${new Date().toISOString().split('T')[0]}.xlsx`;
+        try {
+          XLSX.writeFile(wb, fileName);
+        } catch (writeErr) {
+          const b64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+          const a = document.createElement('a');
+          a.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+        showToast('Đã xuất đầy đủ 5 sheet Excel (DM_TaiLieu, KeHoach_SoatXet, NhatKy_SuKien, So_PhanPhoi, TaiKhoan) thành công!', 'success');
       } catch(e) {
+        console.error(e);
         showToast('Lỗi xuất Excel: ' + e.message, 'warning');
       }
     }
 
+    function exportDocumentListExcel() {
+      exportCompleteWorkbookExcel('DM_TaiLieu', `Danh_Muc_Va_Toan_Bo_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
     function exportAllDataExcel() {
-      try {
-        const wb = XLSX.utils.book_new();
+      exportCompleteWorkbookExcel('DM_TaiLieu', `Toan_Bo_Du_Lieu_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
 
-        // 1. Sheet DM_TaiLieu
-        const rowsDocs = [
-          ['STT', 'Mã hiệu tài liệu', 'Tên tài liệu', 'Loại tài liệu', 'Số trang', 'Lần ban hành', 'Ngày ban hành', 'Lần sửa đổi', 'Ngày sửa đổi', 'Người soạn thảo', 'Chức vụ soạn', 'Người kiểm tra', 'Chức vụ KT', 'Người phê duyệt', 'Chức vụ PD', 'Tình trạng', 'Thời gian gần nhất', 'Soát xét gần nhất', 'Hạn soát xét (+12T)', 'Nội dung tóm tắt']
-        ];
-        appState.documents.forEach((d, idx) => {
-          const st = getDocumentStatus(d, appState.documents);
-          const milestoneText = st.latestMilestone ? `${st.latestMilestone.type}: ${formatDateDisplay(st.latestMilestone.date)}` : '—';
-          rowsDocs.push([
-            idx + 1, d.code || '', d.name || '', d.type || '', d.pages || 1,
-            d.issueNo || '01', formatDateDisplay(d.issueDate), d.revNo || '00', formatDateDisplay(d.revDate),
-            d.drafterName || '', d.drafterRole || '', d.checkerName || '', d.checkerRole || '',
-            d.approverName || '', d.approverRole || '', st.label, milestoneText,
-            formatDateDisplay(d.lastReviewedDate), formatDateDisplay(st.nextReviewDate), d.content || ''
-          ]);
-        });
-        const wsDocs = XLSX.utils.aoa_to_sheet(rowsDocs);
-        XLSX.utils.book_append_sheet(wb, wsDocs, 'DM_TaiLieu');
-
-        // 2. Sheet KeHoach_SoatXet
-        const rowsPlan = [
-          ['STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Phiên bản', 'Ngày hiệu lực', 'Hạn rà soát (+12T)', 'Người soát xét', 'Người phê duyệt', 'Tình trạng']
-        ];
-        let planIdx = 1;
-        appState.documents.forEach(doc => {
-          if (doc.status === 'CANCELLED' || doc.status === 'Hủy') return;
-          const st = getDocumentStatus(doc, appState.documents);
-          if (!st.isLatest) return;
-          rowsPlan.push([
-            planIdx++, doc.code || '', doc.name || '', doc.type || '', `Rev ${doc.revNo || '00'}`,
-            formatDateDisplay(doc.lastReviewedDate || doc.revDate || doc.issueDate),
-            formatDateDisplay(st.nextReviewDate),
-            doc.checkerName || 'Trưởng ban QLCL', doc.approverName || 'Giám đốc PTN', st.label
-          ]);
-        });
-        const wsPlan = XLSX.utils.aoa_to_sheet(rowsPlan);
-        XLSX.utils.book_append_sheet(wb, wsPlan, 'KeHoach_SoatXet');
-
-        // 3. Sheet NhatKy_SuKien
-        const rowsEvents = [
-          ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Loại sự kiện', 'Ngày thực hiện', 'Lần BH', 'Lần SĐ', 'Người đề xuất', 'Người phê duyệt', 'Căn cứ / Số QĐ', 'Nội dung chi tiết / Kết quả']
-        ];
-        appState.events.forEach((ev, idx) => {
-          rowsEvents.push([
-            idx + 1, ev.docCode || '', ev.docName || '', ev.type || '', formatDateDisplay(ev.date),
-            ev.issueNo || '01', ev.revNo || '00', ev.proposer || '', ev.approver || '', ev.decisionNo || '', ev.content || ''
-          ]);
-        });
-        const wsEvents = XLSX.utils.aoa_to_sheet(rowsEvents);
-        XLSX.utils.book_append_sheet(wb, wsEvents, 'NhatKy_SuKien');
-
-        // 4. Sheet So_PhanPhoi
-        const rowsDist = [
-          ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Bản số', 'Lần BH', 'Lần SĐ', 'Đơn vị nhận', 'Thời gian nhận', 'Loại tài liệu / Hình thức', 'Người nhận', 'Người phân phối', 'Tình trạng', 'Ngày thu hồi', 'Ghi chú']
-        ];
-        appState.distributions.forEach((d, idx) => {
-          rowsDist.push([
-            idx + 1, d.docCode || '', d.docName || '', d.copyNo || 'Bản số 01', d.issueNo || '01', d.revNo || '00',
-            d.recipientDept || '', formatDateDisplay(d.receiveDate), d.docType || '', d.recipient || '', d.distributor || '',
-            d.status || '', formatDateDisplay(d.recallDate), d.note || ''
-          ]);
-        });
-        const wsDist = XLSX.utils.aoa_to_sheet(rowsDist);
-        XLSX.utils.book_append_sheet(wb, wsDist, 'So_PhanPhoi');
-
-        // 5. Sheet TaiKhoan
-        const rowsAcc = [
-          ['STT', 'Tên đăng nhập', 'Mật khẩu', 'Họ và tên cán bộ', 'Quyền hạn', 'Phòng ban', 'Ghi chú', 'Ngày tạo']
-        ];
-        appState.accounts.forEach((acc, idx) => {
-          rowsAcc.push([
-            idx + 1, acc.username || '', acc.password || '', acc.fullName || '', acc.role || 'viewer', acc.dept || '', acc.note || '', acc.createdAt || ''
-          ]);
-        });
-        const wsAcc = XLSX.utils.aoa_to_sheet(rowsAcc);
-        XLSX.utils.book_append_sheet(wb, wsAcc, 'TaiKhoan');
-
-        XLSX.writeFile(wb, `Toan_Bo_Du_Lieu_Tai_Lieu_ISO17025_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast('Xuất toàn bộ 5 sheet dữ liệu ra Excel thành công!', 'success');
-      } catch(e) {
-        showToast('Lỗi xuất Excel: ' + e.message, 'warning');
+    function findColIdxInRow(headers, keywords, exclude) {
+      for (let k = 0; k < keywords.length; k++) {
+        const kw = keywords[k].toLowerCase();
+        for (let h = 0; h < headers.length; h++) {
+          const cell = headers[h] || '';
+          if (exclude && exclude.some(ex => cell.includes(ex))) continue;
+          if (cell.includes(kw)) return h;
+        }
       }
+      return -1;
+    }
+
+    function detectHeaderRowIndex(jsonRows, mustContainKeywords) {
+      for (let i = 0; i < Math.min(12, jsonRows.length); i++) {
+        const rowStr = JSON.stringify(jsonRows[i] || []).toLowerCase();
+        if (mustContainKeywords.some(kw => rowStr.includes(kw))) {
+          return i;
+        }
+      }
+      return 0;
     }
 
     function handleExcelImportFile(input) {
@@ -6618,11 +6986,14 @@ const codeArea = document.getElementById('apps-script-code-area');
             if (!s || s === '—' || s === '-') return '';
             const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
             if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+            const ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+            if (ymd) return `${ymd[1]}-${ymd[2].padStart(2, '0')}-${ymd[3].padStart(2, '0')}`;
             return s;
           }
 
-          let docsCount = 0, eventsCount = 0, distCount = 0, accCount = 0;
+          let docsCount = 0, planCount = 0, eventsCount = 0, distCount = 0, accCount = 0;
 
+          // 1. Nạp Sheet DM_TaiLieu
           const docSheetName = workbook.SheetNames.find(s => {
             const low = s.toLowerCase();
             return low.includes('dm_tailieu') || low.includes('tai lieu') || low.includes('tài liệu') || low.includes('dmtl');
@@ -6631,30 +7002,27 @@ const codeArea = document.getElementById('apps-script-code-area');
           if (docSheetName && workbook.Sheets[docSheetName]) {
             const json = XLSX.utils.sheet_to_json(workbook.Sheets[docSheetName], { header: 1, defval: '' });
             if (json.length > 1) {
-              let hdrIdx = 0;
-              for (let i = 0; i < Math.min(10, json.length); i++) {
-                const rStr = JSON.stringify(json[i]).toLowerCase();
-                if (rStr.includes('mã hiệu') || rStr.includes('tên tài liệu')) { hdrIdx = i; break; }
-              }
-              const headers = json[hdrIdx].map(h => String(h || '').trim().toLowerCase());
-              const cIdx = headers.findIndex(h => h.includes('mã hiệu') || h.includes('mã'));
-              const nIdx = headers.findIndex(h => h.includes('tên tài liệu') || h.includes('tên'));
-              const tIdx = headers.findIndex(h => h.includes('loại tài liệu') || h.includes('loại'));
-              const pIdx = headers.findIndex(h => h.includes('số trang') || h.includes('trang'));
-              const isNoIdx = headers.findIndex(h => h.includes('lần ban hành') || h.includes('lần bh'));
-              const isDateIdx = headers.findIndex(h => h.includes('ngày ban hành') || h.includes('ngày bh'));
-              const revNoIdx = headers.findIndex(h => h.includes('lần sửa đổi') || h.includes('lần sđ'));
-              const revDateIdx = headers.findIndex(h => h.includes('ngày sửa đổi') || h.includes('ngày sđ'));
-              const drNameIdx = headers.findIndex(h => h.includes('người soạn') || h.includes('soạn thảo'));
-              const drRoleIdx = headers.findIndex(h => h.includes('chức vụ soạn'));
-              const chNameIdx = headers.findIndex(h => (h === 'người kt' || h.includes('người kt') || h.includes('người kiểm tra') || (h.includes('kiểm tra') && !h.includes('chức vụ'))) && !h.includes('gần nhất'));
-              const chRoleIdx = headers.findIndex(h => h.includes('chức vụ kt'));
-              const apNameIdx = headers.findIndex(h => h.includes('người phê duyệt') || h.includes('phê duyệt'));
-              const apRoleIdx = headers.findIndex(h => h.includes('chức vụ pd'));
-              const stIdx = headers.findIndex(h => h.includes('tình trạng'));
-              const lastRevIdx = headers.findIndex(h => h.includes('soát xét gần nhất'));
-              const nextRevIdx = headers.findIndex(h => h.includes('hạn soát xét'));
-              const contIdx = headers.findIndex(h => h.includes('nội dung'));
+              const hdrIdx = detectHeaderRowIndex(json, ['mã hiệu', 'tên tài liệu', 'mã tài liệu']);
+              const headers = (json[hdrIdx] || []).map(h => String(h || '').trim().toLowerCase());
+              const cIdx = findColIdxInRow(headers, ['mã hiệu', 'mã tài liệu', 'mã']);
+              const nIdx = findColIdxInRow(headers, ['tên tài liệu', 'tên']);
+              const tIdx = findColIdxInRow(headers, ['loại tài liệu', 'phân loại', 'loại']);
+              const pIdx = findColIdxInRow(headers, ['số trang', 'trang']);
+              const isNoIdx = findColIdxInRow(headers, ['lần ban hành', 'lần bh'], ['ngày']);
+              const isDateIdx = findColIdxInRow(headers, ['ngày ban hành', 'ngày bh']);
+              const revNoIdx = findColIdxInRow(headers, ['lần sửa đổi', 'lần sđ'], ['ngày']);
+              const revDateIdx = findColIdxInRow(headers, ['ngày sửa đổi', 'ngày sđ']);
+              const drNameIdx = findColIdxInRow(headers, ['người soạn', 'soạn thảo'], ['chức vụ']);
+              const drRoleIdx = findColIdxInRow(headers, ['chức vụ soạn']);
+              const chNameIdx = findColIdxInRow(headers, ['người kiểm tra', 'người kt', 'người soát xét', 'kiểm tra'], ['chức vụ', 'gần nhất', 'hạn']);
+              const chRoleIdx = findColIdxInRow(headers, ['chức vụ kt', 'chức vụ kiểm tra']);
+              const apNameIdx = findColIdxInRow(headers, ['người phê duyệt', 'phê duyệt'], ['chức vụ']);
+              const apRoleIdx = findColIdxInRow(headers, ['chức vụ pd', 'chức vụ phê duyệt']);
+              const stIdx = findColIdxInRow(headers, ['tình trạng', 'trạng thái']);
+              const lastRevIdx = findColIdxInRow(headers, ['soát xét gần nhất', 'rà soát gần nhất'], ['hạn']);
+              const nextRevIdx = findColIdxInRow(headers, ['hạn soát xét', 'hạn rà soát', 'hạn (+12t)']);
+              const urlIdx = findColIdxInRow(headers, ['đường dẫn', 'url', 'link']);
+              const contIdx = findColIdxInRow(headers, ['nội dung', 'tóm tắt']);
 
               const parsedDocs = [];
               for (let r = hdrIdx + 1; r < json.length; r++) {
@@ -6664,117 +7032,240 @@ const codeArea = document.getElementById('apps-script-code-area');
                 const name = nIdx !== -1 ? String(row[nIdx] || '').trim() : '';
                 if (!code && !name) continue;
 
+                const fileUrlVal = urlIdx !== -1 ? String(row[urlIdx] || '').trim() : '';
+                const issueDate = isDateIdx !== -1 ? parseDateCell(row[isDateIdx]) : '';
+                const revDate = revDateIdx !== -1 ? parseDateCell(row[revDateIdx]) : '';
+                let lastRev = lastRevIdx !== -1 ? parseDateCell(row[lastRevIdx]) : '';
+                if (!lastRev) lastRev = revDate || issueDate;
+                let nextRev = nextRevIdx !== -1 ? parseDateCell(row[nextRevIdx]) : '';
+                const lastRevObj = parseDate(lastRev);
+                if (lastRevObj && !parseDate(nextRev)) {
+                  const autoN = new Date(lastRevObj.getFullYear() + 1, lastRevObj.getMonth(), lastRevObj.getDate());
+                  nextRev = `${autoN.getFullYear()}-${String(autoN.getMonth() + 1).padStart(2, '0')}-${String(autoN.getDate()).padStart(2, '0')}`;
+                }
+
                 parsedDocs.push({
                   id: 'doc-imp-' + r + '-' + Date.now(),
                   code: code || `TL-${r}`,
                   name: name || code,
-                  type: tIdx !== -1 ? String(row[tIdx] || 'Quy trình quản lý').trim() : 'Quy trình quản lý',
+                  type: normalizeCategory(tIdx !== -1 ? String(row[tIdx] || 'Quy trình quản lý').trim() : 'Quy trình quản lý') || 'Quy trình quản lý',
                   pages: pIdx !== -1 ? (parseInt(row[pIdx], 10) || 1) : 1,
                   issueNo: isNoIdx !== -1 ? String(row[isNoIdx] || '01').trim() : '01',
-                  issueDate: isDateIdx !== -1 ? parseDateCell(row[isDateIdx]) : '',
+                  issueDate: issueDate,
                   revNo: revNoIdx !== -1 ? String(row[revNoIdx] || '00').trim() : '00',
-                  revDate: revDateIdx !== -1 ? parseDateCell(row[revDateIdx]) : '',
+                  revDate: revDate,
                   drafterName: drNameIdx !== -1 ? String(row[drNameIdx] || '').trim() : '',
                   drafterRole: drRoleIdx !== -1 ? String(row[drRoleIdx] || '').trim() : '',
                   checkerName: chNameIdx !== -1 ? String(row[chNameIdx] || '').trim() : '',
                   checkerRole: chRoleIdx !== -1 ? String(row[chRoleIdx] || '').trim() : '',
                   approverName: apNameIdx !== -1 ? String(row[apNameIdx] || '').trim() : '',
                   approverRole: apRoleIdx !== -1 ? String(row[apRoleIdx] || '').trim() : '',
-                  status: stIdx !== -1 && String(row[stIdx]).includes('hủy') ? 'CANCELLED' : 'LATEST',
-                  lastReviewedDate: lastRevIdx !== -1 ? parseDateCell(row[lastRevIdx]) : '',
-                  nextReviewDate: nextRevIdx !== -1 ? parseDateCell(row[nextRevIdx]) : '',
+                  status: (stIdx !== -1 && String(row[stIdx]).toLowerCase().includes('hủy')) ? 'CANCELLED' : 'LATEST',
+                  lastReviewedDate: lastRev,
+                  nextReviewDate: nextRev,
+                  fileUrl: fileUrlVal,
+                  fileAttachment: fileUrlVal ? {
+                    fileName: name || code,
+                    fileType: fileUrlVal.toLowerCase().includes('.pdf') ? 'pdf' : (fileUrlVal.toLowerCase().includes('.doc') ? 'docx' : 'other'),
+                    fileSize: 0,
+                    fileUrl: fileUrlVal,
+                    hasBlob: false,
+                    uploadDate: new Date().toISOString().split('T')[0]
+                  } : null,
                   content: contIdx !== -1 ? String(row[contIdx] || '').trim() : ''
                 });
               }
               if (parsedDocs.length > 0) {
                 appState.documents = parsedDocs;
-                saveDocumentsToStorage();
                 docsCount = parsedDocs.length;
               }
             }
           }
 
+          // 2. Nạp Sheet KeHoach_SoatXet
+          const planSheetName = workbook.SheetNames.find(s => {
+            const low = s.toLowerCase();
+            return low.includes('kehoach') || low.includes('soatxet') || low.includes('soat_xet') || low.includes('rà soát') || low.includes('kế hoạch');
+          });
+          if (planSheetName && workbook.Sheets[planSheetName]) {
+            const json = XLSX.utils.sheet_to_json(workbook.Sheets[planSheetName], { header: 1, defval: '' });
+            if (json.length > 1) {
+              const hdrIdx = detectHeaderRowIndex(json, ['mã hiệu', 'tên tài liệu', 'hạn rà soát']);
+              const headers = (json[hdrIdx] || []).map(h => String(h || '').trim().toLowerCase());
+              const cIdx = findColIdxInRow(headers, ['mã hiệu', 'mã tài liệu', 'mã']);
+              const nIdx = findColIdxInRow(headers, ['tên tài liệu', 'tên']);
+              const tIdx = findColIdxInRow(headers, ['loại tài liệu', 'loại']);
+              const revIdx = findColIdxInRow(headers, ['phiên bản', 'lần sđ', 'rev']);
+              const effIdx = findColIdxInRow(headers, ['ngày hiệu lực', 'ngày']);
+              const dueIdx = findColIdxInRow(headers, ['hạn rà soát', 'hạn (+12t)', 'hạn']);
+              const chkIdx = findColIdxInRow(headers, ['người soát xét', 'người kiểm tra', 'soát xét']);
+              const appIdx = findColIdxInRow(headers, ['người phê duyệt', 'phê duyệt']);
+              const stIdx = findColIdxInRow(headers, ['tình trạng', 'trạng thái']);
+              const noteIdx = findColIdxInRow(headers, ['ghi chú', 'nội dung']);
+
+              const parsedPlan = [];
+              for (let r = hdrIdx + 1; r < json.length; r++) {
+                const row = json[r];
+                if (!row) continue;
+                const code = cIdx !== -1 ? String(row[cIdx] || '').trim() : String(row[1] || '').trim();
+                const name = nIdx !== -1 ? String(row[nIdx] || '').trim() : String(row[2] || '').trim();
+                if (!code && !name) continue;
+                parsedPlan.push({
+                  stt: parsedPlan.length + 1,
+                  code: code,
+                  name: name,
+                  type: tIdx !== -1 ? String(row[tIdx] || '').trim() : String(row[3] || '').trim(),
+                  revNo: revIdx !== -1 ? String(row[revIdx] || 'Rev 00').trim() : String(row[4] || 'Rev 00').trim(),
+                  effectiveDate: parseDateCell(effIdx !== -1 ? row[effIdx] : row[5]),
+                  reviewDueDate: parseDateCell(dueIdx !== -1 ? row[dueIdx] : row[6]),
+                  checker: chkIdx !== -1 ? String(row[chkIdx] || '').trim() : String(row[7] || '').trim(),
+                  approver: appIdx !== -1 ? String(row[appIdx] || '').trim() : String(row[8] || '').trim(),
+                  status: stIdx !== -1 ? String(row[stIdx] || 'Đang hiệu lực').trim() : String(row[9] || 'Đang hiệu lực').trim(),
+                  note: noteIdx !== -1 ? String(row[noteIdx] || '').trim() : String(row[10] || '').trim()
+                });
+              }
+              if (parsedPlan.length > 0) {
+                appState.plan = parsedPlan;
+                savePlanToStorage();
+                planCount = parsedPlan.length;
+              }
+            }
+          }
+
+          // 3. Nạp Sheet NhatKy_SuKien (Đầy đủ cột Người kiểm tra)
           const evSheetName = workbook.SheetNames.find(s => {
             const low = s.toLowerCase();
-            return low.includes('nhatky') || low.includes('su_kien') || low.includes('sự kiện');
+            return low.includes('nhatky') || low.includes('su_kien') || low.includes('sự kiện') || low.includes('sukien');
           });
           if (evSheetName && workbook.Sheets[evSheetName]) {
             const json = XLSX.utils.sheet_to_json(workbook.Sheets[evSheetName], { header: 1, defval: '' });
             if (json.length > 1) {
+              const hdrIdx = detectHeaderRowIndex(json, ['mã tài liệu', 'loại sự kiện', 'ngày thực hiện']);
+              const headers = (json[hdrIdx] || []).map(h => String(h || '').trim().toLowerCase());
+              const cIdx = findColIdxInRow(headers, ['mã tài liệu', 'mã hiệu', 'mã']);
+              const nIdx = findColIdxInRow(headers, ['tên tài liệu', 'tên']);
+              const typeIdx = findColIdxInRow(headers, ['loại sự kiện', 'loại']);
+              const dateIdx = findColIdxInRow(headers, ['ngày thực hiện', 'ngày']);
+              const isNoIdx = findColIdxInRow(headers, ['lần bh', 'lần ban hành'], ['ngày']);
+              const revNoIdx = findColIdxInRow(headers, ['lần sđ', 'lần sửa đổi', 'rev'], ['ngày']);
+              const propIdx = findColIdxInRow(headers, ['người đề xuất', 'người soạn', 'người thực hiện']);
+              const chkIdx = findColIdxInRow(headers, ['người kiểm tra', 'người soát xét']);
+              const appIdx = findColIdxInRow(headers, ['người phê duyệt', 'phê duyệt']);
+              const decIdx = findColIdxInRow(headers, ['căn cứ', 'số qđ', 'quyết định']);
+              const contIdx = findColIdxInRow(headers, ['nội dung', 'kết quả', 'chi tiết']);
+
+              const docByCode = new Map();
+              (appState.documents || []).forEach(d => {
+                if (d.code) docByCode.set(String(d.code).trim().toUpperCase(), d);
+              });
+
               const parsedEvs = [];
-              for (let r = 1; r < json.length; r++) {
+              for (let r = hdrIdx + 1; r < json.length; r++) {
                 const row = json[r];
-                if (!row || row.length < 3) continue;
+                if (!row || row.length < 2) continue;
+                const code = cIdx !== -1 ? String(row[cIdx] || '').trim() : String(row[1] || '').trim();
+                const name = nIdx !== -1 ? String(row[nIdx] || '').trim() : String(row[2] || '').trim();
+                if (!code && !name) continue;
+                const matchedDoc = docByCode.get(code.toUpperCase());
                 parsedEvs.push({
                   id: 'evt-imp-' + r + '-' + Date.now(),
-                  docCode: String(row[1] || '').trim(),
-                  docName: String(row[2] || '').trim(),
-                  type: String(row[3] || 'Sửa đổi').trim(),
-                  date: parseDateCell(row[4]),
-                  issueNo: String(row[5] || '01').trim(),
-                  revNo: String(row[6] || '00').trim(),
-                  proposer: String(row[7] || '').trim(),
-                  approver: String(row[8] || '').trim(),
-                  decisionNo: String(row[9] || '').trim(),
-                  content: String(row[10] || '').trim(),
+                  docId: matchedDoc ? matchedDoc.id : '',
+                  docCode: code,
+                  docName: name || (matchedDoc ? matchedDoc.name : ''),
+                  type: typeIdx !== -1 ? String(row[typeIdx] || 'Sửa đổi').trim() : String(row[3] || 'Sửa đổi').trim(),
+                  date: parseDateCell(dateIdx !== -1 ? row[dateIdx] : row[4]),
+                  issueNo: isNoIdx !== -1 ? String(row[isNoIdx] || '01').trim() : String(row[5] || '01').trim(),
+                  revNo: revNoIdx !== -1 ? String(row[revNoIdx] || '00').trim() : String(row[6] || '00').trim(),
+                  proposer: propIdx !== -1 ? String(row[propIdx] || '').trim() : String(row[7] || '').trim(),
+                  checker: chkIdx !== -1 ? String(row[chkIdx] || '').trim() : (matchedDoc ? matchedDoc.checkerName : ''),
+                  approver: appIdx !== -1 ? String(row[appIdx] || '').trim() : String(row[chkIdx !== -1 ? 9 : 8] || '').trim(),
+                  decisionNo: decIdx !== -1 ? String(row[decIdx] || '').trim() : String(row[chkIdx !== -1 ? 10 : 9] || '').trim(),
+                  content: contIdx !== -1 ? String(row[contIdx] || '').trim() : String(row[chkIdx !== -1 ? 11 : 10] || '').trim(),
                   attachments: []
                 });
               }
               if (parsedEvs.length > 0) {
                 appState.events = parsedEvs;
-                saveEventsToStorage();
                 eventsCount = parsedEvs.length;
               }
             }
           }
 
+          // 4. Nạp Sheet So_PhanPhoi
           const distSheetName = workbook.SheetNames.find(s => {
             const low = s.toLowerCase();
-            return low.includes('phanphoi') || low.includes('phân phối');
+            return low.includes('phanphoi') || low.includes('phân phối') || low.includes('phan_phoi');
           });
           if (distSheetName && workbook.Sheets[distSheetName]) {
             const json = XLSX.utils.sheet_to_json(workbook.Sheets[distSheetName], { header: 1, defval: '' });
             if (json.length > 1) {
+              const hdrIdx = detectHeaderRowIndex(json, ['mã tài liệu', 'đơn vị nhận', 'người phân phối']);
+              const headers = (json[hdrIdx] || []).map(h => String(h || '').trim().toLowerCase());
+              const cIdx = findColIdxInRow(headers, ['mã tài liệu', 'mã hiệu', 'mã']);
+              const nIdx = findColIdxInRow(headers, ['tên tài liệu', 'tên']);
+              const copyIdx = findColIdxInRow(headers, ['bản số', 'bản sao']);
+              const isNoIdx = findColIdxInRow(headers, ['lần bh', 'lần ban hành'], ['ngày']);
+              const revNoIdx = findColIdxInRow(headers, ['lần sđ', 'lần sửa đổi', 'rev'], ['ngày']);
+              const deptIdx = findColIdxInRow(headers, ['đơn vị nhận', 'đơn vị', 'phòng ban']);
+              const dateIdx = findColIdxInRow(headers, ['thời gian nhận', 'ngày nhận']);
+              const typeIdx = findColIdxInRow(headers, ['loại tài liệu', 'hình thức']);
+              const recIdx = findColIdxInRow(headers, ['người nhận']);
+              const distIdx = findColIdxInRow(headers, ['người phân phối']);
+              const stIdx = findColIdxInRow(headers, ['tình trạng', 'trạng thái']);
+              const recallIdx = findColIdxInRow(headers, ['ngày thu hồi', 'thu hồi']);
+              const noteIdx = findColIdxInRow(headers, ['ghi chú']);
+
+              const docByCode = new Map();
+              (appState.documents || []).forEach(d => {
+                if (d.code) docByCode.set(String(d.code).trim().toUpperCase(), d);
+              });
+
               const parsedDist = [];
-              for (let r = 1; r < json.length; r++) {
+              for (let r = hdrIdx + 1; r < json.length; r++) {
                 const row = json[r];
-                if (!row || row.length < 3) continue;
+                if (!row || row.length < 2) continue;
+                const code = cIdx !== -1 ? String(row[cIdx] || '').trim() : String(row[1] || '').trim();
+                const name = nIdx !== -1 ? String(row[nIdx] || '').trim() : String(row[2] || '').trim();
+                if (!code && !name) continue;
+                const matchedDoc = docByCode.get(code.toUpperCase());
                 parsedDist.push({
                   id: 'dist-imp-' + r + '-' + Date.now(),
-                  docCode: String(row[1] || '').trim(),
-                  docName: String(row[2] || '').trim(),
-                  copyNo: String(row[3] || 'Bản số 01').trim(),
-                  issueNo: String(row[4] || '01').trim(),
-                  revNo: String(row[5] || '00').trim(),
-                  recipientDept: String(row[6] || '').trim(),
-                  receiveDate: parseDateCell(row[7]),
-                  docType: String(row[8] || 'Bản in có kiểm soát (Controlled Copy)').trim(),
-                  recipient: String(row[9] || '').trim(),
-                  distributor: String(row[10] || '').trim(),
-                  status: String(row[11] || 'Đang lưu hành (Sử dụng)').trim(),
-                  recallDate: parseDateCell(row[12]),
-                  note: String(row[13] || '').trim()
+                  docId: matchedDoc ? matchedDoc.id : '',
+                  docCode: code,
+                  docName: name || (matchedDoc ? matchedDoc.name : ''),
+                  copyNo: copyIdx !== -1 ? String(row[copyIdx] || 'Bản số 01').trim() : String(row[3] || 'Bản số 01').trim(),
+                  issueNo: isNoIdx !== -1 ? String(row[isNoIdx] || '01').trim() : String(row[4] || '01').trim(),
+                  revNo: revNoIdx !== -1 ? String(row[revNoIdx] || '00').trim() : String(row[5] || '00').trim(),
+                  recipientDept: deptIdx !== -1 ? String(row[deptIdx] || '').trim() : String(row[6] || '').trim(),
+                  receiveDate: parseDateCell(dateIdx !== -1 ? row[dateIdx] : row[7]),
+                  docType: typeIdx !== -1 ? String(row[typeIdx] || 'Bản in có kiểm soát (Controlled Copy)').trim() : String(row[8] || 'Bản in có kiểm soát (Controlled Copy)').trim(),
+                  recipient: recIdx !== -1 ? String(row[recIdx] || '').trim() : String(row[9] || '').trim(),
+                  distributor: distIdx !== -1 ? String(row[distIdx] || '').trim() : String(row[10] || '').trim(),
+                  status: stIdx !== -1 ? String(row[stIdx] || 'Đang lưu hành (Sử dụng)').trim() : String(row[11] || 'Đang lưu hành (Sử dụng)').trim(),
+                  recallDate: parseDateCell(recallIdx !== -1 ? row[recallIdx] : row[12]),
+                  note: noteIdx !== -1 ? String(row[noteIdx] || '').trim() : String(row[13] || '').trim()
                 });
               }
               if (parsedDist.length > 0) {
                 appState.distributions = parsedDist;
-                saveDistributionsToStorage();
                 distCount = parsedDist.length;
               }
             }
           }
 
+          // 5. Nạp Sheet TaiKhoan
           const accSheetName = workbook.SheetNames.find(s => {
             const low = s.toLowerCase();
-            return low.includes('taikhoan') || low.includes('tài khoản');
+            return low.includes('taikhoan') || low.includes('tài khoản') || low.includes('tai_khoan');
           });
           if (accSheetName && workbook.Sheets[accSheetName]) {
             const json = XLSX.utils.sheet_to_json(workbook.Sheets[accSheetName], { header: 1, defval: '' });
             if (json.length > 1) {
+              const hdrIdx = detectHeaderRowIndex(json, ['tên đăng nhập', 'mật khẩu', 'quyền hạn']);
               const parsedAcc = [];
-              for (let r = 1; r < json.length; r++) {
+              for (let r = hdrIdx + 1; r < json.length; r++) {
                 const row = json[r];
-                if (!row || row.length < 4) continue;
+                if (!row || row.length < 3) continue;
                 const u = String(row[1] || '').trim();
                 const p = String(row[2] || '').trim();
                 const fn = String(row[3] || u).trim();
@@ -6787,7 +7278,7 @@ const codeArea = document.getElementById('apps-script-code-area');
                     role: String(row[4] || 'viewer').toLowerCase().trim(),
                     dept: String(row[5] || 'Phòng KN Hóa học').trim(),
                     note: String(row[6] || '').trim(),
-                    createdAt: String(row[7] || new Date().toISOString().split('T')[0]).trim()
+                    createdAt: parseDateCell(row[7]) || new Date().toISOString().split('T')[0]
                   });
                 }
               }
@@ -6797,6 +7288,14 @@ const codeArea = document.getElementById('apps-script-code-area');
                 accCount = parsedAcc.length;
               }
             }
+          }
+
+          saveDocumentsToStorage(true);
+          saveEventsToStorage(true);
+          saveDistributionsToStorage(true);
+          appState.hasUnsavedLocalChanges = true;
+          if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
+            triggerAutoSyncGoogleSheet();
           }
 
           renderStats();
@@ -6813,7 +7312,7 @@ const codeArea = document.getElementById('apps-script-code-area');
           closeModal('modal-import-excel');
           input.value = '';
 
-          showToast(`Đã nạp thành công: ${docsCount} tài liệu, ${eventsCount} sự kiện, ${distCount} phân phối, ${accCount} tài khoản!`, 'success');
+          showToast(`Đã nạp thành công: ${docsCount} tài liệu, ${planCount} kế hoạch, ${eventsCount} sự kiện, ${distCount} phân phối, ${accCount} tài khoản!`, 'success');
         } catch(err) {
           console.error(err);
           showToast('Lỗi nạp file Excel: ' + err.message, 'warning');
@@ -6827,6 +7326,7 @@ const codeArea = document.getElementById('apps-script-code-area');
         schema: 'ISO17025_DOC_CONTROL_V2',
         exportedAt: new Date().toISOString(),
         documents: appState.documents,
+        plan: appState.plan,
         events: appState.events,
         distributions: appState.distributions,
         accounts: appState.accounts
@@ -6851,14 +7351,20 @@ const codeArea = document.getElementById('apps-script-code-area');
           const parsed = JSON.parse(e.target.result);
           if (parsed && typeof parsed === 'object') {
             if (Array.isArray(parsed.documents)) appState.documents = parsed.documents;
+            if (Array.isArray(parsed.plan)) appState.plan = parsed.plan;
             if (Array.isArray(parsed.events)) appState.events = parsed.events;
             if (Array.isArray(parsed.distributions)) appState.distributions = parsed.distributions;
             if (Array.isArray(parsed.accounts)) appState.accounts = parsed.accounts;
 
-            saveDocumentsToStorage();
-            saveEventsToStorage();
-            saveDistributionsToStorage();
+            saveDocumentsToStorage(true);
+            savePlanToStorage();
+            saveEventsToStorage(true);
+            saveDistributionsToStorage(true);
             saveAccountsToStorage();
+            appState.hasUnsavedLocalChanges = true;
+            if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) {
+              triggerAutoSyncGoogleSheet();
+            }
 
             renderStats();
             renderCategoryPills();
@@ -6879,37 +7385,28 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     function confirmClearAllData() {
-      const modal = document.getElementById('modal-confirm-dialog');
-      const title = document.getElementById('confirm-dialog-title');
-      const msg = document.getElementById('confirm-dialog-message');
-      const btn = document.getElementById('confirm-dialog-action-btn');
-
-      if (!modal || !btn) {
-        if (confirm('CẢNH BÁO NGUY HIỂM: Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu tài liệu, sự kiện và phân phối để làm trống danh mục không?')) {
-          executeClearAllData();
-        }
-        return;
-      }
-
-      title.textContent = 'Xác Nhận Xóa Toàn Bộ Dữ Liệu?';
-      msg.innerHTML = `
-        Thao tác này sẽ <strong class="text-rose-600 font-bold">XÓA SẠCH toàn bộ danh mục tài liệu, nhật ký sự kiện và sổ phân phối</strong> và đưa hệ thống về trạng thái trống (0 tài liệu) để bạn bắt đầu nhập mới từ đầu.<br><br>
-        <span class="text-amber-800 bg-amber-50 p-2 rounded-lg block border border-amber-200 font-semibold text-xs text-left">
-          ⚠️ Khuyến nghị: Hãy bấm nút <strong>"Xuất Toàn Bộ Excel"</strong> trong mục Cài đặt để sao lưu bản dữ liệu hiện tại trước khi xóa!
-        </span>
-      `;
-      btn.textContent = 'Tôi Đồng Ý Xóa Toàn Bộ';
-      btn.onclick = function() { executeClearAllData(); };
-      openModal('modal-confirm-dialog');
+      showConfirmModal(
+        'Xác Nhận Xóa Toàn Bộ Dữ Liệu?',
+        `
+          Thao tác này sẽ <strong class="text-rose-600 font-bold">XÓA SẠCH toàn bộ danh mục tài liệu, nhật ký sự kiện và sổ phân phối</strong> và đưa hệ thống về trạng thái trống (0 tài liệu) để bạn bắt đầu nhập mới từ đầu.<br><br>
+          <span class="text-amber-800 bg-amber-50 p-2 rounded-lg block border border-amber-200 font-semibold text-xs text-left">
+            ⚠️ Khuyến nghị: Hãy bấm nút <strong>"Xuất Toàn Bộ Excel"</strong> trong mục Cài đặt để sao lưu bản dữ liệu hiện tại trước khi xóa!
+          </span>
+        `,
+        function() { executeClearAllData(); },
+        'Tôi Đồng Ý Xóa Toàn Bộ'
+      );
     }
 
     function executeClearAllData() {
       appState.documents = [];
+      appState.plan = [];
       appState.events = [];
       appState.distributions = [];
-      saveDocumentsToStorage();
-      saveEventsToStorage();
-      saveDistributionsToStorage();
+      saveDocumentsToStorage(true);
+      savePlanToStorage();
+      saveEventsToStorage(true);
+      saveDistributionsToStorage(true);
 
       renderStats();
       renderCategoryPills();
@@ -6926,75 +7423,100 @@ const codeArea = document.getElementById('apps-script-code-area');
     }
 
     function resetToFactoryDefault() {
-      if (confirm('Xác nhận đặt lại toàn bộ hệ thống về trạng thái sạch ban đầu?')) {
-        appState.documents = [];
-        appState.events = [];
-        appState.distributions = [];
-        saveDocumentsToStorage();
-        saveEventsToStorage();
-        saveDistributionsToStorage();
+      showConfirmModal(
+        'Đặt Lại Trạng Thái Sạch Ban Đầu?',
+        'Xác nhận đặt lại toàn bộ hệ thống về trạng thái sạch ban đầu (0 tài liệu)?',
+        function() {
+          appState.documents = [];
+          appState.plan = [];
+          appState.events = [];
+          appState.distributions = [];
+          saveDocumentsToStorage(true);
+          savePlanToStorage();
+          saveEventsToStorage(true);
+          saveDistributionsToStorage(true);
 
-        // Đặt lại toàn bộ bộ lọc về trạng thái hiển thị đầy đủ ngay sau khi nạp
-        appState.searchQuery = '';
-        appState.selectedCategory = 'ALL';
-        appState.selectedStatus = 'ALL';
-        appState.selectedPersonnel = 'ALL';
-        appState.docPage = 1;
+          appState.searchQuery = '';
+          appState.selectedCategory = 'ALL';
+          appState.selectedStatus = 'ALL';
+          appState.selectedPersonnel = 'ALL';
+          appState.docPage = 1;
 
-        const sInp = document.getElementById('search-input');
-        if (sInp) sInp.value = '';
-        const clearBtn = document.getElementById('btn-clear-search');
-        if (clearBtn) clearBtn.classList.add('hidden');
-        const stSelect = document.getElementById('filter-status-select');
-        if (stSelect) stSelect.value = 'ALL';
-        const pSelect = document.getElementById('filter-personnel-select');
-        if (pSelect) pSelect.value = 'ALL';
-        const toggleLatest = document.getElementById('toggle-latest-only');
-        if (toggleLatest) toggleLatest.checked = true;
+          const sInp = document.getElementById('search-input');
+          if (sInp) sInp.value = '';
+          const clearBtn = document.getElementById('btn-clear-search');
+          if (clearBtn) clearBtn.classList.add('hidden');
+          const stSelect = document.getElementById('filter-status-select');
+          if (stSelect) stSelect.value = 'ALL';
+          const pSelect = document.getElementById('filter-personnel-select');
+          if (pSelect) pSelect.value = 'ALL';
+          const toggleLatest = document.getElementById('toggle-latest-only');
+          if (toggleLatest) toggleLatest.checked = true;
 
-        populatePersonnelDropdown();
-        populateDeptFilterDropdown();
-        populateModalDocDropdowns();
-        renderStats();
-        renderCategoryPills();
-        renderDocumentList();
-        renderReviewPlan();
-        renderEventsTable();
-        renderDistributionTable();
-        checkAndRenderAlerts();
-        closeModal('modal-settings');
-        showToast('Đã đặt lại dữ liệu hệ thống về trạng thái sạch ban đầu!', 'success');
-      }
+          populatePersonnelDropdown();
+          populateDeptFilterDropdown();
+          populateModalDocDropdowns();
+          renderStats();
+          renderCategoryPills();
+          renderDocumentList();
+          renderReviewPlan();
+          renderEventsTable();
+          renderDistributionTable();
+          checkAndRenderAlerts();
+          closeModal('modal-settings');
+          showToast('Đã đặt lại dữ liệu hệ thống về trạng thái sạch ban đầu!', 'success');
+        },
+        'Xác Nhận Đặt Lại'
+      );
     }
 
     // ========================================================
     // MÃ NGUỒN GOOGLE APPS SCRIPT CHO HỆ THỐNG KIỂM SOÁT TÀI LIỆU (Code.gs)
+    // Hỗ trợ đồng thời:
+    // 1. Chạy trực tiếp giao diện Web App trên Google Apps Script (HtmlService + google.script.run)
+    // 2. Đồng bộ API 2 chiều từ trình duyệt máy tính & GitHub Pages (CORS JSON + POST + JSONP)
     // ========================================================
     const GOOGLE_APPS_SCRIPT_DOC_CODE = `
-function doGet(e) {
-  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : 'GET_ALL';
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+function createJsonOutput(obj, e) {
+  var jsonStr = JSON.stringify(obj);
+  var cb = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback).replace(/[^a-zA-Z0-9_$.]/g, '') : '';
+  if (cb) {
+    return ContentService.createTextOutput(cb + '(' + jsonStr + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(jsonStr).setMimeType(ContentService.MimeType.JSON);
+}
 
+function doGet(e) {
+  var hasAction = Boolean(e && e.parameter && (e.parameter.action || e.parameter.callback));
+  var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action).trim() : '';
+
+  // Nếu người dùng mở trực tiếp Web App URL trên trình duyệt (không truyền ?action=...), ưu tiên hiển thị giao diện HTML nếu có
+  if (!hasAction) {
+    var htmlFiles = ['index', 'Index', 'kiem_soat_tai_lieu_iso17025_configured', 'App'];
+    for (var i = 0; i < htmlFiles.length; i++) {
+      try {
+        return HtmlService.createHtmlOutputFromFile(htmlFiles[i])
+          .setTitle('Hệ Thống Kiểm Soát Tài Liệu Phòng Thử Nghiệm | ISO/IEC 17025:2017')
+          .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+          .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+      } catch (errHtml) {}
+    }
+    action = 'GET_ALL';
+  }
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (action === 'GET_ACCOUNTS') {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', accounts: getAccountsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'success', accounts: getAccountsFromSheet(ss) }, e);
   } else if (action === 'GET_DOCUMENTS') {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', documents: getDocumentsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'success', documents: getDocumentsFromSheet(ss) }, e);
   } else if (action === 'GET_PLAN') {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', plan: getPlanFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'success', plan: getPlanFromSheet(ss) }, e);
   } else if (action === 'GET_EVENTS') {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', events: getEventsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'success', events: getEventsFromSheet(ss) }, e);
   } else if (action === 'GET_DISTRIBUTIONS') {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', distributions: getDistributionsFromSheet(ss) })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'success', distributions: getDistributionsFromSheet(ss) }, e);
   } else {
-    // GET_ALL: Đồng bộ toàn bộ 5 sheet: DM_TaiLieu, KeHoach_SoatXet, NhatKy_SuKien, So_PhanPhoi, TaiKhoan
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'success',
-      documents: getDocumentsFromSheet(ss),
-      plan: getPlanFromSheet(ss),
-      events: getEventsFromSheet(ss),
-      distributions: getDistributionsFromSheet(ss),
-      accounts: getAccountsFromSheet(ss)
-    })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput(getAllDataFromSpreadsheet(ss), e);
   }
 }
 
@@ -7002,44 +7524,116 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(30000);
   try {
-    var raw = e.postData.contents;
+    var raw = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
     var data = JSON.parse(raw);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var action = data.action || 'EXPORT_ALL';
 
-    if (action === 'EXPORT_ALL' || action === 'EXPORT_DOCUMENTS' || action === 'AUTO_SYNC') {
-      if (data.documents && Array.isArray(data.documents)) {
-        saveDocumentsToSheet(ss, data.documents);
-        savePlanToSheet(ss, data.documents, data.plan);
-      }
-      if (data.events && Array.isArray(data.events)) {
-        saveEventsToSheet(ss, data.events);
-      }
-      if (data.distributions && Array.isArray(data.distributions)) {
-        saveDistributionsToSheet(ss, data.distributions);
-      }
-      if (data.accounts && Array.isArray(data.accounts)) {
-        saveAccountsToSheet(ss, data.accounts);
-      }
-    } else if (action === 'EXPORT_PLAN') {
-      if (data.plan && Array.isArray(data.plan)) savePlanToSheet(ss, data.documents || [], data.plan);
-    } else if (action === 'EXPORT_EVENTS') {
-      if (data.events && Array.isArray(data.events)) saveEventsToSheet(ss, data.events);
-    } else if (action === 'EXPORT_DISTRIBUTIONS') {
-      if (data.distributions && Array.isArray(data.distributions)) saveDistributionsToSheet(ss, data.distributions);
-    } else if (action === 'EXPORT_ACCOUNTS') {
-      if (data.accounts && Array.isArray(data.accounts)) saveAccountsToSheet(ss, data.accounts);
+    // Hỗ trợ truy vấn dữ liệu qua POST (dự phòng khi doGet trả về HTML)
+    if (action === 'GET_ALL') {
+      return createJsonOutput(getAllDataFromSpreadsheet(ss), e);
+    } else if (action === 'GET_ACCOUNTS') {
+      return createJsonOutput({ status: 'success', accounts: getAccountsFromSheet(ss) }, e);
     }
 
-    return ContentService.createTextOutput(JSON.stringify({
+    savePayloadToSpreadsheet(ss, data);
+
+    return createJsonOutput({
       status: 'success',
       message: 'Lưu toàn bộ dữ liệu 5 sheet (DM_TaiLieu, KeHoach_SoatXet, NhatKy_SuKien, So_PhanPhoi, TaiKhoan) thành công!'
-    })).setMimeType(ContentService.MimeType.JSON);
+    }, e);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+    return createJsonOutput({ status: 'error', message: err.toString() }, e);
   } finally {
     lock.releaseLock();
   }
+}
+
+// Các hàm cầu nối trực tiếp cho google.script.run khi chạy Web App trên Google Apps Script
+function gasGetWebAppUrl() {
+  try {
+    return ScriptApp.getService().getUrl();
+  } catch (e) {
+    return '';
+  }
+}
+
+function gasGetAllData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return getAllDataFromSpreadsheet(ss);
+}
+
+function gasSaveAllData(rawJson) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(30000);
+  try {
+    var data = typeof rawJson === 'string' ? JSON.parse(rawJson) : rawJson;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    savePayloadToSpreadsheet(ss, data);
+    return { status: 'success', message: 'Đồng bộ 5 sheet thành công!' };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function gasGetAccounts() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return { status: 'success', accounts: getAccountsFromSheet(ss) };
+}
+
+function gasSaveAccounts(rawAccounts) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var accounts = typeof rawAccounts === 'string' ? JSON.parse(rawAccounts) : rawAccounts;
+  saveAccountsToSheet(ss, accounts);
+  return { status: 'success' };
+}
+
+function getAllDataFromSpreadsheet(ss) {
+  return {
+    status: 'success',
+    documents: getDocumentsFromSheet(ss),
+    plan: getPlanFromSheet(ss),
+    events: getEventsFromSheet(ss),
+    distributions: getDistributionsFromSheet(ss),
+    accounts: getAccountsFromSheet(ss)
+  };
+}
+
+function savePayloadToSpreadsheet(ss, data) {
+  var action = data.action || 'EXPORT_ALL';
+  if (action === 'EXPORT_ALL' || action === 'EXPORT_DOCUMENTS' || action === 'AUTO_SYNC') {
+    if (data.documents && Array.isArray(data.documents)) {
+      saveDocumentsToSheet(ss, data.documents);
+      savePlanToSheet(ss, data.documents, data.plan);
+    }
+    if (data.events && Array.isArray(data.events)) {
+      saveEventsToSheet(ss, data.events);
+    }
+    if (data.distributions && Array.isArray(data.distributions)) {
+      saveDistributionsToSheet(ss, data.distributions);
+    }
+    if (data.accounts && Array.isArray(data.accounts)) {
+      saveAccountsToSheet(ss, data.accounts);
+    }
+  } else if (action === 'EXPORT_PLAN') {
+    if (data.plan && Array.isArray(data.plan)) savePlanToSheet(ss, data.documents || [], data.plan);
+  } else if (action === 'EXPORT_EVENTS') {
+    if (data.events && Array.isArray(data.events)) saveEventsToSheet(ss, data.events);
+  } else if (action === 'EXPORT_DISTRIBUTIONS') {
+    if (data.distributions && Array.isArray(data.distributions)) saveDistributionsToSheet(ss, data.distributions);
+  } else if (action === 'EXPORT_ACCOUNTS') {
+    if (data.accounts && Array.isArray(data.accounts)) saveAccountsToSheet(ss, data.accounts);
+  }
+}
+
+function findHeaderRowIndex(data, keywords) {
+  for (var i = 0; i < Math.min(10, data.length); i++) {
+    var rowStr = JSON.stringify(data[i] || []).toLowerCase();
+    for (var k = 0; k < keywords.length; k++) {
+      if (rowStr.indexOf(keywords[k]) !== -1) return i;
+    }
+  }
+  return 0;
 }
 
 function findColIndex(headers, keywords, exclude) {
@@ -7060,11 +7654,11 @@ function formatDateCell(val) {
   }
   var str = String(val).trim();
   if (str === '00:00:00' || str === '-' || str === '0' || str === '—') return '';
-  var dmy = str.match(/^(\\d{1,2})[\\/\\-](\\d{1,2})[\\/\\-](\\d{4})/);
+  var dmy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (dmy) {
     return dmy[3] + '-' + ('0' + dmy[2]).slice(-2) + '-' + ('0' + dmy[1]).slice(-2);
   }
-  var ymd = str.match(/^(\\d{4})[\\/\\-](\\d{1,2})[\\/\\-](\\d{1,2})/);
+  var ymd = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
   if (ymd) {
     return ymd[1] + '-' + ('0' + ymd[2]).slice(-2) + '-' + ('0' + ymd[3]).slice(-2);
   }
@@ -7132,7 +7726,8 @@ function getDocumentsFromSheet(ss) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
-  var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
+  var hdrIdx = findHeaderRowIndex(data, ['mã hiệu', 'tên tài liệu', 'mã tài liệu', 'loại tài liệu']);
+  var headers = data[hdrIdx].map(function(h) { return String(h || '').trim().toLowerCase(); });
   var colStt = findColIndex(headers, ['stt', 'tt']);
   var colCode = findColIndex(headers, ['mã hiệu tài liệu', 'mã hiệu', 'mã tài liệu', 'mã tl', 'mã']);
   var colName = findColIndex(headers, ['tên tài liệu', 'tên quy trình', 'tên']);
@@ -7155,7 +7750,7 @@ function getDocumentsFromSheet(ss) {
   var colContent = findColIndex(headers, ['nội dung', 'tóm tắt', 'mục đích', 'ghi chú']);
 
   var list = [];
-  for (var i = 1; i < data.length; i++) {
+  for (var i = hdrIdx + 1; i < data.length; i++) {
     var r = data[i];
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
@@ -7164,7 +7759,7 @@ function getDocumentsFromSheet(ss) {
     var fileUrlVal = colUrl !== -1 ? String(r[colUrl] || '').trim() : '';
     list.push({
       id: 'doc_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : i,
+      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
       code: code,
       name: name,
       type: colType !== -1 ? String(r[colType] || 'Quy trình quản lý').trim() : 'Quy trình quản lý',
@@ -7238,7 +7833,8 @@ function getPlanFromSheet(ss) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
-  var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
+  var hdrIdx = findHeaderRowIndex(data, ['mã hiệu', 'tên tài liệu', 'hạn rà soát', 'ngày hiệu lực']);
+  var headers = data[hdrIdx].map(function(h) { return String(h || '').trim().toLowerCase(); });
   var colStt = findColIndex(headers, ['stt', 'tt']);
   var colCode = findColIndex(headers, ['mã hiệu', 'mã tài liệu', 'mã']);
   var colName = findColIndex(headers, ['tên tài liệu', 'tên']);
@@ -7252,13 +7848,13 @@ function getPlanFromSheet(ss) {
   var colNote = findColIndex(headers, ['ghi chú']);
 
   var list = [];
-  for (var i = 1; i < data.length; i++) {
+  for (var i = hdrIdx + 1; i < data.length; i++) {
     var r = data[i];
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
     if (!code && !name) continue;
     list.push({
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : i,
+      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
       code: code,
       name: name,
       type: colType !== -1 ? String(r[colType] || '').trim() : '',
@@ -7300,7 +7896,8 @@ function getEventsFromSheet(ss) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
-  var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
+  var hdrIdx = findHeaderRowIndex(data, ['mã tài liệu', 'loại sự kiện', 'ngày thực hiện']);
+  var headers = data[hdrIdx].map(function(h) { return String(h || '').trim().toLowerCase(); });
   var colStt = findColIndex(headers, ['stt', 'tt']);
   var colCode = findColIndex(headers, ['mã tài liệu', 'mã hiệu', 'mã']);
   var colName = findColIndex(headers, ['tên tài liệu', 'tên']);
@@ -7308,23 +7905,24 @@ function getEventsFromSheet(ss) {
   var colDate = findColIndex(headers, ['ngày thực hiện', 'ngày']);
   var colIssueNo = findColIndex(headers, ['lần bh', 'bh'], ['ngày']);
   var colRevNo = findColIndex(headers, ['lần sđ', 'rev'], ['ngày']);
-  var colProposer = findColIndex(headers, ['người đề xuất', 'người soạn']);
+  var colProposer = findColIndex(headers, ['người đề xuất', 'người soạn', 'người thực hiện']);
   var colChecker = findColIndex(headers, ['người kiểm tra', 'người soát xét']);
   var colApprover = findColIndex(headers, ['người phê duyệt', 'phê duyệt']);
   var colDecision = findColIndex(headers, ['căn cứ', 'số qđ', 'quyết định']);
   var colContent = findColIndex(headers, ['nội dung', 'kết quả', 'chi tiết']);
 
   var list = [];
-  for (var i = 1; i < data.length; i++) {
+  for (var i = hdrIdx + 1; i < data.length; i++) {
     var r = data[i];
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
-    if (!code) continue;
+    var name = colName !== -1 ? String(r[colName] || '').trim() : '';
+    if (!code && !name) continue;
 
     list.push({
       id: 'evt_sheet_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : i,
+      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
       docCode: code,
-      docName: colName !== -1 ? String(r[colName] || '').trim() : '',
+      docName: name,
       type: colType !== -1 ? String(r[colType] || 'Sửa đổi').trim() : 'Sửa đổi',
       date: colDate !== -1 ? formatDateCell(r[colDate]) : '',
       issueNo: colIssueNo !== -1 ? String(r[colIssueNo] || '01').trim() : '01',
@@ -7366,7 +7964,8 @@ function getDistributionsFromSheet(ss) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
-  var headers = data[0].map(function(h) { return String(h || '').trim().toLowerCase(); });
+  var hdrIdx = findHeaderRowIndex(data, ['mã tài liệu', 'đơn vị nhận', 'người phân phối']);
+  var headers = data[hdrIdx].map(function(h) { return String(h || '').trim().toLowerCase(); });
   var colStt = findColIndex(headers, ['stt', 'tt']);
   var colCode = findColIndex(headers, ['mã tài liệu', 'mã hiệu', 'mã']);
   var colName = findColIndex(headers, ['tên tài liệu', 'tên']);
@@ -7383,16 +7982,17 @@ function getDistributionsFromSheet(ss) {
   var colNote = findColIndex(headers, ['ghi chú']);
 
   var list = [];
-  for (var i = 1; i < data.length; i++) {
+  for (var i = hdrIdx + 1; i < data.length; i++) {
     var r = data[i];
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
-    if (!code) continue;
+    var name = colName !== -1 ? String(r[colName] || '').trim() : '';
+    if (!code && !name) continue;
 
     list.push({
       id: 'dist_sheet_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : i,
+      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
       docCode: code,
-      docName: colName !== -1 ? String(r[colName] || '').trim() : '',
+      docName: name,
       copyNo: colCopyNo !== -1 ? String(r[colCopyNo] || 'Bản số 01').trim() : 'Bản số 01',
       issueNo: colIssueNo !== -1 ? String(r[colIssueNo] || '01').trim() : '01',
       revNo: colRevNo !== -1 ? String(r[colRevNo] || '00').trim() : '00',
@@ -7434,8 +8034,9 @@ function getAccountsFromSheet(ss) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
 
+  var hdrIdx = findHeaderRowIndex(data, ['tên đăng nhập', 'mật khẩu', 'quyền hạn']);
   var accounts = [];
-  for (var i = 1; i < data.length; i++) {
+  for (var i = hdrIdx + 1; i < data.length; i++) {
     var r = data[i];
     var u = String(r[1] || '').trim();
     var p = String(r[2] || '').trim();
@@ -7455,50 +8056,174 @@ function getAccountsFromSheet(ss) {
 }
 `;
 
-    function copyGoogleAppsScriptCode() {
-      const area = document.getElementById('apps-script-code-area');
-      if (area) {
-        area.select();
-        navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_DOC_CODE).then(() => {
-          showToast('Đã sao chép mã Google Apps Script vào Clipboard!', 'success');
-        }).catch(() => {
-          showToast('Vui lòng chọn toàn bộ mã trong ô để sao chép!', 'info');
-        });
+    function getEffectiveGsheetUrl() {
+      const inp = document.getElementById('gsheet-app-url');
+      const chk = document.getElementById('gsheet-auto-sync');
+      if (chk) {
+        appState.gsheetAutoSync = Boolean(chk.checked);
+      }
+      if (inp && inp.value && inp.value.trim().startsWith('http')) {
+        appState.gsheetUrl = inp.value.trim();
+        safeSetStorage(LS_KEY_GSHEET, JSON.stringify({
+          url: appState.gsheetUrl,
+          autoSync: appState.gsheetAutoSync !== false
+        }));
+      }
+      return (appState.gsheetUrl || '').trim();
+    }
+
+    function saveGoogleSheetSettings() {
+      const url = getEffectiveGsheetUrl();
+      const chk = document.getElementById('gsheet-auto-sync');
+      appState.gsheetAutoSync = chk ? Boolean(chk.checked) : true;
+      safeSetStorage(LS_KEY_GSHEET, JSON.stringify({
+        url: url,
+        autoSync: appState.gsheetAutoSync
+      }));
+      closeModal('modal-google-sheet');
+      if (url || isRunningInGas()) {
+        showToast('Đã lưu cài đặt Google Sheet! Đang đồng bộ dữ liệu...', 'success');
+        syncGoogleSheet(true);
+      } else {
+        showToast('Đã lưu cài đặt Google Sheet!', 'info');
       }
     }
 
-    function generateReviewPlanFromDocuments() {
-      const planRows = [];
-      let idx = 1;
-      appState.documents.forEach(doc => {
-        if (doc.status === 'CANCELLED' || doc.status === 'Hủy') return;
-        const st = getDocumentStatus(doc, appState.documents);
-        if (!st.isLatest) return;
-        const nextDateStr = st.nextReviewDate || doc.nextReviewDate;
-        planRows.push({
-          stt: idx++,
-          code: doc.code || '',
-          name: doc.name || '',
-          type: doc.type || 'Quy trình quản lý',
-          revNo: `Rev ${doc.revNo || '00'}`,
-          effectiveDate: doc.lastReviewedDate || doc.revDate || doc.issueDate || '',
-          reviewDueDate: nextDateStr || '',
-          checker: doc.checkerName || 'Trưởng ban QLCL',
-          approver: doc.approverName || 'Giám đốc PTN',
-          status: st.label || 'Đang hiệu lực',
-          note: doc.content || ''
-        });
-      });
-      return planRows;
+    function copyGoogleAppsScriptCode() {
+      const area = document.getElementById('apps-script-code-area');
+      if (area) area.select();
+      copyTextSafe(GOOGLE_APPS_SCRIPT_DOC_CODE.trim(), 'Đã sao chép mã Google Apps Script vào Clipboard!');
     }
 
-    // Đồng bộ nút to màu xanh và luồng đồng bộ chuẩn hóa
+    function fetchViaJsonp(url, action = 'GET_ALL', timeoutMs = 18000) {
+      return new Promise((resolve, reject) => {
+        const cbName = '__iso17025GsheetCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const script = document.createElement('script');
+        let timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('Quá thời gian chờ phản hồi từ Google Apps Script (JSONP Timeout)'));
+        }, timeoutMs);
+
+        function cleanup() {
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+          try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cbName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error('Không thể kết nối tới Web App URL (kiểm tra quyền truy cập Anyone)'));
+        };
+
+        const sep = url.includes('?') ? '&' : '?';
+        script.src = `${url}${sep}action=${encodeURIComponent(action)}&callback=${encodeURIComponent(cbName)}&_t=${Date.now()}`;
+        document.body.appendChild(script);
+      });
+    }
+
+    async function fetchFromGoogleSheetEndpoint(url, action = 'GET_ALL') {
+      const sep = url.includes('?') ? '&' : '?';
+      const fetchUrl = `${url}${sep}action=${encodeURIComponent(action)}&_t=${Date.now()}`;
+
+      // Bước 1: Thử GET chuẩn (CORS simple request)
+      try {
+        const res = await fetch(fetchUrl, {
+          method: 'GET',
+          redirect: 'follow',
+          credentials: 'omit'
+        });
+        if (res.ok) {
+          const text = await res.text();
+          const trimmed = text.trim();
+          if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            return JSON.parse(trimmed);
+          }
+        }
+      } catch (errGet) {
+        console.warn('GET fetch fallback:', errGet);
+      }
+
+      // Bước 2: Dự phòng gọi POST (text/plain) nếu doGet trên Apps Script đang trả về trang HTML thay vì JSON
+      try {
+        const postRes = await fetch(url, {
+          method: 'POST',
+          redirect: 'follow',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: action })
+        });
+        if (postRes.ok) {
+          const postText = await postRes.text();
+          const trimmedPost = postText.trim();
+          if (trimmedPost.startsWith('{') || trimmedPost.startsWith('[')) {
+            return JSON.parse(trimmedPost);
+          }
+        }
+      } catch (errPost) {
+        console.warn('POST fetch fallback:', errPost);
+      }
+
+      // Bước 3: Dự phòng JSONP qua cơ chế JSONP (vượt hoàn toàn rào cản CORS trên GitHub Pages / Safari / Brave)
+      return await fetchViaJsonp(url, action);
+    }
+
+    async function postToGoogleSheetEndpoint(url, payload) {
+      const bodyStr = JSON.stringify(payload);
+      // Thử gửi POST với text/plain;charset=utf-8 (CORS simple request không gây lỗi OPTIONS preflight)
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          redirect: 'follow',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: bodyStr
+        });
+        if (res && (res.ok || res.type === 'opaque')) {
+          return true;
+        }
+      } catch (errCors) {
+        // Dự phòng no-cors với text/plain;charset=utf-8
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: bodyStr
+        });
+        return true;
+      }
+      return true;
+    }
+
+    // Đồng bộ 2 chiều thông minh khi bấm nút "Đồng Bộ Dữ Liệu Google Sheet"
     async function syncGoogleSheet(isManual = false) {
+      const url = getEffectiveGsheetUrl();
+      if (!url && !isRunningInGas()) {
+        showToast('Vui lòng nhập URL Ứng dụng web Google Apps Script trước!', 'warning');
+        openModal('modal-google-sheet');
+        return;
+      }
+      // Nếu người dùng vừa có thay đổi cục bộ (thêm/sửa/nhập Excel) và bấm đồng bộ thủ công, đẩy lên trước rồi đồng bộ
+      if (isManual && appState.hasUnsavedLocalChanges && appState.documents.length > 0 && !url.includes('docs.google.com/spreadsheets')) {
+        await exportToGoogleSheet();
+        appState.hasUnsavedLocalChanges = false;
+        closeModal('modal-google-sheet');
+        return;
+      }
       return importFromGoogleSheet({ isAuto: !isManual, silent: !isManual, isManual: isManual });
     }
 
     async function exportToGoogleSheet() {
-      if (!appState.gsheetUrl) {
+      const url = getEffectiveGsheetUrl();
+      if (!url && !isRunningInGas()) {
         showToast('Vui lòng nhập URL Ứng dụng web Google Apps Script trước!', 'warning');
         openModal('modal-google-sheet');
         return;
@@ -7506,26 +8231,39 @@ function getAccountsFromSheet(ss) {
 
       showToast('Đang đẩy toàn bộ 5 sheet lên Google Sheet...', 'info');
 
-      try {
-        const payload = {
-          action: 'EXPORT_ALL',
-          timestamp: new Date().toISOString(),
-          documents: appState.documents,
-          plan: generateReviewPlanFromDocuments(),
-          events: appState.events,
-          distributions: appState.distributions,
-          accounts: appState.accounts
-        };
+      const payload = {
+        action: 'EXPORT_ALL',
+        timestamp: new Date().toISOString(),
+        documents: appState.documents,
+        plan: generateReviewPlanFromDocuments(),
+        events: getEffectiveEventsForExport(),
+        distributions: appState.distributions,
+        accounts: appState.accounts
+      };
 
-        await fetch(appState.gsheetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+      if (isRunningInGas() && typeof google.script.run.gasSaveAllData === 'function') {
+        return new Promise((resolve) => {
+          google.script.run
+            .withSuccessHandler(() => {
+              appState.hasUnsavedLocalChanges = false;
+              const nowStr = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
+              safeSetStorage('ISO17025_LAST_SYNC_TIME', nowStr);
+              showToast('Đã đồng bộ toàn bộ 5 sheet lên Google Sheet thành công!', 'success');
+              resolve(true);
+            })
+            .withFailureHandler((err) => {
+              showToast('Lỗi gửi dữ liệu lên Google Sheet: ' + (err && err.message ? err.message : err), 'warning');
+              resolve(false);
+            })
+            .gasSaveAllData(JSON.stringify(payload));
         });
+      }
 
+      try {
+        await postToGoogleSheetEndpoint(url, payload);
+        appState.hasUnsavedLocalChanges = false;
         const nowStr = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
-        localStorage.setItem('ISO17025_LAST_SYNC_TIME', nowStr);
+        safeSetStorage('ISO17025_LAST_SYNC_TIME', nowStr);
         showToast('Đã gửi toàn bộ dữ liệu 5 sheet lên Google Sheet thành công!', 'success');
       } catch(err) {
         console.error(err);
@@ -7533,28 +8271,64 @@ function getAccountsFromSheet(ss) {
       }
     }
 
-    // Hỗ trợ nạp trực tiếp qua Google Visualization API nếu người dùng dùng link Google Sheet công khai
+    async function fetchGvizSheetTable(sheetId, sheetName) {
+      // Thử qua fetch trước, dự phòng JSONP của Google Visualization API nếu bị chặn CORS
+      const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&_t=${Date.now()}`;
+      try {
+        const res = await fetch(gvizUrl, { credentials: 'omit' });
+        if (res.ok) {
+          const text = await res.text();
+          const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+          if (match && match[1]) {
+            const parsed = JSON.parse(match[1]);
+            if (parsed && parsed.table) return parsed.table;
+          }
+        }
+      } catch (e) {}
+
+      return new Promise((resolve) => {
+        const cbName = '__gvizCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const script = document.createElement('script');
+        const timer = setTimeout(() => {
+          cleanup();
+          resolve(null);
+        }, 10000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cbName] = function(resp) {
+          cleanup();
+          resolve(resp && resp.table ? resp.table : null);
+        };
+        script.onerror = function() {
+          cleanup();
+          resolve(null);
+        };
+        script.src = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json;responseHandler:${cbName}&sheet=${encodeURIComponent(sheetName)}&_t=${Date.now()}`;
+        document.body.appendChild(script);
+      });
+    }
+
+    // Hỗ trợ nạp trực tiếp đầy đủ 5 sheet qua Google Visualization API nếu người dùng dùng link Google Sheet
     async function importViaGviz(sheetId, isAuto, silent) {
       if (!sheetId) return false;
       try {
-        const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=DM_TaiLieu&_t=` + Date.now();
-        const res = await fetch(gvizUrl);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-        if (!match || !match[1]) return false;
-        const parsed = JSON.parse(match[1]);
-        if (!parsed.table || !parsed.table.rows || parsed.table.rows.length === 0) return false;
+        const [tblDocs, tblPlan, tblEvents, tblDist, tblAcc] = await Promise.all([
+          fetchGvizSheetTable(sheetId, 'DM_TaiLieu'),
+          fetchGvizSheetTable(sheetId, 'KeHoach_SoatXet'),
+          fetchGvizSheetTable(sheetId, 'NhatKy_SuKien'),
+          fetchGvizSheetTable(sheetId, 'So_PhanPhoi'),
+          fetchGvizSheetTable(sheetId, 'TaiKhoan')
+        ]);
 
-        const cols = (parsed.table.cols || []).map(c => (c && c.label) ? String(c.label).trim().toLowerCase() : '');
+        if (!tblDocs || !tblDocs.rows || tblDocs.rows.length === 0) return false;
+
+        const cols = (tblDocs.cols || []).map(c => (c && c.label) ? String(c.label).trim().toLowerCase() : '');
         function findGvizCol(keywords, exclude) {
-          for (let i = 0; i < cols.length; i++) {
-            if (!cols[i]) continue;
-            if (exclude && exclude.some(ex => cols[i].includes(ex))) continue;
-            for (let k = 0; k < keywords.length; k++) {
-              if (cols[i] === keywords[k]) return i;
-            }
-          }
           for (let i = 0; i < cols.length; i++) {
             if (!cols[i]) continue;
             if (exclude && exclude.some(ex => cols[i].includes(ex))) continue;
@@ -7582,6 +8356,7 @@ function getAccountsFromSheet(ss) {
         const cStatus = findGvizCol(['tình trạng', 'trạng thái', 'hiệu lực']);
         const cLastRev = findGvizCol(['soát xét gần nhất', 'rà soát gần nhất'], ['hạn']);
         const cNextRev = findGvizCol(['hạn rà soát', 'hạn soát xét', 'hạn (+12t)']);
+        const cUrl = findGvizCol(['đường dẫn', 'url', 'link']);
         const cContent = findGvizCol(['nội dung chi tiết', 'nội dung', 'tóm tắt', 'mục đích', 'ghi chú']);
 
         function cellVal(c) {
@@ -7592,23 +8367,25 @@ function getAccountsFromSheet(ss) {
         }
 
         const importedDocs = [];
-        parsed.table.rows.forEach((r, idx) => {
+        tblDocs.rows.forEach((r, idx) => {
           if (!r || !r.c) return;
           const code = cCode !== -1 ? cellVal(r.c[cCode]) : cellVal(r.c[1]);
           const name = cName !== -1 ? cellVal(r.c[cName]) : cellVal(r.c[2]);
           if (!code && !name) return;
+          if (code.toLowerCase() === 'mã hiệu tài liệu' || code.toLowerCase() === 'mã hiệu') return;
 
           const issueDate = formatDateDisplay(cIssueDate !== -1 ? cellVal(r.c[cIssueDate]) : cellVal(r.c[6]));
           const revDate = formatDateDisplay(cRevDate !== -1 ? cellVal(r.c[cRevDate]) : cellVal(r.c[8]));
           let lastRev = formatDateDisplay(cLastRev !== -1 ? cellVal(r.c[cLastRev]) : cellVal(r.c[16]));
           if (!lastRev || lastRev === '—') lastRev = revDate !== '—' ? revDate : issueDate;
           let nextRev = formatDateDisplay(cNextRev !== -1 ? cellVal(r.c[cNextRev]) : cellVal(r.c[17]));
+          const fileUrlVal = cUrl !== -1 ? cellVal(r.c[cUrl]) : cellVal(r.c[18]);
 
           importedDocs.push({
             id: 'doc_gviz_' + (idx + 1),
             code: code,
             name: name,
-            type: cType !== -1 ? (cellVal(r.c[cType]) || 'Quy trình quản lý') : (cellVal(r.c[3]) || 'Quy trình quản lý'),
+            type: normalizeCategory(cType !== -1 ? (cellVal(r.c[cType]) || 'Quy trình quản lý') : (cellVal(r.c[3]) || 'Quy trình quản lý')) || 'Quy trình quản lý',
             pages: cPages !== -1 ? (parseInt(cellVal(r.c[cPages]), 10) || 1) : 1,
             issueNo: cIssueNo !== -1 ? (cellVal(r.c[cIssueNo]) || '01') : '01',
             issueDate: issueDate !== '—' ? issueDate : '',
@@ -7623,24 +8400,82 @@ function getAccountsFromSheet(ss) {
             status: cStatus !== -1 ? (cellVal(r.c[cStatus]) || 'LATEST') : 'LATEST',
             lastReviewedDate: lastRev !== '—' ? lastRev : '',
             nextReviewDate: nextRev !== '—' ? nextRev : '',
+            fileUrl: fileUrlVal,
             content: cContent !== -1 ? cellVal(r.c[cContent]) : ''
           });
         });
 
+        const gvizPayload = { documents: importedDocs };
+
+        if (tblPlan && tblPlan.rows && tblPlan.rows.length > 0) {
+          gvizPayload.plan = tblPlan.rows.map((r, i) => ({
+            stt: i + 1,
+            code: cellVal(r.c[1]),
+            name: cellVal(r.c[2]),
+            type: cellVal(r.c[3]),
+            revNo: cellVal(r.c[4]) || 'Rev 00',
+            effectiveDate: cellVal(r.c[5]),
+            reviewDueDate: cellVal(r.c[6]),
+            checker: cellVal(r.c[7]),
+            approver: cellVal(r.c[8]),
+            status: cellVal(r.c[9]) || 'Đang hiệu lực',
+            note: cellVal(r.c[10])
+          })).filter(p => p.code && p.code.toLowerCase() !== 'mã hiệu');
+        }
+
+        if (tblEvents && tblEvents.rows && tblEvents.rows.length > 0) {
+          gvizPayload.events = tblEvents.rows.map((r, i) => ({
+            id: 'evt_gviz_' + (i + 1),
+            docCode: cellVal(r.c[1]),
+            docName: cellVal(r.c[2]),
+            type: cellVal(r.c[3]) || 'Sửa đổi',
+            date: cellVal(r.c[4]),
+            issueNo: cellVal(r.c[5]) || '01',
+            revNo: cellVal(r.c[6]) || '00',
+            proposer: cellVal(r.c[7]),
+            checker: cellVal(r.c.length >= 12 ? r.c[8] : null),
+            approver: cellVal(r.c.length >= 12 ? r.c[9] : r.c[8]),
+            decisionNo: cellVal(r.c.length >= 12 ? r.c[10] : r.c[9]),
+            content: cellVal(r.c.length >= 12 ? r.c[11] : r.c[10]),
+            attachments: []
+          })).filter(ev => ev.docCode && ev.docCode.toLowerCase() !== 'mã tài liệu');
+        }
+
+        if (tblDist && tblDist.rows && tblDist.rows.length > 0) {
+          gvizPayload.distributions = tblDist.rows.map((r, i) => ({
+            id: 'dist_gviz_' + (i + 1),
+            docCode: cellVal(r.c[1]),
+            docName: cellVal(r.c[2]),
+            copyNo: cellVal(r.c[3]) || 'Bản số 01',
+            issueNo: cellVal(r.c[4]) || '01',
+            revNo: cellVal(r.c[5]) || '00',
+            recipientDept: cellVal(r.c[6]),
+            receiveDate: cellVal(r.c[7]),
+            docType: cellVal(r.c[8]) || 'Bản in có kiểm soát (Controlled Copy)',
+            recipient: cellVal(r.c[9]),
+            distributor: cellVal(r.c[10]),
+            status: cellVal(r.c[11]) || 'Đang lưu hành (Sử dụng)',
+            recallDate: cellVal(r.c[12]),
+            note: cellVal(r.c[13])
+          })).filter(d => d.docCode && d.docCode.toLowerCase() !== 'mã tài liệu');
+        }
+
+        if (tblAcc && tblAcc.rows && tblAcc.rows.length > 0) {
+          gvizPayload.accounts = tblAcc.rows.map((r, i) => ({
+            id: 'acc_gviz_' + (i + 1),
+            username: cellVal(r.c[1]),
+            password: cellVal(r.c[2]),
+            fullName: cellVal(r.c[3]) || cellVal(r.c[1]),
+            role: (cellVal(r.c[4]) || 'viewer').toLowerCase(),
+            dept: cellVal(r.c[5]) || 'Phòng KN Hóa học',
+            note: cellVal(r.c[6]),
+            createdAt: cellVal(r.c[7])
+          })).filter(a => a.username && a.username.toLowerCase() !== 'tên đăng nhập');
+        }
+
         if (importedDocs.length > 0) {
-          appState.documents = importedDocs;
-          saveDocumentsToStorage(true);
-          if (!isAuto) resetAllFilters();
-          else {
-            populatePersonnelDropdown();
-            renderStats();
-            renderCategoryPills();
-            renderDocumentList();
-            renderReviewPlan();
-            checkAndRenderAlerts();
-          }
+          applySyncedGoogleSheetData(gvizPayload, isAuto);
           closeModal('modal-google-sheet');
-          showToast(`Đã nạp thành công ${importedDocs.length} tài liệu từ Google Sheet (qua Google Sheet ID)!`, 'success');
           return true;
         }
       } catch(eGviz) {
@@ -7649,13 +8484,175 @@ function getAccountsFromSheet(ss) {
       return false;
     }
 
+    function applySyncedGoogleSheetData(data, isAuto = false) {
+      let countMsg = [];
+      if (data && data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
+        const existingDocsMap = new Map();
+        (appState.documents || []).forEach(d => {
+          if (d.code) existingDocsMap.set(String(d.code).trim().toUpperCase(), d);
+          if (d.id) existingDocsMap.set(String(d.id), d);
+        });
+
+        appState.documents = data.documents.map((doc, idx) => {
+          const docCodeUpper = String(doc.code || '').trim().toUpperCase();
+          const existingDoc = existingDocsMap.get(docCodeUpper) || existingDocsMap.get(String(doc.id));
+          const effectiveFileUrl = doc.fileUrl || (doc.fileAttachment && doc.fileAttachment.fileUrl) || (existingDoc && (existingDoc.fileUrl || (existingDoc.fileAttachment && existingDoc.fileAttachment.fileUrl))) || '';
+          let effectiveAttachment = null;
+          if (existingDoc && existingDoc.fileAttachment && (existingDoc.fileAttachment.hasBlob || existingDoc.fileAttachment.fileData)) {
+            effectiveAttachment = { ...existingDoc.fileAttachment };
+            if (effectiveFileUrl) effectiveAttachment.fileUrl = effectiveFileUrl;
+          } else if (doc.fileAttachment) {
+            effectiveAttachment = { ...doc.fileAttachment };
+          } else if (effectiveFileUrl) {
+            effectiveAttachment = {
+              fileName: doc.name || 'Tài liệu toàn văn',
+              fileType: effectiveFileUrl.toLowerCase().includes('.pdf') ? 'pdf' : (effectiveFileUrl.toLowerCase().includes('.doc') ? 'docx' : 'other'),
+              fileSize: 0,
+              fileUrl: effectiveFileUrl,
+              hasBlob: false,
+              uploadDate: new Date().toISOString().split('T')[0]
+            };
+          }
+          const issueDate = String(doc.issueDate || '').trim();
+          const revDate = String(doc.revDate || '').trim();
+          let lastRev = String(doc.lastReviewedDate || '').trim();
+          if (!lastRev || lastRev === '—' || lastRev === '-') lastRev = revDate || issueDate;
+
+          let nextRev = String(doc.nextReviewDate || '').trim();
+          const lastRevDateObj = parseDate(lastRev);
+          const nextRevDateObj = parseDate(nextRev);
+
+          if (lastRevDateObj) {
+            if (!nextRevDateObj || nextRevDateObj.getTime() <= lastRevDateObj.getTime()) {
+              const autoNext = new Date(lastRevDateObj.getFullYear() + 1, lastRevDateObj.getMonth(), lastRevDateObj.getDate());
+              nextRev = `${autoNext.getFullYear()}-${String(autoNext.getMonth() + 1).padStart(2, '0')}-${String(autoNext.getDate()).padStart(2, '0')}`;
+            }
+          }
+
+          let status = String(doc.status || 'LATEST').trim();
+          if (nextRevDateObj && nextRevDateObj.getTime() >= new Date().setHours(0,0,0,0) && status !== 'CANCELLED' && status !== 'Hủy') {
+            status = 'LATEST';
+          }
+
+          return {
+            ...doc,
+            id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
+            code: String(doc.code || '').trim(),
+            name: String(doc.name || '').trim(),
+            type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
+            pages: Number(doc.pages) || 1,
+            issueNo: String(doc.issueNo !== '' && doc.issueNo !== undefined ? doc.issueNo : '01').trim(),
+            issueDate: issueDate,
+            revNo: String(doc.revNo !== '' && doc.revNo !== undefined ? doc.revNo : '00').trim(),
+            revDate: revDate,
+            drafterName: String(doc.drafterName || '').trim(),
+            drafterRole: String(doc.drafterRole || '').trim(),
+            checkerName: (function() {
+              var cName = String(doc.checkerName || '').trim();
+              return /^(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/.test(cName) ? '' : cName;
+            })(),
+            checkerRole: String(doc.checkerRole || '').trim(),
+            approverName: String(doc.approverName || '').trim(),
+            approverRole: String(doc.approverRole || '').trim(),
+            status: status,
+            lastReviewedDate: lastRev,
+            nextReviewDate: nextRev,
+            fileUrl: effectiveFileUrl,
+            fileAttachment: effectiveAttachment,
+            content: String(doc.content || '').trim()
+          };
+        }).filter(d => d.code || d.name);
+
+        saveDocumentsToStorage(true);
+        countMsg.push(`${appState.documents.length} tài liệu`);
+      }
+
+      const docByCode = new Map();
+      (appState.documents || []).forEach(d => {
+        if (d.code) docByCode.set(String(d.code).trim().toUpperCase(), d);
+      });
+
+      if (data && data.plan && Array.isArray(data.plan) && data.plan.length > 0) {
+        appState.plan = data.plan;
+        savePlanToStorage();
+        data.plan.forEach(p => {
+          if (!p || !p.code) return;
+          const mDoc = docByCode.get(String(p.code).trim().toUpperCase());
+          if (mDoc) {
+            if (!mDoc.nextReviewDate && p.reviewDueDate) mDoc.nextReviewDate = p.reviewDueDate;
+            if (!mDoc.lastReviewedDate && p.effectiveDate) mDoc.lastReviewedDate = p.effectiveDate;
+            if (!mDoc.checkerName && p.checker) mDoc.checkerName = p.checker;
+            if (!mDoc.approverName && p.approver) mDoc.approverName = p.approver;
+          }
+        });
+        saveDocumentsToStorage(true);
+        countMsg.push(`${data.plan.length} kế hoạch`);
+      }
+
+      if (data && data.events && Array.isArray(data.events) && data.events.length > 0) {
+        appState.events = data.events.map((ev, idx) => {
+          const mDoc = docByCode.get(String(ev.docCode || '').trim().toUpperCase());
+          return {
+            ...ev,
+            id: ev.id || ('evt_sheet_' + (idx + 1)),
+            docId: ev.docId || (mDoc ? mDoc.id : ''),
+            docCode: ev.docCode || (mDoc ? mDoc.code : ''),
+            docName: ev.docName || (mDoc ? mDoc.name : ''),
+            checker: ev.checker || (mDoc ? mDoc.checkerName : '')
+          };
+        });
+        saveEventsToStorage(true);
+        countMsg.push(`${appState.events.length} sự kiện`);
+      }
+
+      if (data && data.distributions && Array.isArray(data.distributions) && data.distributions.length > 0) {
+        appState.distributions = data.distributions.map((dist, idx) => {
+          const mDoc = docByCode.get(String(dist.docCode || '').trim().toUpperCase());
+          return {
+            ...dist,
+            id: dist.id || ('dist_sheet_' + (idx + 1)),
+            docId: dist.docId || (mDoc ? mDoc.id : ''),
+            docCode: dist.docCode || (mDoc ? mDoc.code : ''),
+            docName: dist.docName || (mDoc ? mDoc.name : '')
+          };
+        });
+        saveDistributionsToStorage(true);
+        countMsg.push(`${appState.distributions.length} phân phối`);
+      }
+
+      if (data && data.accounts && Array.isArray(data.accounts) && data.accounts.length > 0) {
+        appState.accounts = data.accounts;
+        saveAccountsToStorage();
+        renderAccountsTable();
+        countMsg.push(`${data.accounts.length} tài khoản`);
+      }
+
+      appState.hasUnsavedLocalChanges = false;
+
+      if (!isAuto) {
+        resetAllFilters();
+      } else {
+        populatePersonnelDropdown();
+        populateDeptFilterDropdown();
+        populateModalDocDropdowns();
+      }
+      renderStats();
+      renderCategoryPills();
+      renderDocumentList();
+      renderReviewPlan();
+      renderEventsTable();
+      renderDistributionTable();
+      checkAndRenderAlerts();
+
+      return countMsg;
+    }
+
     async function importFromGoogleSheet(options = {}) {
       const isAuto = !!(options && options.isAuto);
       const silent = !!(options && options.silent);
-      const isManual = !!(options && options.isManual);
-      let url = (appState.gsheetUrl || '').trim();
+      let url = getEffectiveGsheetUrl();
 
-      if (!url) {
+      if (!url && !isRunningInGas()) {
         if (!isAuto) {
           showToast('Vui lòng nhập URL Ứng dụng web Google Apps Script trước!', 'warning');
           openModal('modal-google-sheet');
@@ -7667,166 +8664,97 @@ function getAccountsFromSheet(ss) {
         showToast('Đang nạp toàn bộ dữ liệu 5 sheet từ Google Sheet...', 'info');
       }
 
-      // 1. Nếu người dùng dán link bảng tính Google Sheet trực tiếp (docs.google.com/spreadsheets/d/{ID})
+      // 1. Nếu chạy trực tiếp bên trong Google Apps Script Web App (HtmlService), ưu tiên gọi google.script.run
+      if (isRunningInGas() && typeof google.script.run.gasGetAllData === 'function') {
+        google.script.run
+          .withSuccessHandler((data) => {
+            const countMsg = applySyncedGoogleSheetData(data, isAuto);
+            closeModal('modal-google-sheet');
+            if (countMsg.length > 0) {
+              showToast(`Đã đồng bộ thành công: ${countMsg.join(', ')} từ Google Sheet!`, 'success');
+            } else if (!isAuto) {
+              if (appState.documents.length > 0) {
+                exportToGoogleSheet();
+              } else {
+                showToast('Google Sheet hiện chưa có dữ liệu.', 'warning');
+              }
+            }
+          })
+          .withFailureHandler((err) => {
+            if (url) {
+              importFromGoogleSheetViaNetwork(url, isAuto, silent);
+            } else if (!isAuto) {
+              showToast('Lỗi đồng bộ từ Google Sheet: ' + (err && err.message ? err.message : err), 'warning');
+            }
+          })
+          .gasGetAllData();
+        return;
+      }
+
+      await importFromGoogleSheetViaNetwork(url, isAuto, silent);
+    }
+
+    async function importFromGoogleSheetViaNetwork(url, isAuto, silent) {
+      // Nếu người dùng dán link bảng tính Google Sheet trực tiếp (docs.google.com/spreadsheets/d/{ID})
       if (url.includes('docs.google.com/spreadsheets')) {
         const m = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
         if (m && m[1]) {
           const sheetId = m[1];
           const gvizOk = await importViaGviz(sheetId, isAuto, silent);
-          if (gvizOk) return;
+          if (gvizOk) {
+            showToast('Đã đồng bộ toàn bộ 5 sheet từ Google Sheet thành công!', 'success');
+            return;
+          }
         }
       }
 
-      // Hiển thị trạng thái đang tải trên giao diện
       const emptyState = document.getElementById('document-empty-state');
       if (appState.documents.length === 0 && emptyState) {
         emptyState.innerHTML = `
           <div class="py-12 px-4 text-center">
             <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
             <h3 class="text-base font-bold text-slate-800">Đang tự động nạp dữ liệu từ Google Sheet...</h3>
-            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Vui lòng chờ trong giây lát để hệ thống tải toàn bộ danh mục tài liệu.</p>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Vui lòng chờ trong giây lát để hệ thống tải toàn bộ 5 sheet dữ liệu.</p>
           </div>
         `;
         emptyState.classList.remove('hidden');
       }
 
-      // 2. Nạp qua Google Apps Script Web App (action=GET_ALL)
       try {
-        const fetchUrl = url + (url.includes('?') ? '&' : '?') + 'action=GET_ALL&_t=' + Date.now();
-        const res = await fetch(fetchUrl);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
+        const data = await fetchFromGoogleSheetEndpoint(url, 'GET_ALL');
 
-        let countMsg = [];
-        if (data && data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
-          const existingDocsMap = new Map();
-          (appState.documents || []).forEach(d => {
-            if (d.code) existingDocsMap.set(String(d.code).trim().toUpperCase(), d);
-            if (d.id) existingDocsMap.set(String(d.id), d);
-          });
-
-          appState.documents = data.documents.map((doc, idx) => {
-            const docCodeUpper = String(doc.code || '').trim().toUpperCase();
-            const existingDoc = existingDocsMap.get(docCodeUpper) || existingDocsMap.get(String(doc.id));
-            const effectiveFileUrl = doc.fileUrl || (doc.fileAttachment && doc.fileAttachment.fileUrl) || (existingDoc && (existingDoc.fileUrl || (existingDoc.fileAttachment && existingDoc.fileAttachment.fileUrl))) || '';
-            let effectiveAttachment = null;
-            if (existingDoc && existingDoc.fileAttachment && (existingDoc.fileAttachment.hasBlob || existingDoc.fileAttachment.fileData)) {
-              effectiveAttachment = { ...existingDoc.fileAttachment };
-              if (effectiveFileUrl) effectiveAttachment.fileUrl = effectiveFileUrl;
-            } else if (doc.fileAttachment) {
-              effectiveAttachment = { ...doc.fileAttachment };
-            } else if (effectiveFileUrl) {
-              effectiveAttachment = {
-                fileName: doc.name || 'Tài liệu toàn văn',
-                fileType: effectiveFileUrl.toLowerCase().includes('.pdf') ? 'pdf' : (effectiveFileUrl.toLowerCase().includes('.doc') ? 'docx' : 'other'),
-                fileSize: 0,
-                fileUrl: effectiveFileUrl,
-                hasBlob: false,
-                uploadDate: new Date().toISOString().split('T')[0]
-              };
-            }
-            const issueDate = String(doc.issueDate || '').trim();
-            const revDate = String(doc.revDate || '').trim();
-            let lastRev = String(doc.lastReviewedDate || '').trim();
-            if (!lastRev || lastRev === '—' || lastRev === '-') lastRev = revDate || issueDate;
-            
-            // Tính hạn rà soát chuẩn hóa: nếu nextRev trống hoặc nhỏ hơn mốc kiểm duyệt gần nhất thì tự động cộng 12 tháng
-            let nextRev = String(doc.nextReviewDate || '').trim();
-            const lastRevDateObj = parseDate(lastRev);
-            const nextRevDateObj = parseDate(nextRev);
-
-            if (lastRevDateObj) {
-              if (!nextRevDateObj || nextRevDateObj.getTime() <= lastRevDateObj.getTime()) {
-                const autoNext = new Date(lastRevDateObj.getFullYear() + 1, lastRevDateObj.getMonth(), lastRevDateObj.getDate());
-                nextRev = `${autoNext.getFullYear()}-${String(autoNext.getMonth() + 1).padStart(2, '0')}-${String(autoNext.getDate()).padStart(2, '0')}`;
-              }
-            }
-
-            // Chuẩn hóa trạng thái hiệu lực nếu hạn còn hợp lệ
-            let status = String(doc.status || 'LATEST').trim();
-            if (nextRevDateObj && nextRevDateObj.getTime() >= new Date().setHours(0,0,0,0) && status !== 'CANCELLED' && status !== 'Hủy') {
-              status = 'LATEST';
-            }
-
-            return {
-              ...doc,
-              id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
-              code: String(doc.code || '').trim(),
-              name: String(doc.name || '').trim(),
-              type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
-              pages: Number(doc.pages) || 1,
-              issueNo: String(doc.issueNo !== '' && doc.issueNo !== undefined ? doc.issueNo : '01').trim(),
-              issueDate: issueDate,
-              revNo: String(doc.revNo !== '' && doc.revNo !== undefined ? doc.revNo : '00').trim(),
-              revDate: revDate,
-              drafterName: String(doc.drafterName || '').trim(),
-              drafterRole: String(doc.drafterRole || '').trim(),
-              checkerName: (function() {
-                var cName = String(doc.checkerName || '').trim();
-                return /^(\\d{4}[-\/]\\d{1,2}[-\/]\\d{1,2}|\\d{1,2}[-\/]\\d{1,2}[-\/]\\d{4})/.test(cName) ? '' : cName;
-              })(),
-              checkerRole: String(doc.checkerRole || '').trim(),
-              approverName: String(doc.approverName || '').trim(),
-              approverRole: String(doc.approverRole || '').trim(),
-              status: status,
-              lastReviewedDate: lastRev,
-              nextReviewDate: nextRev,
-              fileUrl: effectiveFileUrl,
-              fileAttachment: effectiveAttachment,
-              content: String(doc.content || '').trim()
-            };
-          }).filter(d => d.code || d.name);
-
-          saveDocumentsToStorage(true);
-          countMsg.push(`${appState.documents.length} tài liệu`);
+        // Nếu Code.gs cũ trên Google Sheet chưa trả về events/distributions/plan trong GET_ALL, tự động gọi bổ sung
+        if (data && data.documents && data.events === undefined) {
+          const [evRes, distRes, planRes, accRes] = await Promise.all([
+            fetchFromGoogleSheetEndpoint(url, 'GET_EVENTS').catch(() => null),
+            fetchFromGoogleSheetEndpoint(url, 'GET_DISTRIBUTIONS').catch(() => null),
+            fetchFromGoogleSheetEndpoint(url, 'GET_PLAN').catch(() => null),
+            fetchFromGoogleSheetEndpoint(url, 'GET_ACCOUNTS').catch(() => null)
+          ]);
+          if (evRes && Array.isArray(evRes.events)) data.events = evRes.events;
+          if (distRes && Array.isArray(distRes.distributions)) data.distributions = distRes.distributions;
+          if (planRes && Array.isArray(planRes.plan)) data.plan = planRes.plan;
+          if (accRes && Array.isArray(accRes.accounts)) data.accounts = accRes.accounts;
         }
 
-        if (data && data.events && Array.isArray(data.events) && data.events.length > 0) {
-          appState.events = data.events;
-          saveEventsToStorage();
-          countMsg.push(`${data.events.length} sự kiện`);
-        }
-
-        if (data && data.distributions && Array.isArray(data.distributions) && data.distributions.length > 0) {
-          appState.distributions = data.distributions;
-          saveDistributionsToStorage();
-          countMsg.push(`${data.distributions.length} phân phối`);
-        }
-
-        if (data && data.accounts && Array.isArray(data.accounts) && data.accounts.length > 0) {
-          appState.accounts = data.accounts;
-          saveAccountsToStorage();
-          renderAccountsTable();
-          countMsg.push(`${data.accounts.length} tài khoản`);
-        }
-
-        // Đặt lại bộ lọc để hiển thị ngay tài liệu mới nạp
-        if (!isAuto) {
-          resetAllFilters();
-        } else {
-          populatePersonnelDropdown();
-          populateDeptFilterDropdown();
-          populateModalDocDropdowns();
-          renderStats();
-          renderCategoryPills();
-          renderDocumentList();
-          renderReviewPlan();
-          renderEventsTable();
-          renderDistributionTable();
-          checkAndRenderAlerts();
-        }
-
+        const countMsg = applySyncedGoogleSheetData(data, isAuto);
         closeModal('modal-google-sheet');
 
         if (countMsg.length > 0) {
           showToast(`Đã đồng bộ thành công: ${countMsg.join(', ')} từ Google Sheet!`, 'success');
         } else {
-          if (!isAuto) showToast('Google Sheet chưa có dữ liệu nào.', 'warning');
+          // Nếu Google Sheet đang trống nhưng trên máy đang có dữ liệu và người dùng bấm Đồng bộ thủ công -> đẩy dữ liệu lên Google Sheet
+          if (!isAuto && appState.documents.length > 0) {
+            await exportToGoogleSheet();
+          } else if (!isAuto) {
+            showToast('Google Sheet chưa có dữ liệu nào.', 'warning');
+          }
+          if (appState.documents.length === 0) renderDocumentList();
         }
       } catch(err) {
         console.error('Lỗi nạp từ Google Sheet:', err);
         if (!isAuto || appState.documents.length === 0) {
-          showToast('Lỗi kết nối Google Sheet: ' + err.message + '. Vui lòng kiểm tra lại quyền truy cập "Anyone" của Web App.', 'warning');
+          showToast('Lỗi kết nối Google Sheet: ' + err.message + '. Hãy kiểm tra lại URL Web App và quyền truy cập "Anyone".', 'warning');
         }
         if (appState.documents.length === 0) {
           renderDocumentList();
@@ -7835,22 +8763,27 @@ function getAccountsFromSheet(ss) {
     }
 
     function triggerAutoSyncGoogleSheet() {
-      if (!appState.gsheetUrl || !appState.gsheetUrl.startsWith('http')) return;
-      if (appState.gsheetUrl.includes('docs.google.com/spreadsheets')) return;
-      fetch(appState.gsheetUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'AUTO_SYNC',
-          timestamp: new Date().toISOString(),
-          documents: appState.documents,
-          plan: generateReviewPlanFromDocuments(),
-          events: appState.events,
-          distributions: appState.distributions,
-          accounts: appState.accounts
-        })
-      }).catch(e => console.log('Auto sync silent fail:', e));
+      const url = getEffectiveGsheetUrl();
+      const payload = {
+        action: 'AUTO_SYNC',
+        timestamp: new Date().toISOString(),
+        documents: appState.documents,
+        plan: generateReviewPlanFromDocuments(),
+        events: getEffectiveEventsForExport(),
+        distributions: appState.distributions,
+        accounts: appState.accounts
+      };
+
+      if (isRunningInGas() && typeof google.script.run.gasSaveAllData === 'function') {
+        try {
+          google.script.run.gasSaveAllData(JSON.stringify(payload));
+        } catch (e) {}
+        return;
+      }
+
+      if (!url || !url.startsWith('http')) return;
+      if (url.includes('docs.google.com/spreadsheets')) return;
+      postToGoogleSheetEndpoint(url, payload).catch(e => console.log('Auto sync silent fail:', e));
     }
 
     function detectGoogleSheetUrl() {
@@ -7879,29 +8812,46 @@ function getAccountsFromSheet(ss) {
         }
       } catch(e) {}
 
-      // 3. Nếu chạy trực tiếp trên Google Apps Script Web App
+      // 3. Kiểm tra LocalStorage đã lưu cấu hình trước đó
       try {
-        if (window.location.hostname === 'script.google.com' && window.location.pathname.includes('/macros/s/')) {
-          return window.location.href.split('?')[0].split('#')[0];
-        }
-      } catch(e) {}
-
-      // 4. Kiểm tra LocalStorage đã lưu cấu hình trước đó
-      try {
-        const gsheetCfg = localStorage.getItem(LS_KEY_GSHEET);
+        const gsheetCfg = safeGetStorage(LS_KEY_GSHEET);
         if (gsheetCfg) {
           const parsed = JSON.parse(gsheetCfg);
+          if (parsed && typeof parsed.autoSync === 'boolean') {
+            appState.gsheetAutoSync = parsed.autoSync;
+          }
           if (parsed && parsed.url && parsed.url.trim().startsWith('http')) {
             return parsed.url.trim();
           }
         }
       } catch(e) {}
 
+      // 4. Kiểm tra giá trị đã nhúng sẵn trong appState.gsheetUrl hoặc trong thẻ input #gsheet-app-url (khi dùng Lưu vào File HTML)
+      if (appState.gsheetUrl && appState.gsheetUrl.trim().startsWith('http')) {
+        return appState.gsheetUrl.trim();
+      }
+      try {
+        const inp = document.getElementById('gsheet-app-url');
+        const attrVal = inp ? (inp.value || inp.getAttribute('value') || '').trim() : '';
+        if (attrVal && attrVal.startsWith('http')) {
+          return attrVal;
+        }
+      } catch(e) {}
+
+      // 5. Nếu chạy trực tiếp trên URL script.google.com/macros/s/...
+      try {
+        if (window.location.hostname === 'script.google.com' && window.location.pathname.includes('/macros/s/')) {
+          return window.location.href.split('?')[0].split('#')[0];
+        }
+      } catch(e) {}
+
       return '';
     }
+
     function showQrCodeModal() {
+      const url = getEffectiveGsheetUrl();
       const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const link = baseUrl + '#gsheet=' + encodeURIComponent(appState.gsheetUrl || '');
+      const link = baseUrl + (url ? ('#gsheet=' + encodeURIComponent(url)) : '');
       const qrImg = document.getElementById('qr-code-img');
       if (qrImg) {
         qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(link);
@@ -7910,11 +8860,23 @@ function getAccountsFromSheet(ss) {
     }
 
     function saveConfigPermanentToFile() {
-      let htmlContent = document.documentElement.outerHTML;
-      if (appState.gsheetUrl) {
-        htmlContent = htmlContent.replace(/(gsheetUrl:\s*['"])([^'"]*)(['"])/, '$1' + appState.gsheetUrl + '$3');
+      const url = getEffectiveGsheetUrl();
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('[id^="modal-"]').forEach(m => m.classList.add('hidden'));
+      const cloneBody = clone.querySelector('body');
+      if (cloneBody) cloneBody.classList.remove('overflow-hidden');
+      const cloneToast = clone.querySelector('#toast-container');
+      if (cloneToast) cloneToast.innerHTML = '';
+      const cloneInput = clone.querySelector('#gsheet-app-url');
+      if (cloneInput) cloneInput.setAttribute('value', url || '');
+
+      let innerContent = clone.innerHTML;
+      if (url) {
+        innerContent = innerContent.replace(/(gsheetUrl:\s*['"])([^'"]*)(['"])/, '$1' + url + '$3');
       }
-      const fullHtml = '<!DOCTYPE html>\n<html lang="vi">\n' + htmlContent + '\n</html>';
+      const openDocTag = '<' + '!DOCTYPE html>\n<' + 'html lang="vi">\n';
+      const closeDocTag = '\n</' + 'html>';
+      const fullHtml = openDocTag + innerContent + closeDocTag;
       const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -7926,17 +8888,10 @@ function getAccountsFromSheet(ss) {
     }
 
     function copyConfigLink() {
+      const url = getEffectiveGsheetUrl();
       const baseUrl = window.location.href.split('#')[0].split('?')[0];
-      const url = baseUrl + '#gsheet=' + encodeURIComponent(appState.gsheetUrl || '');
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast('Đã sao chép liên kết cấu hình (kèm Google Sheet)!', 'success');
-        }).catch(() => {
-          prompt('Sao chép đường link cấu hình dưới đây:', url);
-        });
-      } else {
-        prompt('Sao chép đường link cấu hình dưới đây:', url);
-      }
+      const fullLink = baseUrl + (url ? ('#gsheet=' + encodeURIComponent(url)) : '');
+      copyTextSafe(fullLink, 'Đã sao chép liên kết cấu hình (kèm Google Sheet)!');
     }
 
     // ========================================================
@@ -8125,7 +9080,7 @@ function getAccountsFromSheet(ss) {
     function saveAiSettings() {
       const input = document.getElementById('ai-api-key-input');
       if (input) {
-        localStorage.setItem('ISO17025_AI_API_KEY', input.value.trim());
+        safeSetStorage('ISO17025_AI_API_KEY', input.value.trim());
         showToast('Đã lưu cấu hình AI thành công!', 'success');
       }
       closeModal('modal-ai-settings');
