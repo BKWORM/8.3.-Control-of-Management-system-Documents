@@ -7419,7 +7419,7 @@
       closeModal('modal-settings');
       showToast('Đã xóa toàn bộ dữ liệu. Danh mục tài liệu hiện đã trống!', 'info');
 
-      if (appState.gsheetAutoSync) triggerAutoSyncGoogleSheet();
+      if (appState.gsheetAutoSync && (appState.gsheetUrl || isRunningInGas())) exportToGoogleSheet(true);
     }
 
     function resetToFactoryDefault() {
@@ -7474,69 +7474,161 @@
     // MÃ NGUỒN GOOGLE APPS SCRIPT CHO HỆ THỐNG KIỂM SOÁT TÀI LIỆU (Code.gs)
     // Hỗ trợ đồng thời:
     // 1. Chạy trực tiếp giao diện Web App trên Google Apps Script (HtmlService + google.script.run)
-    // 2. Đồng bộ API 2 chiều từ trình duyệt máy tính & GitHub Pages (CORS JSON + POST + JSONP)
+    // 2. Đồng bộ API 2 chiều từ trình duyệt máy tính, GitHub Pages & Web Apps (CORS JSON + Form Data + JSONP)
     // ========================================================
-    const GOOGLE_APPS_SCRIPT_DOC_CODE = `
+    const GOOGLE_APPS_SCRIPT_DOC_CODE = String.raw`// =========================================================================
+// MÃ NGUỒN GOOGLE APPS SCRIPT (Code.gs) - ĐỒNG BỘ 2 CHIỀU 5 SHEET ISO 17025
+// Hỗ trợ chạy trên Google Apps Script Web App, GitHub Pages & Web Apps
+// =========================================================================
+
+// HÀM TẠO OUTPUT CHUẨN - ĐÈ CORS CHO GITHUB PAGES / WEB APPS & HỖ TRỢ JSONP
 function createJsonOutput(obj, e) {
   var jsonStr = JSON.stringify(obj);
+
+  // Hỗ trợ JSONP vượt rào cản CORS / Redirect 302 trên mọi trình duyệt
   var cb = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback).replace(/[^a-zA-Z0-9_$.]/g, '') : '';
   if (cb) {
-    return ContentService.createTextOutput(cb + '(' + jsonStr + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+    return ContentService.createTextOutput(cb + '(' + jsonStr + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
-  return ContentService.createTextOutput(jsonStr).setMimeType(ContentService.MimeType.JSON);
+
+  // Trả về JSON thuần chuẩn cho Fetch API
+  return ContentService.createTextOutput(jsonStr)
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// HÀM LẤY SPREADSHEET AN TOÀN (TRÁNH LỖI NULL KHI CHẠY WEB APP)
+function getTargetSpreadsheet(e, data) {
+  var ss = null;
+  var props = null;
+  try {
+    props = PropertiesService.getScriptProperties();
+  } catch (errProp) {}
+
+  try {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (ss && props) {
+      props.setProperty('ISO17025_SPREADSHEET_ID', ss.getId());
+    }
+    if (ss) return ss;
+  } catch (errActive) {}
+
+  var sheetId = '';
+  if (data && data.sheetId) sheetId = String(data.sheetId).trim();
+  else if (e && e.parameter && e.parameter.sheetId) sheetId = String(e.parameter.sheetId).trim();
+  else if (props) sheetId = props.getProperty('ISO17025_SPREADSHEET_ID') || '';
+
+  if (sheetId) {
+    try {
+      ss = SpreadsheetApp.openById(sheetId);
+      if (ss) return ss;
+    } catch (errOpen) {}
+  }
+
+  throw new Error('Không tìm thấy Google Sheet gắn với Script. Hãy mở mã này từ trong Google Sheet (Tiện ích mở rộng -> Apps Script) hoặc chạy hàm setupInitialSheets() một lần trong trình sửa mã.');
+}
+
+// Hàm khởi tạo nhanh (chạy 1 lần trong Apps Script Editor để cấp quyền và lưu ID Sheet)
+function setupInitialSheets() {
+  var ss = getTargetSpreadsheet();
+  return 'Đã kết nối thành công với Google Sheet: ' + ss.getName() + ' (ID: ' + ss.getId() + ')';
 }
 
 function doGet(e) {
-  var hasAction = Boolean(e && e.parameter && (e.parameter.action || e.parameter.callback));
-  var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action).trim() : '';
+  try {
+    var hasAction = Boolean(e && e.parameter && (e.parameter.action || e.parameter.callback || e.parameter.data || e.parameter.format === 'json'));
+    var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action).trim() : '';
 
-  // Nếu người dùng mở trực tiếp Web App URL trên trình duyệt (không truyền ?action=...), ưu tiên hiển thị giao diện HTML nếu có
-  if (!hasAction) {
-    var htmlFiles = ['index', 'Index', 'kiem_soat_tai_lieu_iso17025_configured', 'App'];
-    for (var i = 0; i < htmlFiles.length; i++) {
-      try {
-        return HtmlService.createHtmlOutputFromFile(htmlFiles[i])
-          .setTitle('Hệ Thống Kiểm Soát Tài Liệu Phòng Thử Nghiệm | ISO/IEC 17025:2017')
-          .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-          .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-      } catch (errHtml) {}
+    // Nếu người dùng mở trực tiếp Web App URL trên trình duyệt (không truyền ?action=...)
+    if (!hasAction) {
+      var htmlFiles = ['index', 'Index', 'kiem_soat_tai_lieu_iso17025_configured', 'App', 'app', 'Main', 'main'];
+      for (var i = 0; i < htmlFiles.length; i++) {
+        try {
+          return HtmlService.createHtmlOutputFromFile(htmlFiles[i])
+            .setTitle('Hệ Thống Kiểm Soát Tài Liệu Phòng Thử Nghiệm | ISO/IEC 17025:2017')
+            .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+            .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+        } catch (errHtml) {}
+      }
+      action = 'GET_ALL';
     }
-    action = 'GET_ALL';
-  }
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  if (action === 'GET_ACCOUNTS') {
-    return createJsonOutput({ status: 'success', accounts: getAccountsFromSheet(ss) }, e);
-  } else if (action === 'GET_DOCUMENTS') {
-    return createJsonOutput({ status: 'success', documents: getDocumentsFromSheet(ss) }, e);
-  } else if (action === 'GET_PLAN') {
-    return createJsonOutput({ status: 'success', plan: getPlanFromSheet(ss) }, e);
-  } else if (action === 'GET_EVENTS') {
-    return createJsonOutput({ status: 'success', events: getEventsFromSheet(ss) }, e);
-  } else if (action === 'GET_DISTRIBUTIONS') {
-    return createJsonOutput({ status: 'success', distributions: getDistributionsFromSheet(ss) }, e);
-  } else {
-    return createJsonOutput(getAllDataFromSpreadsheet(ss), e);
+    var ss = getTargetSpreadsheet(e, null);
+
+    // Hỗ trợ lưu dữ liệu nhỏ qua GET/JSONP khi cần
+    if (e && e.parameter && e.parameter.data && (action === 'EXPORT_ACCOUNTS' || action === 'SAVE_DATA')) {
+      var lock = LockService.getScriptLock();
+      lock.tryLock(20000);
+      try {
+        var payloadObj = JSON.parse(e.parameter.data);
+        savePayloadToSpreadsheet(ss, payloadObj);
+        SpreadsheetApp.flush();
+        return createJsonOutput({ status: 'success', message: 'Đã lưu dữ liệu lên Google Sheet thành công!' }, e);
+      } finally {
+        try { lock.releaseLock(); } catch (eLock) {}
+      }
+    }
+
+    if (action === 'GET_ACCOUNTS') {
+      return createJsonOutput({ status: 'success', accounts: getAccountsFromSheet(ss) }, e);
+    } else if (action === 'GET_DOCUMENTS') {
+      return createJsonOutput({ status: 'success', documents: getDocumentsFromSheet(ss) }, e);
+    } else if (action === 'GET_PLAN') {
+      return createJsonOutput({ status: 'success', plan: getPlanFromSheet(ss) }, e);
+    } else if (action === 'GET_EVENTS') {
+      return createJsonOutput({ status: 'success', events: getEventsFromSheet(ss) }, e);
+    } else if (action === 'GET_DISTRIBUTIONS') {
+      return createJsonOutput({ status: 'success', distributions: getDistributionsFromSheet(ss) }, e);
+    } else {
+      return createJsonOutput(getAllDataFromSpreadsheet(ss), e);
+    }
+  } catch (err) {
+    return createJsonOutput({ status: 'error', message: err.toString() }, e);
   }
 }
 
 function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(30000);
+  var lock = null;
   try {
-    var raw = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
-    var data = JSON.parse(raw);
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    // Nhận diện và bẫy lỗi dữ liệu POST từ GitHub Pages / Web App (JSON raw hoặc form-url-encoded)
+    var raw = '{}';
+    if (e && e.parameter && e.parameter.data) {
+      raw = e.parameter.data;
+    } else if (e && e.postData && e.postData.contents) {
+      raw = e.postData.contents;
+      // Trường hợp gửi dạng form-urlencoded "data=%7B...%7D" trong postData.contents
+      if (raw.indexOf('data=') === 0 && raw.charAt(0) !== '{') {
+        try {
+          raw = decodeURIComponent(raw.substring(5).replace(/\+/g, ' '));
+        } catch (errDecode) {}
+      }
+    }
+
+    var data = typeof raw === 'string' ? JSON.parse(raw) : (raw || {});
+    var ss = getTargetSpreadsheet(e, data);
     var action = data.action || 'EXPORT_ALL';
 
-    // Hỗ trợ truy vấn dữ liệu qua POST (dự phòng khi doGet trả về HTML)
+    // Nếu là truy vấn đọc dữ liệu qua POST thì trả về ngay không cần khóa LockService
     if (action === 'GET_ALL') {
       return createJsonOutput(getAllDataFromSpreadsheet(ss), e);
     } else if (action === 'GET_ACCOUNTS') {
       return createJsonOutput({ status: 'success', accounts: getAccountsFromSheet(ss) }, e);
+    } else if (action === 'GET_DOCUMENTS') {
+      return createJsonOutput({ status: 'success', documents: getDocumentsFromSheet(ss) }, e);
+    } else if (action === 'GET_PLAN') {
+      return createJsonOutput({ status: 'success', plan: getPlanFromSheet(ss) }, e);
+    } else if (action === 'GET_EVENTS') {
+      return createJsonOutput({ status: 'success', events: getEventsFromSheet(ss) }, e);
+    } else if (action === 'GET_DISTRIBUTIONS') {
+      return createJsonOutput({ status: 'success', distributions: getDistributionsFromSheet(ss) }, e);
     }
 
+    // Khóa LockService khi ghi dữ liệu vào Spreadsheet
+    lock = LockService.getScriptLock();
+    lock.tryLock(30000);
+
     savePayloadToSpreadsheet(ss, data);
+    SpreadsheetApp.flush();
 
     return createJsonOutput({
       status: 'success',
@@ -7545,22 +7637,27 @@ function doPost(e) {
   } catch (err) {
     return createJsonOutput({ status: 'error', message: err.toString() }, e);
   } finally {
-    lock.releaseLock();
+    if (lock) {
+      try { lock.releaseLock(); } catch (errRelease) {}
+    }
   }
 }
 
-// Các hàm cầu nối trực tiếp cho google.script.run khi chạy Web App trên Google Apps Script
+// =========================================================================
+// CÁC HÀM CẦU NỐI CHO GOOGLE.SCRIPT.RUN (KHI CHẠY TRỰC TIẾP TRÊN GAS WEB APP)
+// Dùng JSON.parse(JSON.stringify(...)) để tránh lỗi null do đối tượng Date
+// =========================================================================
 function gasGetWebAppUrl() {
   try {
-    return ScriptApp.getService().getUrl();
+    return ScriptApp.getService().getUrl() || '';
   } catch (e) {
     return '';
   }
 }
 
 function gasGetAllData() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  return getAllDataFromSpreadsheet(ss);
+  var ss = getTargetSpreadsheet();
+  return JSON.parse(JSON.stringify(getAllDataFromSpreadsheet(ss)));
 }
 
 function gasSaveAllData(rawJson) {
@@ -7568,24 +7665,32 @@ function gasSaveAllData(rawJson) {
   lock.tryLock(30000);
   try {
     var data = typeof rawJson === 'string' ? JSON.parse(rawJson) : rawJson;
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = getTargetSpreadsheet(null, data);
     savePayloadToSpreadsheet(ss, data);
+    SpreadsheetApp.flush();
     return { status: 'success', message: 'Đồng bộ 5 sheet thành công!' };
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch (e) {}
   }
 }
 
 function gasGetAccounts() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  return { status: 'success', accounts: getAccountsFromSheet(ss) };
+  var ss = getTargetSpreadsheet();
+  return JSON.parse(JSON.stringify({ status: 'success', accounts: getAccountsFromSheet(ss) }));
 }
 
 function gasSaveAccounts(rawAccounts) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var accounts = typeof rawAccounts === 'string' ? JSON.parse(rawAccounts) : rawAccounts;
-  saveAccountsToSheet(ss, accounts);
-  return { status: 'success' };
+  var lock = LockService.getScriptLock();
+  lock.tryLock(30000);
+  try {
+    var ss = getTargetSpreadsheet();
+    var accounts = typeof rawAccounts === 'string' ? JSON.parse(rawAccounts) : rawAccounts;
+    saveAccountsToSheet(ss, accounts);
+    SpreadsheetApp.flush();
+    return { status: 'success' };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
 }
 
 function getAllDataFromSpreadsheet(ss) {
@@ -7601,34 +7706,42 @@ function getAllDataFromSpreadsheet(ss) {
 
 function savePayloadToSpreadsheet(ss, data) {
   var action = data.action || 'EXPORT_ALL';
+  var allowEmpty = Boolean(data.allowEmpty);
+
   if (action === 'EXPORT_ALL' || action === 'EXPORT_DOCUMENTS' || action === 'AUTO_SYNC') {
     if (data.documents && Array.isArray(data.documents)) {
-      saveDocumentsToSheet(ss, data.documents);
-      savePlanToSheet(ss, data.documents, data.plan);
+      saveDocumentsToSheet(ss, data.documents, allowEmpty);
+      savePlanToSheet(ss, data.documents, data.plan, allowEmpty);
     }
     if (data.events && Array.isArray(data.events)) {
-      saveEventsToSheet(ss, data.events);
+      saveEventsToSheet(ss, data.events, allowEmpty);
     }
     if (data.distributions && Array.isArray(data.distributions)) {
-      saveDistributionsToSheet(ss, data.distributions);
+      saveDistributionsToSheet(ss, data.distributions, allowEmpty);
     }
     if (data.accounts && Array.isArray(data.accounts)) {
       saveAccountsToSheet(ss, data.accounts);
     }
   } else if (action === 'EXPORT_PLAN') {
-    if (data.plan && Array.isArray(data.plan)) savePlanToSheet(ss, data.documents || [], data.plan);
+    if (data.plan && Array.isArray(data.plan)) savePlanToSheet(ss, data.documents || [], data.plan, allowEmpty);
   } else if (action === 'EXPORT_EVENTS') {
-    if (data.events && Array.isArray(data.events)) saveEventsToSheet(ss, data.events);
+    if (data.events && Array.isArray(data.events)) saveEventsToSheet(ss, data.events, allowEmpty);
   } else if (action === 'EXPORT_DISTRIBUTIONS') {
-    if (data.distributions && Array.isArray(data.distributions)) saveDistributionsToSheet(ss, data.distributions);
+    if (data.distributions && Array.isArray(data.distributions)) saveDistributionsToSheet(ss, data.distributions, allowEmpty);
   } else if (action === 'EXPORT_ACCOUNTS') {
     if (data.accounts && Array.isArray(data.accounts)) saveAccountsToSheet(ss, data.accounts);
   }
 }
 
 function findHeaderRowIndex(data, keywords) {
-  for (var i = 0; i < Math.min(10, data.length); i++) {
-    var rowStr = JSON.stringify(data[i] || []).toLowerCase();
+  for (var i = 0; i < Math.min(12, data.length); i++) {
+    var row = data[i] || [];
+    var nonEmpty = 0;
+    for (var c = 0; c < row.length; c++) {
+      if (row[c] !== null && row[c] !== undefined && String(row[c]).trim() !== '') nonEmpty++;
+    }
+    if (nonEmpty < 2) continue;
+    var rowStr = JSON.stringify(row).toLowerCase();
     for (var k = 0; k < keywords.length; k++) {
       if (rowStr.indexOf(keywords[k]) !== -1) return i;
     }
@@ -7649,7 +7762,8 @@ function findColIndex(headers, keywords, exclude) {
 
 function formatDateCell(val) {
   if (val === null || val === undefined || val === '') return '';
-  if (val instanceof Date) {
+  if (Object.prototype.toString.call(val) === '[object Date]' || val instanceof Date) {
+    if (isNaN(val.getTime())) return '';
     return Utilities.formatDate(val, Session.getScriptTimeZone() || 'GMT+7', 'yyyy-MM-dd');
   }
   var str = String(val).trim();
@@ -7666,8 +7780,10 @@ function formatDateCell(val) {
 }
 
 // 1. SHEET DM_TaiLieu
-function saveDocumentsToSheet(ss, list) {
+function saveDocumentsToSheet(ss, list, allowEmpty) {
   var sheet = ss.getSheetByName('DM_TaiLieu') || ss.insertSheet('DM_TaiLieu');
+  if ((!list || list.length === 0) && !allowEmpty && sheet.getLastRow() > 1) return;
+
   sheet.clear();
   var headers = [
     'STT', 'Mã hiệu tài liệu', 'Tên tài liệu', 'Loại tài liệu', 'Số trang',
@@ -7683,29 +7799,29 @@ function saveDocumentsToSheet(ss, list) {
   var rows = list.map(function(doc, idx) {
     return [
       idx + 1,
-      doc.code || '',
-      doc.name || '',
-      doc.type || '',
-      doc.pages || 1,
-      doc.issueNo || '01',
-      doc.issueDate || '',
-      doc.revNo || '00',
-      doc.revDate || '',
-      doc.drafterName || '',
-      doc.drafterRole || '',
-      doc.checkerName || '',
-      doc.checkerRole || '',
-      doc.approverName || '',
-      doc.approverRole || '',
-      doc.status || 'LATEST',
-      doc.lastReviewedDate || '',
-      doc.nextReviewDate || '',
-      doc.fileUrl || (doc.fileAttachment && doc.fileAttachment.fileUrl) || '',
-      doc.content || ''
+      String(doc.code || ''),
+      String(doc.name || ''),
+      String(doc.type || ''),
+      Number(doc.pages) || 1,
+      String(doc.issueNo || '01'),
+      formatDateCell(doc.issueDate),
+      String(doc.revNo || '00'),
+      formatDateCell(doc.revDate),
+      String(doc.drafterName || ''),
+      String(doc.drafterRole || ''),
+      String(doc.checkerName || ''),
+      String(doc.checkerRole || ''),
+      String(doc.approverName || ''),
+      String(doc.approverRole || ''),
+      String(doc.status || 'LATEST'),
+      formatDateCell(doc.lastReviewedDate),
+      formatDateCell(doc.nextReviewDate),
+      String(doc.fileUrl || (doc.fileAttachment && doc.fileAttachment.fileUrl) || ''),
+      String(doc.content || '')
     ];
   });
   sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.autoResizeColumns(1, 15);
+  try { sheet.autoResizeColumns(1, 10); } catch (e) {}
 }
 
 function getDocumentsFromSheet(ss) {
@@ -7714,7 +7830,7 @@ function getDocumentsFromSheet(ss) {
     var sheets = ss.getSheets();
     for (var s = 0; s < sheets.length; s++) {
       var sName = sheets[s].getName().trim().toLowerCase();
-      if (!sName.includes('kehoach') && !sName.includes('nhatky') && !sName.includes('phanphoi') && !sName.includes('taikhoan')) {
+      if (sName.indexOf('kehoach') === -1 && sName.indexOf('nhatky') === -1 && sName.indexOf('phanphoi') === -1 && sName.indexOf('taikhoan') === -1) {
         sheet = sheets[s];
         break;
       }
@@ -7755,11 +7871,12 @@ function getDocumentsFromSheet(ss) {
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
     if (!code && !name) continue;
+    if (code.toLowerCase() === 'mã hiệu tài liệu' || code.toLowerCase() === 'mã hiệu') continue;
 
     var fileUrlVal = colUrl !== -1 ? String(r[colUrl] || '').trim() : '';
     list.push({
       id: 'doc_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
+      stt: colStt !== -1 && Number(r[colStt]) ? Number(r[colStt]) : (list.length + 1),
       code: code,
       name: name,
       type: colType !== -1 ? String(r[colType] || 'Quy trình quản lý').trim() : 'Quy trình quản lý',
@@ -7785,8 +7902,11 @@ function getDocumentsFromSheet(ss) {
 }
 
 // 2. SHEET KeHoach_SoatXet
-function savePlanToSheet(ss, docsList, customPlan) {
+function savePlanToSheet(ss, docsList, customPlan, allowEmpty) {
   var sheet = ss.getSheetByName('KeHoach_SoatXet') || ss.insertSheet('KeHoach_SoatXet');
+  var hasData = (customPlan && customPlan.length > 0) || (docsList && docsList.length > 0);
+  if (!hasData && !allowEmpty && sheet.getLastRow() > 1) return;
+
   sheet.clear();
   var headers = ['STT', 'Mã hiệu', 'Tên tài liệu', 'Loại tài liệu', 'Phiên bản', 'Ngày hiệu lực', 'Hạn rà soát (+12T)', 'Người soát xét', 'Người phê duyệt', 'Tình trạng', 'Ghi chú'];
   sheet.appendRow(headers);
@@ -7797,10 +7917,10 @@ function savePlanToSheet(ss, docsList, customPlan) {
   if (customPlan && Array.isArray(customPlan) && customPlan.length > 0) {
     customPlan.forEach(function(item) {
       rows.push([
-        idx++, item.code || '', item.name || '', item.type || '', item.revNo || 'Rev 00',
+        idx++, String(item.code || ''), String(item.name || ''), String(item.type || ''), String(item.revNo || 'Rev 00'),
         formatDateCell(item.effectiveDate || item.lastReviewedDate || item.revDate || item.issueDate),
         formatDateCell(item.reviewDueDate || item.nextReviewDate),
-        item.checker || '', item.approver || '', item.status || 'Đang hiệu lực', item.note || ''
+        String(item.checker || ''), String(item.approver || ''), String(item.status || 'Đang hiệu lực'), String(item.note || '')
       ]);
     });
   } else if (docsList && docsList.length > 0) {
@@ -7816,15 +7936,15 @@ function savePlanToSheet(ss, docsList, customPlan) {
         }
       }
       rows.push([
-        idx++, doc.code || '', doc.name || '', doc.type || '', 'Rev ' + (doc.revNo || '00'),
+        idx++, String(doc.code || ''), String(doc.name || ''), String(doc.type || ''), 'Rev ' + String(doc.revNo || '00'),
         formatDateCell(effDate), formatDateCell(nextDate),
-        doc.checkerName || 'Trưởng ban QLCL', doc.approverName || 'Giám đốc PTN',
-        doc.status || 'Đang hiệu lực', doc.content || ''
+        String(doc.checkerName || 'Trưởng ban QLCL'), String(doc.approverName || 'Giám đốc PTN'),
+        String(doc.status || 'Đang hiệu lực'), String(doc.content || '')
       ]);
     });
   }
   if (rows.length > 0) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.autoResizeColumns(1, headers.length);
+  try { sheet.autoResizeColumns(1, 10); } catch (e) {}
 }
 
 function getPlanFromSheet(ss) {
@@ -7853,8 +7973,9 @@ function getPlanFromSheet(ss) {
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
     if (!code && !name) continue;
+    if (code.toLowerCase() === 'mã hiệu') continue;
     list.push({
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
+      stt: colStt !== -1 && Number(r[colStt]) ? Number(r[colStt]) : (list.length + 1),
       code: code,
       name: name,
       type: colType !== -1 ? String(r[colType] || '').trim() : '',
@@ -7871,8 +7992,10 @@ function getPlanFromSheet(ss) {
 }
 
 // 3. SHEET NhatKy_SuKien
-function saveEventsToSheet(ss, events) {
+function saveEventsToSheet(ss, events, allowEmpty) {
   var sheet = ss.getSheetByName('NhatKy_SuKien') || ss.insertSheet('NhatKy_SuKien');
+  if ((!events || events.length === 0) && !allowEmpty && sheet.getLastRow() > 1) return;
+
   sheet.clear();
   var headers = ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Loại sự kiện', 'Ngày thực hiện', 'Lần BH', 'Lần SĐ', 'Người đề xuất', 'Người kiểm tra', 'Người phê duyệt', 'Căn cứ / Số QĐ', 'Nội dung chi tiết / Kết quả'];
   sheet.appendRow(headers);
@@ -7881,13 +8004,13 @@ function saveEventsToSheet(ss, events) {
 
   var rows = events.map(function(ev, idx) {
     return [
-      idx + 1, ev.docCode || '', ev.docName || '', ev.type || '', formatDateCell(ev.date),
-      ev.issueNo || '01', ev.revNo || '00', ev.proposer || '', ev.checker || '', ev.approver || '',
-      ev.decisionNo || '', ev.content || ''
+      idx + 1, String(ev.docCode || ''), String(ev.docName || ''), String(ev.type || ''), formatDateCell(ev.date),
+      String(ev.issueNo || '01'), String(ev.revNo || '00'), String(ev.proposer || ''), String(ev.checker || ''), String(ev.approver || ''),
+      String(ev.decisionNo || ''), String(ev.content || '')
     ];
   });
   sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.autoResizeColumns(1, headers.length);
+  try { sheet.autoResizeColumns(1, 10); } catch (e) {}
 }
 
 function getEventsFromSheet(ss) {
@@ -7917,10 +8040,11 @@ function getEventsFromSheet(ss) {
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
     if (!code && !name) continue;
+    if (code.toLowerCase() === 'mã tài liệu') continue;
 
     list.push({
       id: 'evt_sheet_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
+      stt: colStt !== -1 && Number(r[colStt]) ? Number(r[colStt]) : (list.length + 1),
       docCode: code,
       docName: name,
       type: colType !== -1 ? String(r[colType] || 'Sửa đổi').trim() : 'Sửa đổi',
@@ -7939,8 +8063,10 @@ function getEventsFromSheet(ss) {
 }
 
 // 4. SHEET So_PhanPhoi
-function saveDistributionsToSheet(ss, distributions) {
+function saveDistributionsToSheet(ss, distributions, allowEmpty) {
   var sheet = ss.getSheetByName('So_PhanPhoi') || ss.insertSheet('So_PhanPhoi');
+  if ((!distributions || distributions.length === 0) && !allowEmpty && sheet.getLastRow() > 1) return;
+
   sheet.clear();
   var headers = ['STT', 'Mã tài liệu', 'Tên tài liệu', 'Bản số', 'Lần BH', 'Lần SĐ', 'Đơn vị nhận', 'Thời gian nhận', 'Loại tài liệu / Hình thức', 'Người nhận', 'Người phân phối', 'Tình trạng', 'Ngày thu hồi', 'Ghi chú'];
   sheet.appendRow(headers);
@@ -7949,13 +8075,13 @@ function saveDistributionsToSheet(ss, distributions) {
 
   var rows = distributions.map(function(d, idx) {
     return [
-      idx + 1, d.docCode || '', d.docName || '', d.copyNo || 'Bản số 01', d.issueNo || '01', d.revNo || '00',
-      d.recipientDept || '', formatDateCell(d.receiveDate), d.docType || '', d.recipient || '', d.distributor || '',
-      d.status || '', formatDateCell(d.recallDate), d.note || ''
+      idx + 1, String(d.docCode || ''), String(d.docName || ''), String(d.copyNo || 'Bản số 01'), String(d.issueNo || '01'), String(d.revNo || '00'),
+      String(d.recipientDept || ''), formatDateCell(d.receiveDate), String(d.docType || ''), String(d.recipient || ''), String(d.distributor || ''),
+      String(d.status || ''), formatDateCell(d.recallDate), String(d.note || '')
     ];
   });
   sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.autoResizeColumns(1, headers.length);
+  try { sheet.autoResizeColumns(1, 12); } catch (e) {}
 }
 
 function getDistributionsFromSheet(ss) {
@@ -7987,10 +8113,11 @@ function getDistributionsFromSheet(ss) {
     var code = colCode !== -1 ? String(r[colCode] || '').trim() : '';
     var name = colName !== -1 ? String(r[colName] || '').trim() : '';
     if (!code && !name) continue;
+    if (code.toLowerCase() === 'mã tài liệu') continue;
 
     list.push({
       id: 'dist_sheet_' + i,
-      stt: colStt !== -1 && r[colStt] ? r[colStt] : list.length + 1,
+      stt: colStt !== -1 && Number(r[colStt]) ? Number(r[colStt]) : (list.length + 1),
       docCode: code,
       docName: name,
       copyNo: colCopyNo !== -1 ? String(r[colCopyNo] || 'Bản số 01').trim() : 'Bản số 01',
@@ -8012,20 +8139,21 @@ function getDistributionsFromSheet(ss) {
 // 5. SHEET TaiKhoan
 function saveAccountsToSheet(ss, accounts) {
   var sheet = ss.getSheetByName('TaiKhoan') || ss.insertSheet('TaiKhoan');
+  if (!accounts || accounts.length === 0) return;
+
   sheet.clear();
   var headers = ['STT', 'Tên đăng nhập', 'Mật khẩu', 'Họ và tên cán bộ', 'Quyền hạn', 'Phòng ban', 'Ghi chú', 'Ngày tạo'];
   sheet.appendRow(headers);
   sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#4338ca').setFontColor('#ffffff');
-  if (!accounts || accounts.length === 0) return;
 
   var rows = accounts.map(function(acc, idx) {
     return [
-      idx + 1, acc.username || '', acc.password || '', acc.fullName || '', acc.role || 'viewer',
-      acc.dept || 'Phòng KN Hóa học', acc.note || '', acc.createdAt || Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'GMT+7', 'yyyy-MM-dd')
+      idx + 1, String(acc.username || ''), String(acc.password || ''), String(acc.fullName || ''), String(acc.role || 'viewer'),
+      String(acc.dept || 'Phòng KN Hóa học'), String(acc.note || ''), formatDateCell(acc.createdAt) || Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'GMT+7', 'yyyy-MM-dd')
     ];
   });
   sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.autoResizeColumns(1, headers.length);
+  try { sheet.autoResizeColumns(1, headers.length); } catch (e) {}
 }
 
 function getAccountsFromSheet(ss) {
@@ -8040,7 +8168,7 @@ function getAccountsFromSheet(ss) {
     var r = data[i];
     var u = String(r[1] || '').trim();
     var p = String(r[2] || '').trim();
-    if (!u) continue;
+    if (!u || u.toLowerCase() === 'tên đăng nhập') continue;
     accounts.push({
       id: 'acc_' + i,
       username: u,
@@ -8095,7 +8223,7 @@ function getAccountsFromSheet(ss) {
       copyTextSafe(GOOGLE_APPS_SCRIPT_DOC_CODE.trim(), 'Đã sao chép mã Google Apps Script vào Clipboard!');
     }
 
-    function fetchViaJsonp(url, action = 'GET_ALL', timeoutMs = 18000) {
+    function fetchViaJsonp(url, action = 'GET_ALL', timeoutMs = 15000, extraParams = {}) {
       return new Promise((resolve, reject) => {
         const cbName = '__iso17025GsheetCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
         const script = document.createElement('script');
@@ -8115,92 +8243,195 @@ function getAccountsFromSheet(ss) {
 
         window[cbName] = function(data) {
           cleanup();
-          resolve(data);
+          if (data && data.status === 'error') {
+            reject(new Error(data.message || 'Lỗi từ Google Apps Script'));
+          } else {
+            resolve(data);
+          }
         };
 
         script.onerror = function() {
           cleanup();
-          reject(new Error('Không thể kết nối tới Web App URL (kiểm tra quyền truy cập Anyone)'));
+          reject(new Error('Không thể kết nối tới Web App URL (Hãy kiểm tra quyền truy cập "Bất kỳ ai / Anyone" khi triển khai)'));
         };
 
         const sep = url.includes('?') ? '&' : '?';
-        script.src = `${url}${sep}action=${encodeURIComponent(action)}&callback=${encodeURIComponent(cbName)}&_t=${Date.now()}`;
+        let query = `${sep}action=${encodeURIComponent(action)}&format=json&callback=${encodeURIComponent(cbName)}&_t=${Date.now()}`;
+        if (extraParams && typeof extraParams === 'object') {
+          Object.keys(extraParams).forEach(k => {
+            if (extraParams[k] !== undefined && extraParams[k] !== null) {
+              query += `&${encodeURIComponent(k)}=${encodeURIComponent(String(extraParams[k]))}`;
+            }
+          });
+        }
+        script.src = url + query;
         document.body.appendChild(script);
       });
     }
 
     async function fetchFromGoogleSheetEndpoint(url, action = 'GET_ALL') {
-      const sep = url.includes('?') ? '&' : '?';
-      const fetchUrl = `${url}${sep}action=${encodeURIComponent(action)}&_t=${Date.now()}`;
+      const cleanUrl = (url || '').trim();
+      const sep = cleanUrl.includes('?') ? '&' : '?';
+      const fetchUrl = `${cleanUrl}${sep}action=${encodeURIComponent(action)}&format=json&_t=${Date.now()}`;
 
-      // Bước 1: Thử GET chuẩn (CORS simple request)
+      // Nếu là URL thử nghiệm (/dev), ưu tiên dùng JSONP ngay vì /dev yêu cầu cookie trình duyệt và chặn CORS fetch
+      if (cleanUrl.endsWith('/dev') || cleanUrl.includes('/dev?')) {
+        return await fetchViaJsonp(cleanUrl, action);
+      }
+
+      // Bước 1: Thử GET chuẩn (CORS simple request) với timeout 7s
       try {
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timeoutId = controller ? setTimeout(() => controller.abort(), 7000) : null;
         const res = await fetch(fetchUrl, {
           method: 'GET',
           redirect: 'follow',
-          credentials: 'omit'
+          credentials: 'omit',
+          signal: controller ? controller.signal : undefined
         });
+        if (timeoutId) clearTimeout(timeoutId);
         if (res.ok) {
           const text = await res.text();
           const trimmed = text.trim();
           if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-            return JSON.parse(trimmed);
+            const parsed = JSON.parse(trimmed);
+            if (parsed && parsed.status === 'error') {
+              throw new Error(parsed.message || 'Lỗi từ Google Apps Script');
+            }
+            return parsed;
           }
         }
       } catch (errGet) {
-        console.warn('GET fetch fallback:', errGet);
-      }
-
-      // Bước 2: Dự phòng gọi POST (text/plain) nếu doGet trên Apps Script đang trả về trang HTML thay vì JSON
-      try {
-        const postRes = await fetch(url, {
-          method: 'POST',
-          redirect: 'follow',
-          credentials: 'omit',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: action })
-        });
-        if (postRes.ok) {
-          const postText = await postRes.text();
-          const trimmedPost = postText.trim();
-          if (trimmedPost.startsWith('{') || trimmedPost.startsWith('[')) {
-            return JSON.parse(trimmedPost);
-          }
+        if (errGet && errGet.message && errGet.message.includes('Google Sheet')) {
+          throw errGet;
         }
-      } catch (errPost) {
-        console.warn('POST fetch fallback:', errPost);
+        console.warn('GET fetch fallback to JSONP:', errGet);
       }
 
-      // Bước 3: Dự phòng JSONP qua cơ chế JSONP (vượt hoàn toàn rào cản CORS trên GitHub Pages / Safari / Brave)
-      return await fetchViaJsonp(url, action);
+      // Bước 2: Dự phòng JSONP qua thẻ <script> (vượt hoàn toàn rào cản CORS / Redirect 302 trên GitHub Pages, Canvas, Safari)
+      try {
+        return await fetchViaJsonp(cleanUrl, action);
+      } catch (errJsonp) {
+        console.warn('JSONP fallback to POST:', errJsonp);
+        if (errJsonp && errJsonp.message && errJsonp.message.includes('Google Sheet')) {
+          throw errJsonp;
+        }
+      }
+
+      // Bước 3: Dự phòng gọi POST (text/plain) nếu doGet trên Apps Script đang trả về trang HTML
+      const postRes = await fetch(cleanUrl, {
+        method: 'POST',
+        redirect: 'follow',
+        credentials: 'omit',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action })
+      });
+      if (postRes.ok) {
+        const postText = await postRes.text();
+        const trimmedPost = postText.trim();
+        if (trimmedPost.startsWith('{') || trimmedPost.startsWith('[')) {
+          const parsedPost = JSON.parse(trimmedPost);
+          if (parsedPost && parsedPost.status === 'error') {
+            throw new Error(parsedPost.message || 'Lỗi từ Google Apps Script');
+          }
+          return parsedPost;
+        }
+      }
+      throw new Error('Không nhận được phản hồi JSON hợp lệ từ Web App URL.');
+    }
+
+    function sendViaHiddenFormIframe(url, bodyStr) {
+      return new Promise((resolve) => {
+        try {
+          const iframeName = '__gas_post_iframe_' + Date.now();
+          const iframe = document.createElement('iframe');
+          iframe.name = iframeName;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = url;
+          form.target = iframeName;
+          form.enctype = 'application/x-www-form-urlencoded';
+          form.style.display = 'none';
+
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'data';
+          input.value = bodyStr;
+          form.appendChild(input);
+          document.body.appendChild(form);
+
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            setTimeout(() => {
+              if (form.parentNode) form.parentNode.removeChild(form);
+              if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+            }, 1000);
+            resolve(true);
+          };
+
+          iframe.onload = finish;
+          setTimeout(finish, 4500);
+          form.submit();
+        } catch (e) {
+          resolve(false);
+        }
+      });
     }
 
     async function postToGoogleSheetEndpoint(url, payload) {
+      const cleanUrl = (url || '').trim();
       const bodyStr = JSON.stringify(payload);
-      // Thử gửi POST với text/plain;charset=utf-8 (CORS simple request không gây lỗi OPTIONS preflight)
+
+      // Tầng 1: Gửi POST với text/plain;charset=utf-8 (CORS simple request không gây lỗi OPTIONS preflight)
       try {
-        const res = await fetch(url, {
+        const res = await fetch(cleanUrl, {
           method: 'POST',
           redirect: 'follow',
           credentials: 'omit',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: bodyStr
         });
-        if (res && (res.ok || res.type === 'opaque')) {
+        if (res && res.ok) {
+          const txt = await res.text();
+          const trimmed = txt.trim();
+          if (trimmed.startsWith('{')) {
+            const parsed = JSON.parse(trimmed);
+            if (parsed.status === 'error') {
+              throw new Error(parsed.message || 'Lỗi lưu dữ liệu trên Google Apps Script');
+            }
+          }
           return true;
         }
       } catch (errCors) {
-        // Dự phòng no-cors với text/plain;charset=utf-8
-        await fetch(url, {
+        if (errCors && errCors.message && (errCors.message.includes('Google Sheet') || errCors.message.includes('Google Apps Script') || errCors.message.includes('TypeError') === false)) {
+          throw errCors;
+        }
+        console.warn('CORS POST fallback triggered:', errCors);
+      }
+
+      // Tầng 2: Gửi POST dạng application/x-www-form-urlencoded (khớp với e.parameter.data trong doPost của Code.gs)
+      try {
+        const formBody = new URLSearchParams();
+        formBody.set('data', bodyStr);
+        await fetch(cleanUrl, {
           method: 'POST',
           mode: 'no-cors',
           credentials: 'omit',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: bodyStr
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+          body: formBody.toString()
         });
         return true;
+      } catch (errFormFetch) {
+        // Tầng 3: Gửi qua hidden <form target="iframe"> vượt tường lửa CORS trong mọi WebView/Iframe
+        const ok = await sendViaHiddenFormIframe(cleanUrl, bodyStr);
+        if (ok) return true;
+        throw errFormFetch;
       }
-      return true;
     }
 
     // Đồng bộ 2 chiều thông minh khi bấm nút "Đồng Bộ Dữ Liệu Google Sheet"
@@ -8211,7 +8442,7 @@ function getAccountsFromSheet(ss) {
         openModal('modal-google-sheet');
         return;
       }
-      // Nếu người dùng vừa có thay đổi cục bộ (thêm/sửa/nhập Excel) và bấm đồng bộ thủ công, đẩy lên trước rồi đồng bộ
+      // Nếu người dùng vừa có thay đổi cục bộ (thêm/sửa/nhập Excel) và bấm đồng bộ thủ công, đẩy lên trước rồi nạp lại
       if (isManual && appState.hasUnsavedLocalChanges && appState.documents.length > 0 && !url.includes('docs.google.com/spreadsheets')) {
         await exportToGoogleSheet();
         appState.hasUnsavedLocalChanges = false;
@@ -8221,7 +8452,7 @@ function getAccountsFromSheet(ss) {
       return importFromGoogleSheet({ isAuto: !isManual, silent: !isManual, isManual: isManual });
     }
 
-    async function exportToGoogleSheet() {
+    async function exportToGoogleSheet(allowEmpty = false) {
       const url = getEffectiveGsheetUrl();
       if (!url && !isRunningInGas()) {
         showToast('Vui lòng nhập URL Ứng dụng web Google Apps Script trước!', 'warning');
@@ -8233,6 +8464,7 @@ function getAccountsFromSheet(ss) {
 
       const payload = {
         action: 'EXPORT_ALL',
+        allowEmpty: Boolean(allowEmpty),
         timestamp: new Date().toISOString(),
         documents: appState.documents,
         plan: generateReviewPlanFromDocuments(),
@@ -8244,7 +8476,12 @@ function getAccountsFromSheet(ss) {
       if (isRunningInGas() && typeof google.script.run.gasSaveAllData === 'function') {
         return new Promise((resolve) => {
           google.script.run
-            .withSuccessHandler(() => {
+            .withSuccessHandler((res) => {
+              if (res && res.status === 'error') {
+                showToast('Lỗi lưu Google Sheet: ' + (res.message || ''), 'warning');
+                resolve(false);
+                return;
+              }
               appState.hasUnsavedLocalChanges = false;
               const nowStr = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
               safeSetStorage('ISO17025_LAST_SYNC_TIME', nowStr);
@@ -8484,7 +8721,8 @@ function getAccountsFromSheet(ss) {
       return false;
     }
 
-    function applySyncedGoogleSheetData(data, isAuto = false) {
+    function applySyncedGoogleSheetData(rawData, isAuto = false) {
+      const data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
       let countMsg = [];
       if (data && data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
         const existingDocsMap = new Map();
@@ -8667,7 +8905,12 @@ function getAccountsFromSheet(ss) {
       // 1. Nếu chạy trực tiếp bên trong Google Apps Script Web App (HtmlService), ưu tiên gọi google.script.run
       if (isRunningInGas() && typeof google.script.run.gasGetAllData === 'function') {
         google.script.run
-          .withSuccessHandler((data) => {
+          .withSuccessHandler((rawRes) => {
+            const data = typeof rawRes === 'string' ? JSON.parse(rawRes) : rawRes;
+            if (data && data.status === 'error') {
+              if (!isAuto) showToast('Lỗi từ Google Sheet: ' + data.message, 'warning');
+              return;
+            }
             const countMsg = applySyncedGoogleSheetData(data, isAuto);
             closeModal('modal-google-sheet');
             if (countMsg.length > 0) {
@@ -8754,7 +8997,7 @@ function getAccountsFromSheet(ss) {
       } catch(err) {
         console.error('Lỗi nạp từ Google Sheet:', err);
         if (!isAuto || appState.documents.length === 0) {
-          showToast('Lỗi kết nối Google Sheet: ' + err.message + '. Hãy kiểm tra lại URL Web App và quyền truy cập "Anyone".', 'warning');
+          showToast('Lỗi kết nối Google Sheet: ' + err.message, 'warning');
         }
         if (appState.documents.length === 0) {
           renderDocumentList();
@@ -8776,14 +9019,18 @@ function getAccountsFromSheet(ss) {
 
       if (isRunningInGas() && typeof google.script.run.gasSaveAllData === 'function') {
         try {
-          google.script.run.gasSaveAllData(JSON.stringify(payload));
+          google.script.run.withSuccessHandler(() => {
+            appState.hasUnsavedLocalChanges = false;
+          }).gasSaveAllData(JSON.stringify(payload));
         } catch (e) {}
         return;
       }
 
       if (!url || !url.startsWith('http')) return;
       if (url.includes('docs.google.com/spreadsheets')) return;
-      postToGoogleSheetEndpoint(url, payload).catch(e => console.log('Auto sync silent fail:', e));
+      postToGoogleSheetEndpoint(url, payload).then(() => {
+        appState.hasUnsavedLocalChanges = false;
+      }).catch(e => console.log('Auto sync silent fail:', e));
     }
 
     function detectGoogleSheetUrl() {
