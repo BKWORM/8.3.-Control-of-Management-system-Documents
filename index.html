@@ -641,7 +641,7 @@
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            <input type="text" id="search-input" oninput="handleSearchFilter()" placeholder="Tìm theo tên tài liệu, mã hiệu (QTQL-..., QTTN-...), người soạn/duyệt, nội dung..." class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition placeholder-slate-400">
+            <input type="text" id="search-input" oninput="handleSearchFilter()" placeholder="Tìm theo tên tài liệu, mã hiệu, tài liệu tham chiếu (TCVN...), người soạn/duyệt, nội dung..." class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition placeholder-slate-400">
             <button type="button" id="btn-clear-search" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition" title="Xóa tìm kiếm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -1300,10 +1300,14 @@
                 <span id="view-doc-pages" class="font-semibold text-slate-900">1</span>
               </div>
               <div>
+                <span class="text-xs text-slate-500 block">Tài liệu tham chiếu</span>
+                <span id="view-doc-ref" class="font-mono font-bold text-blue-700">—</span>
+              </div>
+              <div>
                 <span class="text-xs text-slate-500 block">Soát xét gần nhất</span>
                 <span id="view-doc-last-reviewed" class="font-semibold text-slate-900">Chưa ghi nhận</span>
               </div>
-              <div class="col-span-2">
+              <div>
                 <span class="text-xs text-slate-500 block">Hạn soát xét định kỳ (+12T theo ISO 17025)</span>
                 <span id="view-doc-review-due" class="font-bold text-amber-700">—</span>
               </div>
@@ -1496,7 +1500,17 @@
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Mã hiệu tài liệu *</label>
-              <input type="text" id="doc-code" required placeholder="VD: QTQL-01, QTTN-01..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white font-mono uppercase">
+              <input type="text" id="doc-code" required oninput="updateDocCodeRefPreview()" placeholder="VD: 05.2-CL1/ST 03.13, QTQL-01..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white font-mono uppercase">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tài liệu tham chiếu <span class="text-[11px] font-normal text-slate-500">(Hiển thị kèm Mã hiệu: Ref....)</span></label>
+              <input type="text" id="doc-ref" oninput="updateDocCodeRefPreview()" placeholder="VD: TCVN 3702:2009, ISO 17025..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white font-mono">
+            </div>
+
+            <div id="doc-code-ref-preview-box" class="sm:col-span-2 hidden bg-blue-50/80 px-3 py-2 rounded-lg border border-blue-200 flex items-center justify-between gap-3">
+              <span class="text-xs font-semibold text-slate-600">Xem trước hiển thị trong cột <strong>MÃ HIỆU</strong>:</span>
+              <div id="doc-code-ref-preview-content" class="font-mono text-xs font-bold text-blue-700 whitespace-pre-line text-left bg-white px-2.5 py-1 rounded border border-blue-200 shadow-2xs"></div>
             </div>
 
             <div>
@@ -2753,6 +2767,82 @@
       return s;
     }
 
+    // Chuẩn hóa và định dạng Tài liệu tham chiếu kèm theo trong cột Mã hiệu
+    function normalizeRefDoc(rawRef) {
+      if (rawRef === null || rawRef === undefined) return '';
+      let s = String(rawRef).trim();
+      if (!s || s === '—' || s === '-' || s === 'null' || s === 'undefined') return '';
+      s = s.replace(/^ref(?:\.|\:|\s)+/i, '').trim();
+      return s;
+    }
+
+    function extractCodeAndRef(rawCode, rawRef) {
+      let codeStr = String(rawCode || '').trim();
+      let refStr = normalizeRefDoc(rawRef);
+      if (codeStr) {
+        const lines = codeStr.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        if (lines.length > 1) {
+          codeStr = lines[0];
+          const rest = lines.slice(1).map(l => normalizeRefDoc(l)).filter(Boolean).join('; ');
+          if (!refStr && rest) refStr = rest;
+        } else {
+          const refMatch = codeStr.match(/^(.*?)\s+(?:Ref\.|Ref:)\s*(.+)$/i);
+          if (refMatch) {
+            codeStr = refMatch[1].trim();
+            if (!refStr) refStr = normalizeRefDoc(refMatch[2]);
+          }
+        }
+      }
+      return { code: codeStr, refDoc: refStr };
+    }
+
+    function formatRefDisplay(rawRef) {
+      const clean = normalizeRefDoc(rawRef);
+      return clean ? `Ref.${clean}` : '';
+    }
+
+    function formatCodeWithRefText(docOrCode, optRef) {
+      if (!docOrCode) return '';
+      const isObj = typeof docOrCode === 'object';
+      const parsed = extractCodeAndRef(isObj ? docOrCode.code : docOrCode, isObj ? docOrCode.refDoc : optRef);
+      const refDisp = formatRefDisplay(parsed.refDoc);
+      if (!parsed.code) return refDisp;
+      return refDisp ? `${parsed.code}\n${refDisp}` : parsed.code;
+    }
+
+    function renderCodeWithRefHtml(docOrCode, optRef, mode = 'table') {
+      const isObj = typeof docOrCode === 'object' && docOrCode !== null;
+      const parsed = extractCodeAndRef(isObj ? docOrCode.code : docOrCode, isObj ? docOrCode.refDoc : optRef);
+      const codeHtml = escapeHtml(parsed.code || '');
+      const refDisp = formatRefDisplay(parsed.refDoc);
+      const refHtml = escapeHtml(refDisp);
+
+      if (mode === 'card') {
+        return `<span class="inline-flex flex-col px-2 py-0.5 text-xs font-mono bg-blue-50 text-blue-700 rounded border border-blue-200 leading-tight"><span class="font-bold">${codeHtml}</span>${refHtml ? `\n<span class="text-[11px] font-semibold text-slate-600 mt-0.5">${refHtml}</span>` : ''}</span>`;
+      }
+      if (mode === 'plain-multiline') {
+        return `<div class="inline-flex flex-col leading-snug"><span class="font-bold text-blue-700">${codeHtml}</span>${refHtml ? `\n<span class="text-xs font-semibold text-slate-600 mt-0.5">${refHtml}</span>` : ''}</div>`;
+      }
+      return `<div class="inline-flex flex-col items-start bg-blue-50 px-2 py-1 rounded border border-blue-200 leading-snug"><span class="font-mono font-bold text-blue-700 text-sm whitespace-nowrap">${codeHtml}</span>${refHtml ? `\n<span class="font-mono font-semibold text-slate-600 text-xs whitespace-nowrap mt-0.5 pt-0.5 border-t border-blue-200/70 w-full">${refHtml}</span>` : ''}</div>`;
+    }
+
+    function updateDocCodeRefPreview() {
+      const codeEl = document.getElementById('doc-code');
+      const refEl = document.getElementById('doc-ref');
+      const boxEl = document.getElementById('doc-code-ref-preview-box');
+      const contentEl = document.getElementById('doc-code-ref-preview-content');
+      if (!codeEl || !refEl || !boxEl || !contentEl) return;
+
+      const parsed = extractCodeAndRef(codeEl.value.trim().toUpperCase(), refEl.value.trim());
+      if (!parsed.code && !parsed.refDoc) {
+        boxEl.classList.add('hidden');
+        contentEl.textContent = '';
+        return;
+      }
+      contentEl.textContent = formatCodeWithRefText(parsed.code || 'MÃ HIỆU', parsed.refDoc);
+      boxEl.classList.remove('hidden');
+    }
+
     // ==========================================
     // SIDEBAR TOGGLING (GEMINI STYLE)
     // ==========================================
@@ -2936,7 +3026,10 @@
           const parsed = JSON.parse(savedDocs);
           const isMock = Array.isArray(parsed) && parsed.some(d => d.id === 'doc-001' && d.code === 'STCL-01');
           if (Array.isArray(parsed) && !isMock) {
-            appState.documents = parsed;
+            appState.documents = parsed.map(d => {
+              const cr = extractCodeAndRef(d.code, d.refDoc);
+              return { ...d, code: cr.code, refDoc: cr.refDoc };
+            });
           } else {
             appState.documents = [];
             safeSetStorage(LS_KEY_DOCS, JSON.stringify([]));
@@ -4446,7 +4539,7 @@
         }
 
         if (q) {
-          const matchCode = String(doc.code || '').toLowerCase().includes(q);
+          const matchCode = String(doc.code || '').toLowerCase().includes(q) || formatCodeWithRefText(doc).toLowerCase().includes(q) || String(doc.refDoc || '').toLowerCase().includes(q);
           const matchName = String(doc.name || '').toLowerCase().includes(q);
           const matchType = String(doc.type || '').toLowerCase().includes(q);
           const matchContent = String(doc.content || '').toLowerCase().includes(q);
@@ -4563,8 +4656,8 @@
         tableHtml += `
           <tr class="${rowBg} transition duration-150 group">
             <td class="py-3 px-3 text-center text-slate-500 font-mono text-xs">${rowNum}</td>
-            <td class="py-3 px-3 font-mono font-bold text-blue-700 whitespace-nowrap text-sm">
-              <span class="bg-blue-50 px-2 py-0.5 rounded border border-blue-200">${escapeHtml(doc.code)}</span>
+            <td class="py-3 px-3 font-mono font-bold text-blue-700 whitespace-nowrap text-sm align-middle">
+              ${renderCodeWithRefHtml(doc, null, 'table')}
             </td>
             <td class="py-3 px-4">
               <div class="flex items-center space-x-1.5 flex-wrap">
@@ -4636,7 +4729,7 @@
               <div>
                 <div class="flex items-center space-x-2">
                   <span class="font-mono text-xs font-bold text-slate-500">#${rowNum}</span>
-                  <span class="px-2 py-0.5 text-xs font-mono font-bold bg-blue-50 text-blue-700 rounded border border-blue-200">${escapeHtml(doc.code)}</span>
+                  ${renderCodeWithRefHtml(doc, null, 'card')}
                   <span class="px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-700 rounded">${escapeHtml(doc.type)}</span>
                 </div>
                 <h4 class="text-sm font-bold text-slate-900 mt-1.5 flex items-center flex-wrap gap-1">
@@ -4766,6 +4859,9 @@
       const form = document.getElementById('form-document');
       if (form) form.reset();
       document.getElementById('doc-id').value = '';
+      const refInputEl = document.getElementById('doc-ref');
+      if (refInputEl) refInputEl.value = '';
+      updateDocCodeRefPreview();
       document.getElementById('modal-doc-title').textContent = 'Thêm Mới Tài Liệu Nội Bộ (ISO 17025)';
       document.getElementById('doc-issue-no').value = '01';
       document.getElementById('doc-rev-no').value = '00';
@@ -4780,10 +4876,14 @@
       const doc = appState.documents.find(d => d.id === id);
       if (!doc) return;
 
+      const parsedCR = extractCodeAndRef(doc.code, doc.refDoc);
       document.getElementById('doc-id').value = doc.id;
-      document.getElementById('modal-doc-title').textContent = `Chỉnh Sửa Tài Liệu: ${doc.code}`;
+      document.getElementById('modal-doc-title').textContent = `Chỉnh Sửa Tài Liệu: ${parsedCR.code}`;
       document.getElementById('doc-name').value = doc.name || '';
-      document.getElementById('doc-code').value = doc.code || '';
+      document.getElementById('doc-code').value = parsedCR.code || '';
+      const refInputEl = document.getElementById('doc-ref');
+      if (refInputEl) refInputEl.value = parsedCR.refDoc || '';
+      updateDocCodeRefPreview();
       document.getElementById('doc-type').value = doc.type || 'Quy trình quản lý';
       document.getElementById('doc-pages').value = doc.pages || 1;
       document.getElementById('doc-issue-no').value = doc.issueNo || '01';
@@ -4872,7 +4972,11 @@
       const isEdit = !!id;
 
       const name = document.getElementById('doc-name').value.trim();
-      const code = document.getElementById('doc-code').value.trim().toUpperCase();
+      const rawCodeInput = document.getElementById('doc-code').value.trim().toUpperCase();
+      const rawRefInput = document.getElementById('doc-ref') ? document.getElementById('doc-ref').value.trim() : '';
+      const parsedCR = extractCodeAndRef(rawCodeInput, rawRefInput);
+      const code = parsedCR.code;
+      const refDoc = parsedCR.refDoc;
       const type = document.getElementById('doc-type').value;
       const pages = parseInt(document.getElementById('doc-pages').value, 10) || 1;
       const issueNo = document.getElementById('doc-issue-no').value.trim() || '01';
@@ -4904,6 +5008,7 @@
 
       doc.name = name;
       doc.code = code;
+      doc.refDoc = refDoc;
       doc.type = type;
       doc.pages = pages;
       doc.issueNo = issueNo;
@@ -5094,7 +5199,7 @@
           <tr class="hover:bg-amber-50/40 transition duration-150">
             <td class="py-3 px-3 text-center font-mono text-slate-500 text-xs">${rowNum}</td>
             <td class="py-3 px-3 font-mono font-bold text-blue-700 whitespace-nowrap text-sm">
-              ${escapeHtml(doc.code)}
+              ${renderCodeWithRefHtml(doc, null, 'plain-multiline')}
             </td>
             <td class="py-3 px-4">
               <span class="font-bold text-slate-900 block text-sm">${escapeHtml(doc.name)}</span>
@@ -5951,9 +6056,10 @@
     // ========================================================
     function viewDocumentDetail(idOrCode) {
       if (!idOrCode) return;
-      const targetStr = String(idOrCode).trim().toUpperCase();
+      const extractedTarget = extractCodeAndRef(idOrCode).code || String(idOrCode).trim();
+      const targetStr = String(extractedTarget).trim().toUpperCase();
       const targetNorm = targetStr.replace(/\s+/g, '');
-      const targetLower = String(idOrCode).trim().toLowerCase();
+      const targetLower = String(extractedTarget).trim().toLowerCase();
 
       let doc = (appState.documents || []).find(d => 
         d.id === idOrCode || 
@@ -5972,8 +6078,13 @@
       currentViewDoc = doc;
       const st = getDocumentStatus(doc, appState.documents);
 
+      const refDisp = formatRefDisplay(doc.refDoc);
       document.getElementById('view-doc-name').textContent = doc.name;
-      document.getElementById('view-doc-code').textContent = doc.code;
+      const viewCodeEl = document.getElementById('view-doc-code');
+      if (viewCodeEl) {
+        viewCodeEl.textContent = formatCodeWithRefText(doc);
+        viewCodeEl.classList.add('whitespace-pre-line');
+      }
       document.getElementById('view-doc-type-badge').textContent = doc.type;
 
       document.getElementById('view-doc-issue-no').textContent = doc.issueNo || '01';
@@ -5981,6 +6092,8 @@
       document.getElementById('view-doc-rev-no').textContent = doc.revNo || '00';
       document.getElementById('view-doc-rev-date').textContent = formatDateDisplay(doc.revDate);
       document.getElementById('view-doc-pages').textContent = doc.pages || 1;
+      const viewRefEl = document.getElementById('view-doc-ref');
+      if (viewRefEl) viewRefEl.textContent = refDisp || '—';
       document.getElementById('view-doc-last-reviewed').textContent = formatDateDisplay(doc.lastReviewedDate);
       document.getElementById('view-doc-review-due').textContent = formatDateDisplay(st.nextReviewDate);
 
@@ -6934,7 +7047,8 @@
         const nextDateStr = st.nextReviewDate || doc.nextReviewDate || (customPlanItem ? customPlanItem.reviewDueDate : '') || '';
         planRows.push({
           stt: idx++,
-          code: doc.code || '',
+          code: formatCodeWithRefText(doc),
+          refDoc: doc.refDoc || '',
           name: doc.name || '',
           type: doc.type || 'Quy trình quản lý',
           revNo: `Rev ${doc.revNo || '00'}`,
@@ -6990,7 +7104,7 @@
           const docUrl = d.fileUrl || (d.fileAttachment && d.fileAttachment.fileUrl) || '';
           rowsDocs.push([
             idx + 1,
-            d.code || '',
+            formatCodeWithRefText(d),
             d.name || '',
             d.type || '',
             d.pages || 1,
@@ -7239,6 +7353,7 @@
               const hdrIdx = detectHeaderRowIndex(json, ['mã hiệu', 'tên tài liệu', 'mã tài liệu']);
               const headers = (json[hdrIdx] || []).map(h => String(h || '').trim().toLowerCase());
               const cIdx = findColIdxInRow(headers, ['mã hiệu', 'mã tài liệu', 'mã']);
+              const refIdx = findColIdxInRow(headers, ['tài liệu tham chiếu', 'tham chiếu', 'ref']);
               const nIdx = findColIdxInRow(headers, ['tên tài liệu', 'tên']);
               const tIdx = findColIdxInRow(headers, ['loại tài liệu', 'phân loại', 'loại']);
               const pIdx = findColIdxInRow(headers, ['số trang', 'trang']);
@@ -7262,7 +7377,11 @@
               for (let r = hdrIdx + 1; r < json.length; r++) {
                 const row = json[r];
                 if (!row) continue;
-                const code = cIdx !== -1 ? String(row[cIdx] || '').trim() : '';
+                const rawCodeCell = cIdx !== -1 ? String(row[cIdx] || '').trim() : '';
+                const rawRefCell = refIdx !== -1 ? String(row[refIdx] || '').trim() : '';
+                const parsedCR = extractCodeAndRef(rawCodeCell, rawRefCell);
+                const code = parsedCR.code;
+                const refDoc = parsedCR.refDoc;
                 const name = nIdx !== -1 ? String(row[nIdx] || '').trim() : '';
                 if (!code && !name) continue;
 
@@ -7281,6 +7400,7 @@
                 parsedDocs.push({
                   id: 'doc-imp-' + r + '-' + Date.now(),
                   code: code || `TL-${r}`,
+                  refDoc: refDoc || '',
                   name: name || code,
                   type: normalizeCategory(tIdx !== -1 ? String(row[tIdx] || 'Quy trình quản lý').trim() : 'Quy trình quản lý') || 'Quy trình quản lý',
                   pages: pIdx !== -1 ? (parseInt(row[pIdx], 10) || 1) : 1,
@@ -8031,9 +8151,14 @@ function saveDocumentsToSheet(ss, list, allowEmpty) {
   if (!list || list.length === 0) return;
 
   var rows = list.map(function(doc, idx) {
+    var codeStr = String(doc.code || '').trim();
+    var refStr = String(doc.refDoc || '').trim().replace(/^ref(?:\.|\:|\s)+/i, '').trim();
+    if (refStr && codeStr.toLowerCase().indexOf('ref.') === -1) {
+      codeStr = codeStr ? (codeStr + '\nRef.' + refStr) : ('Ref.' + refStr);
+    }
     return [
       idx + 1,
-      String(doc.code || ''),
+      codeStr,
       String(doc.name || ''),
       String(doc.type || ''),
       Number(doc.pages) || 1,
@@ -8700,7 +8825,7 @@ function getAccountsFromSheet(ss) {
         action: 'EXPORT_ALL',
         allowEmpty: Boolean(allowEmpty),
         timestamp: new Date().toISOString(),
-        documents: appState.documents,
+        documents: (appState.documents || []).map(d => ({ ...d, code: formatCodeWithRefText(d), refDoc: d.refDoc || '' })),
         plan: generateReviewPlanFromDocuments(),
         events: getEffectiveEventsForExport(),
         distributions: appState.distributions,
@@ -8840,7 +8965,10 @@ function getAccountsFromSheet(ss) {
         const importedDocs = [];
         tblDocs.rows.forEach((r, idx) => {
           if (!r || !r.c) return;
-          const code = cCode !== -1 ? cellVal(r.c[cCode]) : cellVal(r.c[1]);
+          const rawCodeCell = cCode !== -1 ? cellVal(r.c[cCode]) : cellVal(r.c[1]);
+          const parsedCR = extractCodeAndRef(rawCodeCell, '');
+          const code = parsedCR.code;
+          const refDoc = parsedCR.refDoc;
           const name = cName !== -1 ? cellVal(r.c[cName]) : cellVal(r.c[2]);
           if (!code && !name) return;
           if (code.toLowerCase() === 'mã hiệu tài liệu' || code.toLowerCase() === 'mã hiệu') return;
@@ -8855,6 +8983,7 @@ function getAccountsFromSheet(ss) {
           importedDocs.push({
             id: 'doc_gviz_' + (idx + 1),
             code: code,
+            refDoc: refDoc || '',
             name: name,
             type: normalizeCategory(cType !== -1 ? (cellVal(r.c[cType]) || 'Quy trình quản lý') : (cellVal(r.c[3]) || 'Quy trình quản lý')) || 'Quy trình quản lý',
             pages: cPages !== -1 ? (parseInt(cellVal(r.c[cPages]), 10) || 1) : 1,
@@ -8966,7 +9095,8 @@ function getAccountsFromSheet(ss) {
         });
 
         appState.documents = data.documents.map((doc, idx) => {
-          const docCodeUpper = String(doc.code || '').trim().toUpperCase();
+          const parsedCR = extractCodeAndRef(doc.code, doc.refDoc);
+          const docCodeUpper = String(parsedCR.code || '').trim().toUpperCase();
           const existingDoc = existingDocsMap.get(docCodeUpper) || existingDocsMap.get(String(doc.id));
           const effectiveFileUrl = doc.fileUrl || (doc.fileAttachment && doc.fileAttachment.fileUrl) || (existingDoc && (existingDoc.fileUrl || (existingDoc.fileAttachment && existingDoc.fileAttachment.fileUrl))) || '';
           let effectiveAttachment = null;
@@ -9009,7 +9139,8 @@ function getAccountsFromSheet(ss) {
           return {
             ...doc,
             id: doc.id ? String(doc.id) : ('doc_' + (idx + 1)),
-            code: String(doc.code || '').trim(),
+            code: String(parsedCR.code || '').trim(),
+            refDoc: String(parsedCR.refDoc || (existingDoc && existingDoc.refDoc) || '').trim(),
             name: String(doc.name || '').trim(),
             type: normalizeCategory(doc.type) || doc.type || 'Quy trình quản lý',
             pages: Number(doc.pages) || 1,
@@ -9244,7 +9375,7 @@ function getAccountsFromSheet(ss) {
       const payload = {
         action: 'AUTO_SYNC',
         timestamp: new Date().toISOString(),
-        documents: appState.documents,
+        documents: (appState.documents || []).map(d => ({ ...d, code: formatCodeWithRefText(d), refDoc: d.refDoc || '' })),
         plan: generateReviewPlanFromDocuments(),
         events: getEffectiveEventsForExport(),
         distributions: appState.distributions,
