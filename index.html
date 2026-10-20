@@ -14,7 +14,7 @@
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,6 +25,7 @@
         extend: {
           fontFamily: {
             sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
           },
           colors: {
             brand: {
@@ -150,8 +151,83 @@
     /* Custom Scrollbars */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+    /* ======================================================== */
+    /* ENTERPRISE DMS / QMS DESIGN SYSTEM UPGRADES */
+    /* ======================================================== */
+    body {
+      background-color: #f1f5f9;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.045) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 45%);
+      background-attachment: fixed;
+    }
+
+    /* Enterprise Data Table Row Hover & Sticky Action Column */
+    #document-table-body tr,
+    #plan-table-body tr,
+    #events-table-body tr,
+    #distribution-table-body tr {
+      transition: background-color 0.14s ease, box-shadow 0.14s ease;
+    }
+    #document-table-body tr:hover {
+      box-shadow: inset 3px 0 0 #2563eb;
+    }
+    #plan-table-body tr:hover {
+      box-shadow: inset 3px 0 0 #f59e0b;
+    }
+    #events-table-body tr:hover {
+      box-shadow: inset 3px 0 0 #9333ea;
+    }
+    #distribution-table-body tr:hover {
+      box-shadow: inset 3px 0 0 #059669;
+    }
+
+    /* Compact Table Density Mode (Enterprise View) */
+    .dms-table-compact tbody td {
+      padding-top: 0.42rem !important;
+      padding-bottom: 0.42rem !important;
+    }
+    .dms-table-compact thead th {
+      padding-top: 0.55rem !important;
+      padding-bottom: 0.55rem !important;
+    }
+
+    /* Sticky Action Column on Desktop */
+    @media (min-width: 1280px) {
+      .dms-sticky-action-th {
+        position: sticky !important;
+        right: 0 !important;
+        z-index: 12 !important;
+        background-color: #f1f5f9 !important;
+        box-shadow: -4px 0 8px -4px rgba(15, 23, 42, 0.08);
+      }
+      .dms-sticky-action-td {
+        position: sticky !important;
+        right: 0 !important;
+        z-index: 5 !important;
+        background-color: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(4px);
+        box-shadow: -4px 0 8px -4px rgba(15, 23, 42, 0.06);
+      }
+      tr:hover .dms-sticky-action-td {
+        background-color: #f8fafc !important;
+      }
+    }
+
+    /* Enterprise Top Module Navigation Tabs */
+    .dms-module-tab {
+      position: relative;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dms-module-tab.active {
+      color: #0f172a;
+      font-weight: 700;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+    }
 
     /* Document Reader & Paper View Styles */
     .docx-paper {
@@ -395,8 +471,8 @@
   <!-- ======================================================== -->
   <!-- TOP APP BAR (HEADER ĐỒNG BỘ TUYỆT ĐỐI THEO BẢN INDEX) -->
   <!-- ======================================================== -->
-  <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+  <header class="bg-slate-900/95 backdrop-blur-md text-white shadow-lg border-b border-slate-800/90 sticky top-0 z-30">
+    <div class="w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
         <!-- Left: Nút mở Menu Sidebar ẩn + Logo & Tiêu đề -->
@@ -522,33 +598,106 @@
     <!-- ALERT BANNER: Cảnh báo tài liệu quá hạn rà soát theo ISO 17025 Khoản 8.3.2.b -->
     <div id="alert-container" class="hidden"></div>
 
-    <!-- VIEW ACTIVE BREADCRUMB / HEADER CHÍNH (ĐỒNG BỘ THEO BẢN INDEX) -->
-    <div class="bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between no-print">
-      <div class="flex items-center space-x-3">
-        <!-- Nút nhanh mở Sidebar khi ở nội dung -->
-        <button type="button" onclick="toggleSidebar(true)" class="p-2 text-slate-600 hover:text-blue-600 rounded-xl hover:bg-slate-100 transition border border-slate-200 shadow-2xs flex items-center space-x-1.5 text-xs font-bold" title="Mở menu danh mục bên trái (Sidebar)">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-          <span class="hidden sm:inline">Menu Danh Mục</span>
-        </button>
+    <!-- ENTERPRISE WORKSPACE COMMAND BAR & 1-CLICK MODULE NAVIGATION -->
+    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden no-print">
+      <!-- Top Row: Workspace Breadcrumb, Active View Title & Quick Creation Actions -->
+      <div class="px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b border-slate-100">
+        <div class="flex items-center space-x-3">
+          <!-- Nút mở Sidebar ẩn -->
+          <button type="button" onclick="toggleSidebar(true)" class="p-2 text-slate-700 hover:text-blue-600 rounded-xl hover:bg-blue-50/60 transition border border-slate-200/90 shadow-2xs flex items-center space-x-1.5 text-xs font-bold shrink-0" title="Mở thanh điều hướng thu gọn (Sidebar)">
+            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <span class="hidden sm:inline">Menu Danh Mục</span>
+          </button>
 
-        <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
-        <div>
-          <h2 id="current-view-title" class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight flex items-center">
-            Danh Mục Kiểm Soát Tài Liệu Nội Bộ
-          </h2>
-          <p id="current-view-subtitle" class="text-xs text-slate-500">
-            Hệ thống quản lý chất lượng phòng thử nghiệm theo ISO/IEC 17025:2017 (Khoản 8.3)
-          </p>
+          <div>
+            <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-0.5">
+              <span>QMS Workspace</span>
+              <span>/</span>
+              <span class="text-blue-600 font-bold">ISO/IEC 17025:2017 (Khoản 8.3)</span>
+            </div>
+            <div class="flex items-center flex-wrap gap-2">
+              <h2 id="current-view-title" class="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 tracking-tight flex items-center">
+                Danh Mục Kiểm Soát Tài Liệu Nội Bộ
+              </h2>
+              <span id="current-view-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                Danh mục tài liệu
+              </span>
+            </div>
+            <p id="current-view-subtitle" class="text-xs text-slate-500 mt-0.5">
+              Hệ thống quản lý chất lượng phòng thử nghiệm theo ISO/IEC 17025:2017 (Khoản 8.3)
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Quick Action Bar (Enterprise Quick-Actions) -->
+        <div class="flex items-center flex-wrap gap-2 shrink-0">
+          <div class="hidden xl:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="font-medium">Trạng thái:</span>
+            <span class="font-bold text-slate-800">Kiểm soát trực tuyến</span>
+          </div>
+
+          <button type="button" onclick="checkEditAction(() => openAddEventModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition active:scale-95" title="Ghi nhận sự kiện Ban hành / Sửa đổi / Soát xét / Hủy">
+            <svg class="w-3.5 h-3.5 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>+ Ghi nhận sự kiện</span>
+          </button>
+
+          <button type="button" onclick="checkEditAction(() => openAddDistributionModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95" title="Phân phối hoặc thu hồi bản sao có kiểm soát">
+            <svg class="w-3.5 h-3.5 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+            <span>+ Phân phối bản sao</span>
+          </button>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <span id="current-view-badge" class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-          Danh mục tài liệu
-        </span>
+      <!-- Bottom Row: 1-Click Enterprise Module Tabs (No need to open drawer to switch modules) -->
+      <div class="px-3 py-2 bg-slate-50/90 flex items-center justify-between gap-2 overflow-x-auto">
+        <div class="inline-flex items-center p-1 rounded-xl bg-slate-200/75 space-x-1 min-w-max">
+          <button type="button" id="top-tab-master" onclick="switchMainView('master')" class="dms-module-tab active inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-900 transition">
+            <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <span>Danh mục tài liệu nội bộ</span>
+            <span id="top-tab-doc-count" class="px-1.5 py-0.2 text-[11px] font-mono font-bold rounded-md bg-blue-100 text-blue-800">0</span>
+          </button>
+
+          <button type="button" id="top-tab-review-plan" onclick="switchMainView('review-plan')" class="dms-module-tab inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+            <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span>Kế hoạch rà soát định kỳ</span>
+            <span id="top-tab-plan-year" class="px-1.5 py-0.2 text-[11px] font-mono font-bold rounded-md bg-amber-100 text-amber-800">2027</span>
+          </button>
+
+          <button type="button" id="top-tab-events" onclick="switchMainView('events')" class="dms-module-tab inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+            <svg class="w-4 h-4 text-purple-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Nhật ký sự kiện vòng đời</span>
+            <span id="top-tab-events-count" class="px-1.5 py-0.2 text-[11px] font-mono font-bold rounded-md bg-purple-100 text-purple-800">0</span>
+          </button>
+
+          <button type="button" id="top-tab-distribution" onclick="switchMainView('distribution')" class="dms-module-tab inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+            <span>Sổ phân phối &amp; thu hồi</span>
+            <span id="top-tab-dist-count" class="px-1.5 py-0.2 text-[11px] font-mono font-bold rounded-md bg-emerald-100 text-emerald-800">0</span>
+          </button>
+        </div>
+
+        <!-- Keyboard Shortcut Hint -->
+        <div class="hidden xl:flex items-center space-x-2 text-xs text-slate-500 pr-1">
+          <span>Tìm nhanh:</span>
+          <kbd onclick="document.getElementById('search-input')?.focus()" class="px-2 py-0.5 text-[11px] font-mono font-semibold text-slate-700 bg-white border border-slate-300 rounded-md shadow-2xs cursor-pointer hover:bg-slate-100" title="Nhấn phím / hoặc Ctrl+K để tìm kiếm nhanh">Ctrl + K</kbd>
+        </div>
       </div>
     </div>
 
@@ -557,75 +706,87 @@
     <!-- ======================================================== -->
     <section id="section-doc-master" class="space-y-4">
       
-      <!-- SUMMARY METRIC CARDS (CLICKABLE DASHBOARD FILTER CARDS) -->
+      <!-- SUMMARY METRIC CARDS (ENTERPRISE QMS KPI SCORECARDS) -->
       <div id="summary-cards-container" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <!-- Tổng số tài liệu -->
-        <div id="dash-card-all" onclick="filterByDashboardCard('ALL')" role="button" tabindex="0" title="Nhấp để hiển thị toàn bộ danh mục tài liệu xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
+        <div id="dash-card-all" onclick="filterByDashboardCard('ALL')" role="button" tabindex="0" title="Nhấp để hiển thị toàn bộ danh mục tài liệu xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-2xl border border-slate-200/90 border-t-4 border-t-blue-600 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-700 group-hover:text-blue-700 uppercase tracking-wider transition-colors">Tổng Số Tài Liệu</span>
-            <div class="p-2 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <div class="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-2xs">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
           </div>
           <div class="mt-2 flex items-baseline space-x-2">
-            <span id="metric-total-docs" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
-            <span class="text-xs text-slate-600 font-medium">tài liệu</span>
+            <span id="metric-total-docs" class="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900">0</span>
+            <span class="text-xs text-slate-600 font-semibold">mã tài liệu</span>
           </div>
-          <div class="mt-1 flex items-center justify-between gap-1">
-            <p class="text-xs text-slate-600 font-medium truncate"><span id="metric-total-entries" class="font-bold">0</span> bản ghi phiên bản</p>
+          <div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div id="metric-bar-all" class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-1">
+            <p class="text-xs text-slate-600 font-medium truncate"><span id="metric-total-entries" class="font-bold font-mono text-slate-900">0</span> bản ghi phiên bản</p>
             <span id="dash-badge-all" class="dash-card-badge text-[10px] font-bold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Xem tất cả ↓</span>
           </div>
         </div>
 
         <!-- Đang hiệu lực (mới nhất) -->
-        <div id="dash-card-latest" onclick="filterByDashboardCard('LATEST')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu đang hiệu lực (bản mới nhất) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
+        <div id="dash-card-latest" onclick="filterByDashboardCard('LATEST')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu đang hiệu lực (bản mới nhất) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-2xl border border-slate-200/90 border-t-4 border-t-emerald-500 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Đang Hiệu Lực</span>
-            <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Đang Hiệu Lực</span>
+            <div class="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors shadow-2xs">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
           </div>
           <div class="mt-2 flex items-baseline space-x-2">
-            <span id="metric-active-docs" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</span>
-            <span class="text-xs text-emerald-600/80 font-medium">bản mới nhất</span>
+            <span id="metric-active-docs" class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-600">0</span>
+            <span class="text-xs text-emerald-700 font-semibold">bản hiện hành</span>
           </div>
-          <div class="mt-1 flex items-center justify-between gap-1">
+          <div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div id="metric-bar-active" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-1">
             <p class="text-xs text-slate-600 font-medium truncate">Lưu hành tại điểm sử dụng</p>
             <span id="dash-badge-latest" class="dash-card-badge text-[10px] font-bold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
           </div>
         </div>
 
         <!-- Cần rà soát định kỳ (> 1 năm) -->
-        <div id="dash-card-due-review" onclick="filterByDashboardCard('DUE_REVIEW')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu cần rà soát định kỳ (> 1 năm) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
+        <div id="dash-card-due-review" onclick="filterByDashboardCard('DUE_REVIEW')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu cần rà soát định kỳ (> 1 năm) xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-2xl border border-slate-200/90 border-t-4 border-t-amber-500 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Cần Rà Soát Định Kỳ</span>
-            <div class="p-2 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+            <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">Cần Rà Soát Định Kỳ</span>
+            <div class="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors shadow-2xs">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
           </div>
           <div class="mt-2 flex items-baseline space-x-2">
-            <span id="metric-due-review" class="text-2xl sm:text-3xl font-extrabold text-amber-600">0</span>
-            <span class="text-xs text-amber-600/80 font-medium">&gt; 1 năm</span>
+            <span id="metric-due-review" class="text-2xl sm:text-3xl font-extrabold font-mono text-amber-600">0</span>
+            <span class="text-xs text-amber-700 font-semibold">&gt; 12 tháng</span>
           </div>
-          <div class="mt-1 flex items-center justify-between gap-1">
+          <div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div id="metric-bar-due" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-1">
             <p class="text-xs text-slate-600 font-medium truncate">Tuân thủ Khoản 8.3.2.b</p>
             <span id="dash-badge-due-review" class="dash-card-badge text-[10px] font-bold text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
           </div>
         </div>
 
         <!-- Lịch sử (Đã thay thế / Thu hồi) -->
-        <div id="dash-card-superseded" onclick="filterByDashboardCard('SUPERSEDED')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu lịch sử / đã thay thế xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
+        <div id="dash-card-superseded" onclick="filterByDashboardCard('SUPERSEDED')" role="button" tabindex="0" title="Nhấp để hiển thị danh sách tài liệu lịch sử / đã thay thế xuống bảng phía dưới" class="dash-metric-card group cursor-pointer select-none bg-white p-4 rounded-2xl border border-slate-200/90 border-t-4 border-t-indigo-500 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150 relative overflow-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Lịch Sử / Đã Thay Thế</span>
-            <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+            <span class="text-xs font-bold text-indigo-700 uppercase tracking-wider">Lịch Sử / Đã Thay Thế</span>
+            <div class="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-2xs">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
           </div>
           <div class="mt-2 flex items-baseline space-x-2">
-            <span id="metric-superseded" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0</span>
-            <span class="text-xs text-indigo-600/80 font-medium">bản cũ</span>
+            <span id="metric-superseded" class="text-2xl sm:text-3xl font-extrabold font-mono text-indigo-600">0</span>
+            <span class="text-xs text-indigo-700 font-semibold">phiên bản cũ</span>
           </div>
-          <div class="mt-1 flex items-center justify-between gap-1">
+          <div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div id="metric-bar-super" class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-1">
             <p class="text-xs text-slate-600 font-medium truncate">Thu hồi theo Khoản 8.3.2.f</p>
             <span id="dash-badge-superseded" class="dash-card-badge text-[10px] font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Lọc danh sách ↓</span>
           </div>
@@ -697,10 +858,16 @@
               <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
               <span>Phân Loại Tài Liệu ISO 17025:</span>
             </div>
-            <!-- Chế độ xem Table / Card -->
-            <div class="inline-flex rounded-lg shadow-2xs border border-slate-200 overflow-hidden text-xs">
-              <button type="button" id="btn-mode-table" onclick="setViewMode('table')" class="px-2.5 py-1 font-semibold bg-blue-600 text-white">Bảng</button>
-              <button type="button" id="btn-mode-card" onclick="setViewMode('card')" class="px-2.5 py-1 font-semibold bg-white text-slate-700 hover:bg-slate-100">Thẻ</button>
+            <!-- Chế độ mật độ dòng (Chuẩn / Gọn) & Chế độ xem (Bảng / Thẻ) -->
+            <div class="flex items-center space-x-2">
+              <div class="hidden sm:inline-flex items-center rounded-lg shadow-2xs border border-slate-200 overflow-hidden text-xs" title="Chỉnh mật độ hiển thị dòng trong bảng">
+                <button type="button" id="btn-density-comfortable" onclick="setTableDensity('comfortable')" class="px-2.5 py-1 font-semibold bg-slate-800 text-white transition">Chuẩn</button>
+                <button type="button" id="btn-density-compact" onclick="setTableDensity('compact')" class="px-2.5 py-1 font-semibold bg-white text-slate-700 hover:bg-slate-100 transition">Thu gọn</button>
+              </div>
+              <div class="inline-flex rounded-lg shadow-2xs border border-slate-200 overflow-hidden text-xs">
+                <button type="button" id="btn-mode-table" onclick="setViewMode('table')" class="px-2.5 py-1 font-semibold bg-blue-600 text-white">Bảng</button>
+                <button type="button" id="btn-mode-card" onclick="setViewMode('card')" class="px-2.5 py-1 font-semibold bg-white text-slate-700 hover:bg-slate-100">Thẻ</button>
+              </div>
             </div>
           </div>
 
@@ -739,7 +906,7 @@
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Soạn thảo</th>
                 <th scope="col" class="py-3.5 px-3 min-w-[140px]">Phê duyệt</th>
                 <th scope="col" class="py-3.5 px-3 min-w-[150px] text-center">Tình trạng</th>
-                <th scope="col" class="py-3.5 px-3 w-32 text-center no-print">Thao tác</th>
+                <th scope="col" class="py-3.5 px-3 w-36 text-center no-print dms-sticky-action-th">Thao tác</th>
               </tr>
             </thead>
             <tbody id="document-table-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
@@ -2816,14 +2983,15 @@
       const codeHtml = escapeHtml(parsed.code || '');
       const refDisp = formatRefDisplay(parsed.refDoc);
       const refHtml = escapeHtml(refDisp);
+      const fullCopyText = escapeHtml(formatCodeWithRefText(parsed.code, parsed.refDoc).replace(/\n/g, ' - '));
 
       if (mode === 'card') {
-        return `<span class="inline-flex flex-col px-2 py-0.5 text-xs font-mono bg-blue-50 text-blue-700 rounded border border-blue-200 leading-tight"><span class="font-bold">${codeHtml}</span>${refHtml ? `\n<span class="text-[11px] font-semibold text-slate-600 mt-0.5">${refHtml}</span>` : ''}</span>`;
+        return `<span class="inline-flex flex-col px-2.5 py-1 text-xs font-mono bg-gradient-to-br from-blue-50 to-indigo-50/70 text-blue-800 rounded-lg border border-blue-200/90 shadow-2xs leading-tight"><span class="font-bold tracking-tight">${codeHtml}</span>${refHtml ? `\n<span class="text-[11px] font-semibold text-indigo-700 mt-0.5 pt-0.5 border-t border-blue-200/60">${refHtml}</span>` : ''}</span>`;
       }
       if (mode === 'plain-multiline') {
-        return `<div class="inline-flex flex-col leading-snug"><span class="font-bold text-blue-700">${codeHtml}</span>${refHtml ? `\n<span class="text-xs font-semibold text-slate-600 mt-0.5">${refHtml}</span>` : ''}</div>`;
+        return `<div class="inline-flex flex-col leading-snug font-mono"><span class="font-bold text-blue-700">${codeHtml}</span>${refHtml ? `\n<span class="text-xs font-semibold text-indigo-600 mt-0.5">${refHtml}</span>` : ''}</div>`;
       }
-      return `<div class="inline-flex flex-col items-start bg-blue-50 px-2 py-1 rounded border border-blue-200 leading-snug"><span class="font-mono font-bold text-blue-700 text-sm whitespace-nowrap">${codeHtml}</span>${refHtml ? `\n<span class="font-mono font-semibold text-slate-600 text-xs whitespace-nowrap mt-0.5 pt-0.5 border-t border-blue-200/70 w-full">${refHtml}</span>` : ''}</div>`;
+      return `<div class="group/code inline-flex flex-col items-start bg-gradient-to-br from-slate-50 to-blue-50/60 hover:from-blue-50 hover:to-indigo-50/80 px-2.5 py-1.5 rounded-xl border border-slate-200/90 hover:border-blue-300 shadow-2xs leading-snug transition-all"><div class="flex items-center space-x-1.5 w-full justify-between"><span class="font-mono font-bold text-blue-700 text-xs sm:text-sm whitespace-nowrap tracking-tight">${codeHtml}</span><button type="button" onclick="copyTextSafe('${fullCopyText}', 'Đã sao chép mã hiệu: ${fullCopyText}'); event.stopPropagation();" class="opacity-0 group-hover/code:opacity-100 p-0.5 text-slate-400 hover:text-blue-600 rounded transition" title="Sao chép mã hiệu tài liệu"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button></div>${refHtml ? `\n<span class="inline-flex items-center font-mono font-semibold text-indigo-700 bg-indigo-50/90 px-1.5 py-0.5 rounded-md border border-indigo-200/80 text-[11px] whitespace-nowrap mt-1 w-full" title="Tài liệu tham chiếu: ${refHtml}">${refHtml}</span>` : ''}</div>`;
     }
 
     function updateDocCodeRefPreview() {
@@ -2910,6 +3078,22 @@
       // Cập nhật trạng thái active trên các mục sidebar
       document.querySelectorAll('.sidebar-nav-item').forEach(el => {
         el.className = 'sidebar-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-left text-slate-300 hover:text-white hover:bg-slate-800';
+      });
+
+      // Cập nhật trạng thái active trên thanh Module Tabs ngang (Enterprise Top Tabs)
+      const topTabsMap = {
+        'master': document.getElementById('top-tab-master'),
+        'review-plan': document.getElementById('top-tab-review-plan'),
+        'events': document.getElementById('top-tab-events'),
+        'distribution': document.getElementById('top-tab-distribution')
+      };
+      Object.entries(topTabsMap).forEach(([k, btn]) => {
+        if (!btn) return;
+        if (k === view) {
+          btn.className = 'dms-module-tab active inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-slate-900 transition';
+        } else {
+          btn.className = 'dms-module-tab inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition';
+        }
       });
 
       if (view === 'master') {
@@ -4018,6 +4202,22 @@
 
       const sideDocCount = document.getElementById('sidebar-doc-count');
       if (sideDocCount) sideDocCount.textContent = totalUniqueDocs;
+
+      const topDocCount = document.getElementById('top-tab-doc-count');
+      if (topDocCount) topDocCount.textContent = totalUniqueDocs;
+      const topEventsCount = document.getElementById('top-tab-events-count');
+      if (topEventsCount) topEventsCount.textContent = (appState.events || []).length;
+      const topDistCount = document.getElementById('top-tab-dist-count');
+      if (topDistCount) topDistCount.textContent = (appState.distributions || []).length;
+
+      // Cập nhật thanh tiến trình tỷ lệ trên 4 thẻ KPI
+      const denom = Math.max(totalEntries, 1);
+      const barActive = document.getElementById('metric-bar-active');
+      const barDue = document.getElementById('metric-bar-due');
+      const barSuper = document.getElementById('metric-bar-super');
+      if (barActive) barActive.style.width = (totalEntries > 0 ? Math.min(100, Math.round((activeCount / denom) * 100)) : 0) + '%';
+      if (barDue) barDue.style.width = (activeCount > 0 ? Math.min(100, Math.round((dueReviewCount / Math.max(activeCount, 1)) * 100)) : 0) + '%';
+      if (barSuper) barSuper.style.width = (totalEntries > 0 ? Math.min(100, Math.round((supersededCount / denom) * 100)) : 0) + '%';
     }
 
         // Helper: Chuẩn hóa loại tài liệu tránh lỗi lệch tên khi đồng bộ từ Google Sheet / Excel
@@ -4698,7 +4898,7 @@
                 ${st.latestMilestoneHtml || ''}
               </div>
             </td>
-            <td class="py-3 px-3 text-center whitespace-nowrap no-print">
+            <td class="py-3 px-3 text-center whitespace-nowrap no-print dms-sticky-action-td">
               <div class="flex items-center justify-center space-x-1">
                 <button type="button" onclick="openDocumentReaderById('${doc.id}')" class="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition" title="Đọc toàn văn tài liệu">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -4834,6 +5034,24 @@
       appState.docPageSize = val;
       appState.docPage = 1;
       renderDocumentList();
+    }
+
+    function setTableDensity(density) {
+      appState.tableDensity = density;
+      const tables = document.querySelectorAll('#container-table-view table, #section-doc-review-plan table, #section-doc-events table, #section-doc-distribution table');
+      tables.forEach(t => {
+        if (density === 'compact') t.classList.add('dms-table-compact');
+        else t.classList.remove('dms-table-compact');
+      });
+      const btnComf = document.getElementById('btn-density-comfortable');
+      const btnComp = document.getElementById('btn-density-compact');
+      if (density === 'compact') {
+        if (btnComp) btnComp.className = 'px-2.5 py-1 font-semibold bg-slate-800 text-white transition';
+        if (btnComf) btnComf.className = 'px-2.5 py-1 font-semibold bg-white text-slate-700 hover:bg-slate-100 transition';
+      } else {
+        if (btnComf) btnComf.className = 'px-2.5 py-1 font-semibold bg-slate-800 text-white transition';
+        if (btnComp) btnComp.className = 'px-2.5 py-1 font-semibold bg-white text-slate-700 hover:bg-slate-100 transition';
+      }
     }
 
     function setViewMode(mode) {
@@ -5121,6 +5339,8 @@
     // ========================================================
     function selectPlanYear(y) {
       appState.planYear = y;
+      const topPlanYear = document.getElementById('top-tab-plan-year');
+      if (topPlanYear) topPlanYear.textContent = y === 'ALL' ? 'Tất cả' : y;
       appState.planPage = 1;
       document.querySelectorAll('.plan-year-pill').forEach(btn => {
         if (btn.getAttribute('data-year') == String(y)) {
@@ -5585,6 +5805,8 @@
 
       const sideEvCount = document.getElementById('sidebar-events-count');
       if (sideEvCount) sideEvCount.textContent = appState.events.length;
+      const topEvCount = document.getElementById('top-tab-events-count');
+      if (topEvCount) topEvCount.textContent = appState.events.length;
 
       const q = appState.eventsSearchQuery;
       let filtered = appState.events.filter(ev => {
@@ -5889,6 +6111,8 @@
 
       const sideDistCount = document.getElementById('sidebar-dist-count');
       if (sideDistCount) sideDistCount.textContent = total;
+      const topDistCount = document.getElementById('top-tab-dist-count');
+      if (topDistCount) topDistCount.textContent = total;
 
       let filtered = appState.distributions.filter(d => {
         if (selectedDept !== 'ALL' && d.recipientDept !== selectedDept) return false;
@@ -9729,6 +9953,19 @@ function getAccountsFromSheet(ss) {
         const openModals = document.querySelectorAll('[id^="modal-"]:not(.hidden)');
         openModals.forEach(m => closeModal(m.id));
         toggleSidebar(false);
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((document.activeElement && document.activeElement.tagName) || ''))) {
+        const openModals = document.querySelectorAll('[id^="modal-"]:not(.hidden)');
+        if (!openModals || openModals.length === 0) {
+          e.preventDefault();
+          let searchEl = document.getElementById('search-input');
+          if (appState.currentView === 'events') searchEl = document.getElementById('events-search-input');
+          else if (appState.currentView === 'distribution') searchEl = document.getElementById('dist-search-input');
+          if (searchEl) {
+            searchEl.focus();
+            searchEl.select();
+          }
+        }
       }
     });
 
