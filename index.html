@@ -688,77 +688,48 @@
 
     <!-- ENTERPRISE WORKSPACE COMMAND BAR & 1-CLICK MODULE NAVIGATION -->
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden no-print">
-      <!-- Top Row: Workspace Breadcrumb, Active View Title & Quick Creation Actions -->
-      <div class="px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b border-slate-100">
-        <div class="flex items-center space-x-3">
-          <!-- Nút mở Sidebar ẩn -->
-          <button type="button" onclick="toggleSidebar(true)" class="p-2 text-slate-700 hover:text-blue-600 rounded-xl hover:bg-blue-50/60 transition border border-slate-200/90 shadow-2xs flex items-center space-x-1.5 text-xs font-bold shrink-0" title="Mở thanh điều hướng thu gọn (Sidebar)">
-            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <span class="hidden sm:inline">Menu Danh Mục</span>
-          </button>
-
-          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-
-          <div>
-            <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-0.5">
-              <span>QMS Workspace</span>
-              <span>/</span>
-              <span class="text-blue-600 font-bold">ISO/IEC 17025:2017 (Khoản 8.3)</span>
-            </div>
-            <div class="flex items-center flex-wrap gap-2">
-              <h2 id="current-view-title" class="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 tracking-tight flex items-center">
-                Danh Mục Kiểm Soát Tài Liệu Nội Bộ
-              </h2>
-              <span id="current-view-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                Danh mục tài liệu
-              </span>
-            </div>
-            <p id="current-view-subtitle" class="text-xs text-slate-500 mt-0.5">
-              Hệ thống quản lý chất lượng phòng thử nghiệm theo ISO/IEC 17025:2017 (Khoản 8.3)
-            </p>
-          </div>
+      <!-- Top Row: Centered Active View Title & Quick Creation Actions (Thiết kế Hình 2) -->
+      <div class="px-4 py-4 flex flex-col items-center justify-center text-center gap-3 border-b border-slate-100">
+        <div class="flex flex-col items-center justify-center">
+          <h2 id="current-view-title" class="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 tracking-tight text-center">
+            Danh Mục Kiểm Soát Tài Liệu Nội Bộ
+          </h2>
+          <span id="current-view-badge" class="hidden"></span>
+          <p id="current-view-subtitle" class="hidden"></p>
         </div>
 
-        <!-- Right Quick Action Bar (Enterprise Quick-Actions) -->
-        <div class="flex items-center flex-wrap gap-2 shrink-0">
-          <div class="hidden xl:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="font-medium">Trạng thái:</span>
-            <span class="font-bold text-slate-800">Kiểm soát trực tuyến</span>
-          </div>
-
-          <button type="button" onclick="checkEditAction(() => openAddEventModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition active:scale-95" title="Ghi nhận sự kiện Ban hành / Sửa đổi / Soát xét / Hủy">
-            <svg class="w-3.5 h-3.5 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Centered Quick Action Bar -->
+        <div class="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5">
+          <button type="button" onclick="checkEditAction(() => openAddEventModal())" class="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition active:scale-95" title="Ghi nhận sự kiện Ban hành / Sửa đổi / Soát xét / Hủy">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <span>+ Ghi nhận sự kiện</span>
           </button>
 
-          <button type="button" onclick="checkEditAction(() => openAddDistributionModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95" title="Phân phối hoặc thu hồi bản sao có kiểm soát">
-            <svg class="w-3.5 h-3.5 mr-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button type="button" onclick="checkEditAction(() => openAddDistributionModal())" class="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95" title="Phân phối hoặc thu hồi bản sao có kiểm soát">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
             </svg>
             <span>+ Phân phối bản sao</span>
           </button>
 
-          <button type="button" onclick="checkEditAction(() => openAddCompetencyModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition active:scale-95" title="Ghi nhận hồ sơ Năng lực thử nghiệm (Valid / Verify / Tay nghề)">
-            <svg class="w-3.5 h-3.5 mr-1 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button type="button" onclick="checkEditAction(() => openAddCompetencyModal())" class="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition active:scale-95" title="Ghi nhận hồ sơ Năng lực thử nghiệm (Valid / Verify / Tay nghề)">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
             </svg>
             <span>+ Năng lực TN</span>
           </button>
 
-          <button type="button" onclick="checkEditAction(() => openAddPtModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition active:scale-95" title="Ghi nhận kết quả tham gia Thử nghiệm thành thạo (Proficiency Testing - PT)">
-            <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button type="button" onclick="checkEditAction(() => openAddPtModal())" class="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition active:scale-95" title="Ghi nhận kết quả tham gia Thử nghiệm thành thạo (Proficiency Testing - PT)">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
             <span>+ Tham gia PT</span>
           </button>
 
-          <button type="button" onclick="checkEditAction(() => openAddAccreditationModal())" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition active:scale-95" title="Ghi nhận tình trạng Công nhận ISO 17025, Đăng ký NĐ 22, Chỉ định (kèm nền mẫu, chỉ tiêu, LOD/POD, LOQ)">
-            <svg class="w-3.5 h-3.5 mr-1 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button type="button" onclick="checkEditAction(() => openAddAccreditationModal())" class="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition active:scale-95" title="Ghi nhận tình trạng Công nhận ISO 17025, Đăng ký NĐ 22, Chỉ định (kèm nền mẫu, chỉ tiêu, LOD/POD, LOQ)">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
             </svg>
             <span>+ ISO / NĐ 22 / Chỉ định</span>
@@ -4660,7 +4631,7 @@
         if (subEl) subEl.textContent = 'Quản lý tài liệu theo ISO/IEC 17025:2017 Khoản 8.3: Quy trình, Hướng dẫn, Biểu mẫu';
         if (badgeEl) {
           badgeEl.textContent = `${appState.documents.length} Tài liệu`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200';
         }
         if (printTitle) printTitle.textContent = 'DANH MỤC KIỂM SOÁT TÀI LIỆU NỘI BỘ (ISO/IEC 17025:2017)';
         if (printSub) printSub.textContent = 'Ban hành kèm theo Sổ tay Quản lý Chất lượng và Quy trình kiểm soát tài liệu (Khoản 8.3)';
@@ -4674,7 +4645,7 @@
         if (subEl) subEl.textContent = 'Lập lịch rà soát định kỳ tuân thủ Điều khoản 8.3.2.b Tiêu chuẩn ISO/IEC 17025:2017';
         if (badgeEl) {
           badgeEl.textContent = 'Kế hoạch năm ' + appState.planYear;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200';
         }
         if (printTitle) printTitle.textContent = `KẾ HOẠCH RÀ SOÁT TÀI LIỆU NĂM ${appState.planYear}`;
         if (printSub) printSub.textContent = 'Phê duyệt theo Kế hoạch Kiểm soát Tài liệu ISO/IEC 17025:2017 (Khoản 8.3.2.b)';
@@ -4688,7 +4659,7 @@
         if (subEl) subEl.textContent = 'Ghi nhận và lưu trữ các sự kiện: Ban hành mới, Sửa đổi, Soát xét (không có sửa đổi), Hủy';
         if (badgeEl) {
           badgeEl.textContent = `${appState.events.length} Sự kiện`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-200';
         }
         if (printTitle) printTitle.textContent = 'NHẬT KÝ SỰ KIỆN VÒNG ĐỜI TÀI LIỆU (ISO/IEC 17025:2017)';
         if (printSub) printSub.textContent = 'Lưu trữ lịch sử ban hành, sửa đổi, soát xét định kỳ và hủy tài liệu';
@@ -4702,7 +4673,7 @@
         if (subEl) subEl.textContent = 'Kiểm soát việc phân phối bản sao có kiểm soát tại các điểm sử dụng và thu hồi bản lỗi thời';
         if (badgeEl) {
           badgeEl.textContent = `${appState.distributions.length} Phân phối`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
         }
         if (printTitle) printTitle.textContent = 'SỔ PHÂN PHỐI VÀ THU HỒI TÀI LIỆU (BM-01/QTQL-01)';
         if (printSub) printSub.textContent = 'Theo dõi vị trí lưu hành bản sao có kiểm soát tại các đơn vị theo Điều 8.3.2.d & 8.3.2.f';
@@ -4716,7 +4687,7 @@
         if (subEl) subEl.textContent = 'Theo dõi xác nhận giá trị sử dụng (Valid), thẩm định phương pháp (Verify) và kiểm tra tay nghề của Quy trình thử nghiệm (Test)';
         if (badgeEl) {
           badgeEl.textContent = `${(appState.competencies || []).length} Hồ sơ năng lực`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-teal-50 text-teal-700 border border-teal-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-teal-50 text-teal-700 border border-teal-200';
         }
         if (printTitle) printTitle.textContent = 'DANH MỤC & LỊCH SỬ NĂNG LỰC THỬ NGHIỆM (ISO/IEC 17025:2017 - KHOẢN 7.2 & 6.2)';
         if (printSub) printSub.textContent = 'Xác nhận giá trị sử dụng (Valid), Thẩm định phương pháp (Verify) và Kiểm tra tay nghề kiểm nghiệm viên';
@@ -4730,7 +4701,7 @@
         if (subEl) subEl.textContent = 'Quản lý kết quả tham gia chương trình thử nghiệm thành thạo (Z-score) theo ISO/IEC 17025:2017 (Khoản 7.7.2)';
         if (badgeEl) {
           badgeEl.textContent = `${(appState.ptRecords || []).length} Lượt PT`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200';
         }
         if (printTitle) printTitle.textContent = 'BÁO CÁO LỊCH SỬ THAM GIA THỬ NGHIỆM THÀNH THẠO - PROFICIENCY TESTING (PT)';
         if (printSub) printSub.textContent = 'Đảm bảo giá trị sử dụng của kết quả thử nghiệm theo Điều khoản 7.7.2 Tiêu chuẩn ISO/IEC 17025:2017';
@@ -4744,7 +4715,7 @@
         if (subEl) subEl.textContent = 'Theo dõi nền mẫu, chỉ tiêu cụ thể kèm theo LOD/POD, LOQ, Tổ chức công nhận / Cơ quan cấp / Cơ quan chỉ định, Số QĐ/GCN và Ngày ban hành';
         if (badgeEl) {
           badgeEl.textContent = `${(appState.accreditations || []).length} Hồ sơ CN/ĐK/CĐ`;
-          badgeEl.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-sky-50 text-sky-700 border border-sky-200';
+          badgeEl.className = 'hidden px-2.5 py-1 text-xs font-bold rounded-full bg-sky-50 text-sky-700 border border-sky-200';
         }
         if (printTitle) printTitle.textContent = 'DANH MỤC TÌNH TRẠNG CÔNG NHẬN ISO/IEC 17025, ĐĂNG KÝ NĐ 22 & CHỈ ĐỊNH PHÉP THỬ';
         if (printSub) printSub.textContent = 'Tổng hợp nền mẫu, chỉ tiêu thử nghiệm, giới hạn phát hiện (LOD/POD), giới hạn định lượng (LOQ) và quyết định công nhận/chỉ định';
